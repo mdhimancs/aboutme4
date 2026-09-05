@@ -8,6 +8,12 @@
   "description": "Professional portfolio of Munish Dhiman — Cybersecurity & IAM Expert.",
   "icons": [
     {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
       "src": "https://img.youtube.com/vi/R2_fL0zH5h4/hqdefault.jpg",
       "sizes": "192x192",
       "type": "image/jpeg"
