@@ -18,6 +18,7 @@ import { ContactModal } from './components/ContactModal';
 import { GateModal } from './components/GateModal';
 import { InterfaceOptionsModal, ThemeMode, AccentColor, FontStyle } from './components/InterfaceOptionsModal';
 import { ChevronUp, ChevronDown } from 'lucide-react';
+import { motion } from 'motion/react';
 
 const SECTIONS = ['overview', 'bio', 'competencies', 'career', 'projects', 'blog', 'offkeyboard', 'philosophy', 'archive'] as const;
 type SectionId = typeof SECTIONS[number];
@@ -32,6 +33,27 @@ const SECTION_LABELS: Record<SectionId, string> = {
   offkeyboard: 'Off Keyboard',
   philosophy: 'Philosophy',
   archive: 'Archives & Patents'
+};
+
+interface SnapSectionProps {
+  id: SectionId;
+  children: React.ReactNode;
+}
+
+const SnapSection: React.FC<SnapSectionProps> = ({ id, children }) => {
+  return (
+    <div id={id} className="snap-section w-full">
+      <motion.div
+        initial={{ opacity: 0, y: 32 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: false, amount: 0.15 }}
+        transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full h-full"
+      >
+        {children}
+      </motion.div>
+    </div>
+  );
 };
 
 export default function App() {
@@ -369,72 +391,72 @@ export default function App() {
       >
         <main className="w-full">
           {/* Stop 1: Overview */}
-          <div className="snap-section">
+          <SnapSection id="overview">
             <Hero 
               onOpenContact={() => setContactOpen(true)} 
               onExploreBlog={() => navigateToSection('blog')} 
               theme={theme} 
             />
-          </div>
+          </SnapSection>
 
           {/* Stop 2: Executive Bio */}
-          <div className="snap-section">
+          <SnapSection id="bio">
             <ExecutiveBio 
               theme={theme} 
               onNextPage={handleNextPage}
             />
-          </div>
+          </SnapSection>
 
           {/* Stop 3: Core Technical Competencies */}
-          <div className="snap-section">
+          <SnapSection id="competencies">
             <CoreCompetencies 
               theme={theme} 
             />
-          </div>
+          </SnapSection>
 
           {/* Stop 4: Career Journey */}
-          <div className="snap-section">
+          <SnapSection id="career">
             <CareerJourney 
               theme={theme} 
             />
-          </div>
+          </SnapSection>
 
           {/* Stop 5: Case Studies (Projects) */}
-          <div className="snap-section">
+          <SnapSection id="projects">
             <Projects 
               theme={theme} 
             />
-          </div>
+          </SnapSection>
           
           {/* Stop 6: Technical Blog */}
-          <div className="snap-section">
+          <SnapSection id="blog">
             <TechnicalBlog 
               theme={theme} 
             />
-          </div>
+          </SnapSection>
 
-          {/* Stop 6: Off Keyboard */}
-          <div className="snap-section">
+          {/* Stop 7: Off Keyboard */}
+          <SnapSection id="offkeyboard">
             <OffKeyboard 
               theme={theme} 
             />
-          </div>
+          </SnapSection>
 
-          {/* Stop 7: Philosophy */}
-          <div className="snap-section">
+          {/* Stop 8: Philosophy */}
+          <SnapSection id="philosophy">
             <Philosophy 
               theme={theme} 
             />
-          </div>
+          </SnapSection>
           
-          {/* Stop 8: Archives & Patents + Integrated Footer */}
-          <div className="snap-section">
+          {/* Stop 9: Archives & Patents + Integrated Footer */}
+          <SnapSection id="archive">
             <Archive 
               theme={theme} 
               onOpenContact={() => setContactOpen(true)}
               onScrollToTop={() => navigateToIndex(0)}
             />
-          </div>
+          </SnapSection>
         </main>
       </div>
 
