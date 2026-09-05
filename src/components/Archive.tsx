@@ -20,6 +20,8 @@ import {
   Sparkles,
   CheckCircle2,
   Lock,
+  Unlock,
+  KeyRound,
   Printer,
   Target,
   TrendingUp,
@@ -30,6 +32,8 @@ import {
 } from 'lucide-react';
 import { ARCHIVE_ITEMS, PERSONAL_INFO } from '../data/portfolioData';
 import { useHoverScroll } from '../lib/utils';
+import { trackAssetInteraction } from '../lib/analytics';
+import { useAuth } from '../context/AuthContext';
 
 interface ArchiveProps {
   theme?: string;
@@ -387,6 +391,20 @@ export const Archive: React.FC<ArchiveProps> = ({
   onScrollToTop 
 }) => {
   const isLight = theme === 'apple-light';
+  const { 
+    gateItem, 
+    user, 
+    isAdmin, 
+    isAuthorized, 
+    currentUserEntry,
+    isItemLocked, 
+    isSectionLocked, 
+    toggleSectionLock, 
+    toggleItemLock 
+  } = useAuth();
+
+  const isSectionGated = isSectionLocked('archive');
+
   const [activeTab, setActiveTab] = useState<'blueprints' | 'aspirational' | 'playbooks' | 'archive'>('aspirational');
   const [selectedType, setSelectedType] = useState<string>('All');
   const [selectedYear, setSelectedYear] = useState<string>('All');
@@ -406,10 +424,12 @@ export const Archive: React.FC<ArchiveProps> = ({
     return matchesType && matchesYear;
   });
 
+  // Transparent lock: managed via PasswordGate wrapper
+
   return (
     <section 
       id="archive" 
-      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-between py-4 sm:py-5 pb-6 sm:pb-8 lg:pb-10 px-6 sm:px-10 lg:px-14 max-w-6xl mx-auto border-t ${
+      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-between py-3 sm:py-4 pb-3 sm:pb-4 lg:pb-5 px-6 sm:px-10 lg:px-14 max-w-6xl mx-auto border-t ${
         isLight ? 'border-zinc-200 bg-[#fcfcfd]' : 'border-white/10 bg-[#000000]'
       }`}
     >
@@ -421,16 +441,16 @@ export const Archive: React.FC<ArchiveProps> = ({
             : 'bg-gradient-to-tr from-blue-600/16 via-indigo-500/12 to-cyan-500/10'
         }`} 
       />
-      <div 
-        className={`absolute -bottom-20 -right-20 w-80 sm:w-96 h-80 sm:h-96 rounded-full blur-[80px] sm:blur-[110px] pointer-events-none ${
-          isLight ? 'bg-indigo-300/10' : 'bg-blue-600/12'
-        }`} 
-      />
-      <div 
-        className={`absolute -top-12 -left-12 w-72 sm:w-80 h-72 sm:h-80 rounded-full blur-[70px] sm:blur-[100px] pointer-events-none ${
-          isLight ? 'bg-sky-300/10' : 'bg-indigo-600/10'
-        }`} 
-      />
+        <div 
+          className={`absolute -bottom-20 -right-20 w-80 sm:w-96 h-80 sm:h-96 rounded-full blur-[80px] sm:blur-[110px] pointer-events-none ${
+            isLight ? 'bg-indigo-300/10' : 'bg-blue-600/12'
+          }`} 
+        />
+        <div 
+          className={`absolute -top-12 -left-12 w-72 sm:w-80 h-72 sm:h-80 rounded-full blur-[70px] sm:blur-[100px] pointer-events-none ${
+            isLight ? 'bg-sky-300/10' : 'bg-indigo-600/10'
+          }`} 
+        />
 
       <div className="relative flex-1 flex flex-col justify-center min-h-0">
         
@@ -451,16 +471,101 @@ export const Archive: React.FC<ArchiveProps> = ({
             <Award className="w-3 h-3 text-blue-500" />
             <span>Defensibility, Patents & Standardized Blueprints</span>
           </div>
-          <h2 className={`relative text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all ${
-            isLight 
-              ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
-              : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
-          }`}>
-            Archive, Patents & Executive Blueprints
-          </h2>
+          <div className="relative flex flex-col sm:flex-row items-center justify-center gap-3">
+            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all text-center ${
+              isLight 
+                ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
+                : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
+            }`}>
+              Archives & Executive Blueprints
+            </h2>
+            <div className="inline-flex items-center gap-2">
+              <button 
+                type="button"
+                onClick={() => gateItem('sec-archive', 'archive', 'Archive Vaults & Executive Blueprints', () => {})}
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border cursor-pointer transition-all ${
+                  isSectionGated 
+                    ? (isLight ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-amber-500/10 text-amber-400 border-amber-500/20')
+                    : (isLight ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20')
+                }`}
+              >
+                {isSectionGated ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+                <span>{isSectionGated ? 'Locked Section' : 'Public Access'}</span>
+              </button>
+              {isAdmin && (
+                <button
+                  type="button"
+                  onClick={() => toggleSectionLock('archive')}
+                  className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border transition-colors cursor-pointer ${
+                    isLight 
+                      ? 'bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border-zinc-300' 
+                      : 'bg-white/5 hover:bg-white/10 text-zinc-300 border-white/10'
+                  }`}
+                  title="Toggle archive section lock"
+                >
+                  <span>{isSectionGated ? 'Unlock Section' : 'Lock Section'}</span>
+                </button>
+              )}
+            </div>
+          </div>
           <p className={`relative max-w-3xl mx-auto text-xs sm:text-sm ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
             Granted intellectual property, institutional reference architectures, and standardized CISO operational blueprints.
           </p>
+
+          {/* Persistent Firebase Auth Locking Notice */}
+          <div className="max-w-4xl mx-auto pt-1">
+            {!isAuthorized ? (
+              <div className={`p-2 sm:p-2.5 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs transition-all ${
+                isLight ? 'bg-amber-50/90 border-amber-200 text-amber-950' : 'bg-amber-950/20 border-amber-500/30 text-amber-200'
+              }`}>
+                <div className="flex items-center gap-2 text-left">
+                  <div className="w-6 h-6 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
+                    <Lock className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-[11px] block">
+                      {isSectionGated ? 'Section Gated by Default' : 'Granular Resource Protection Active'}
+                    </span>
+                    <span className="text-[10px] opacity-80 block">
+                      Each article and vault can be locked independently or granted specific individual clearance.
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => gateItem('sec-archive', 'archive', 'Archive Vaults & Blueprints', () => {})}
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-[11px] shadow transition-all cursor-pointer"
+                >
+                  <Lock className="w-3 h-3" />
+                  <span>Authenticate & Request Access</span>
+                </button>
+              </div>
+            ) : (
+              <div className={`p-2 rounded-xl border flex items-center justify-between gap-2 text-xs transition-all ${
+                isLight ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950' : 'bg-emerald-950/20 border-emerald-500/30 text-emerald-200'
+              }`}>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span className="text-[11px]">
+                    <strong>Authenticated ({user?.email}):</strong> {
+                      isAdmin 
+                        ? 'Admin Clearance — Full control over individual locks & allowlists.'
+                        : currentUserEntry?.scope === 'specific'
+                          ? `Specific Clearance — Granted access to ${currentUserEntry.allowedItems?.length || 0} designated item(s).`
+                          : 'Global Clearance — Authorized for all archives, patents & blueprints.'
+                    }
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => gateItem('sec-archive', 'archive', 'Security Hub', () => {})}
+                  className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase font-bold hover:bg-emerald-500/20 transition-colors cursor-pointer"
+                >
+                  {isAdmin ? 'Manage Security' : 'View Clearance'}
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Primary View Switcher */}
           <div className="flex flex-wrap items-center justify-center pt-1.5 gap-1.5">
@@ -514,7 +619,7 @@ export const Archive: React.FC<ArchiveProps> = ({
               }`}
             >
               <ArchiveIcon className="w-3 h-3" />
-              <span>Vault & Patents ({ARCHIVE_ITEMS.length})</span>
+              <span>Vaults ({ARCHIVE_ITEMS.length})</span>
             </button>
           </div>
         </div>
@@ -523,103 +628,128 @@ export const Archive: React.FC<ArchiveProps> = ({
         {activeTab === 'blueprints' && (
           <div className="relative w-full">
             <div className="overflow-y-auto min-h-0 max-h-[360px] sm:max-h-[385px] lg:max-h-[405px] pr-1 pb-14 space-y-3 scrollbar-thin animate-in fade-in duration-300">
-              {/* In the making Patent Spotlight Banner */}
-              <div className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
-                isLight ? 'bg-blue-50/90 border-blue-200 shadow-2xs' : 'bg-blue-950/20 border-blue-800/40 text-white'
-              }`}>
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md">
-                    <Shield className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-600/20 text-blue-600 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30">
-                        In the making Patent
-                      </span>
-                      <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                        US Pat. No. 11,222,333 B2 ®
-                      </span>
-                    </div>
-                    <h4 className={`text-xs sm:text-sm font-bold mt-0.5 ${isLight ? 'text-zinc-900' : 'text-white'}`}>
-                      Method and Apparatus for Cryptographic Session Binding and Device Attestation™
-                    </h4>
-                    <p className={`text-[11px] leading-relaxed max-w-2xl mt-0.5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                      Hardware-backed cryptographic assertion of device integrity and FIDO2 session binding during OAuth 2.0 / OIDC authorization code exchanges.
-                    </p>
-                  </div>
-                </div>
-                <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border shrink-0 ${
-                  isLight ? 'bg-white border-blue-300 text-blue-700' : 'bg-white/10 border-white/10 text-blue-300'
-                }`}>
-                  Protected IP & Defensibility
-                </span>
-              </div>
-
               {/* Blueprints Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                {EXECUTIVE_BLUEPRINTS.map((bp) => (
-                  <div
-                    key={bp.id}
-                    className={`p-3.5 rounded-2xl border flex flex-col justify-between transition-all hover:border-blue-500/40 ${
-                      isLight 
-                        ? 'bg-white border-zinc-200 shadow-xs hover:shadow-md' 
-                        : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.04]'
-                    }`}
-                  >
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className={`text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                          isLight ? 'bg-zinc-100 border-zinc-200 text-zinc-700' : 'bg-white/5 border-white/10 text-zinc-300'
+                {EXECUTIVE_BLUEPRINTS.map((bp) => {
+                  const locked = isItemLocked(bp.id, 'archive');
+                  const hasSpecificClearance = currentUserEntry?.scope === 'specific' && currentUserEntry.allowedItems?.includes(bp.id);
+
+                  return (
+                    <div
+                      key={bp.id}
+                      onClick={() => {
+                        gateItem(bp.id, 'archive', bp.title, () => {
+                          setSelectedBlueprint(bp);
+                          trackAssetInteraction(bp.id, bp.title, 'Executive Blueprint');
+                        });
+                      }}
+                      className={`p-3.5 rounded-2xl border flex flex-col justify-between transition-all cursor-pointer hover:border-blue-500/40 ${
+                        isLight 
+                          ? 'bg-white border-zinc-200 shadow-xs hover:shadow-md' 
+                          : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className={`text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                              isLight ? 'bg-zinc-100 border-zinc-200 text-zinc-700' : 'bg-white/5 border-white/10 text-zinc-300'
+                            }`}>
+                              {bp.category}
+                            </span>
+                            {hasSpecificClearance && (
+                              <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider ${
+                                isLight ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-purple-500/15 border-purple-500/30 text-purple-300'
+                              }`}>
+                                <KeyRound className="w-2.5 h-2.5 text-purple-400" />
+                                <span>Clearance Granted</span>
+                              </span>
+                            )}
+                            {locked && !hasSpecificClearance && (
+                              <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
+                                <Lock className="w-2.5 h-2.5" /> Locked
+                              </span>
+                            )}
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleItemLock(bp.id, 'archive');
+                                }}
+                                className="p-1 rounded bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                                title={locked ? 'Unlock this blueprint' : 'Lock this blueprint'}
+                              >
+                                {locked ? <Lock className="w-2.5 h-2.5 text-amber-400" /> : <Unlock className="w-2.5 h-2.5 text-emerald-400" />}
+                              </button>
+                            )}
+                          </div>
+                          <span className="text-[10px] font-mono text-blue-500 font-semibold">{bp.regulatoryStandard}</span>
+                        </div>
+
+                        <h4 className={`text-xs sm:text-sm font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                          {bp.title}
+                        </h4>
+
+                        <p className={`text-[11px] leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                          {bp.description}
+                        </p>
+
+                        <div className={`p-2 rounded-xl text-[10.5px] border ${
+                          isLight ? 'bg-blue-50/70 border-blue-100 text-zinc-800' : 'bg-white/[0.03] border-white/5 text-zinc-300'
                         }`}>
-                          {bp.category}
-                        </span>
-                        <span className="text-[10px] font-mono text-blue-500 font-semibold">{bp.regulatoryStandard}</span>
-                      </div>
-
-                      <h4 className={`text-xs sm:text-sm font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
-                        {bp.title}
-                      </h4>
-
-                      <p className={`text-[11px] leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                        {bp.description}
-                      </p>
-
-                      <div className={`p-2 rounded-xl text-[10.5px] border ${
-                        isLight ? 'bg-blue-50/70 border-blue-100 text-zinc-800' : 'bg-white/[0.03] border-white/5 text-zinc-300'
-                      }`}>
-                        <strong className="text-blue-500 font-bold block mb-0.5">Executive Outcome:</strong>
-                        {bp.executiveTakeaway}
-                      </div>
-                    </div>
-
-                    <div className={`pt-2.5 mt-2.5 border-t space-y-2 ${isLight ? 'border-zinc-100' : 'border-white/5'}`}>
-                      <div className="space-y-1">
-                        <span className={`text-[8.5px] font-semibold uppercase tracking-wider ${isLight ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                          Core Governance Components
-                        </span>
-                        <div className="grid grid-cols-2 gap-1">
-                          {bp.coreComponents.map((comp, i) => (
-                            <div key={i} className="flex items-center gap-1 text-[9.5px] text-zinc-600 dark:text-zinc-400">
-                              <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500 shrink-0" />
-                              <span className="truncate">{comp}</span>
-                            </div>
-                          ))}
+                          <strong className="text-blue-500 font-bold block mb-0.5">Executive Outcome:</strong>
+                          {bp.executiveTakeaway}
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-1 text-[10px]">
-                        <span className="text-zinc-400 font-mono">{bp.version}</span>
-                        <button 
-                          onClick={() => setSelectedBlueprint(bp)}
-                          className="flex items-center gap-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                        >
-                          <span>Inspect Executive Blueprint</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </button>
+                      <div className={`pt-2.5 mt-2.5 border-t space-y-2 ${isLight ? 'border-zinc-100' : 'border-white/5'}`}>
+                        <div className="space-y-1">
+                          <span className={`text-[8.5px] font-semibold uppercase tracking-wider ${isLight ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                            Core Governance Components
+                          </span>
+                          <div className="grid grid-cols-2 gap-1">
+                            {bp.coreComponents.map((comp, i) => (
+                              <div key={i} className="flex items-center gap-1 text-[9.5px] text-zinc-600 dark:text-zinc-400">
+                                <CheckCircle2 className="w-2.5 h-2.5 text-emerald-500 shrink-0" />
+                                <span className="truncate">{comp}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center justify-between pt-1 text-[10px]">
+                          <span className="text-zinc-400 font-mono">{bp.version}</span>
+                          <button 
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              gateItem(bp.id, 'archive', bp.title, () => {
+                                setSelectedBlueprint(bp);
+                                trackAssetInteraction(bp.id, bp.title, 'Executive Blueprint');
+                              });
+                            }}
+                            className={`flex items-center gap-1 font-semibold hover:underline cursor-pointer ${
+                              locked && !hasSpecificClearance ? 'text-amber-500 hover:text-amber-400' : 'text-blue-600 dark:text-blue-400'
+                            }`}
+                          >
+                            {locked && !hasSpecificClearance ? (
+                              <>
+                                <Lock className="w-3 h-3" />
+                                <span>Unlock Blueprint</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>Inspect Executive Blueprint</span>
+                                <ChevronRight className="w-3 h-3" />
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -639,131 +769,288 @@ export const Archive: React.FC<ArchiveProps> = ({
           <div className="relative w-full">
             <div className="overflow-y-auto min-h-0 max-h-[360px] sm:max-h-[385px] lg:max-h-[405px] pr-1 pb-14 space-y-3 scrollbar-thin animate-in fade-in duration-300">
               {/* Executive Horizon Spotlight Banner */}
-              <div className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
-                isLight ? 'bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-sky-50/90 border-blue-200 shadow-2xs' : 'bg-gradient-to-r from-blue-950/30 via-indigo-950/20 to-zinc-900 border-blue-800/40 text-white'
-              }`}>
-                <div className="flex items-start gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md">
-                    <Target className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-600/20 text-blue-600 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30">
-                        CISO & dyCISO Strategic Horizons
-                      </span>
-                      <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300">
-                        Board & Search Committee Dossier
+              {(() => {
+                const horizonLocked = isItemLocked('asp-boardroom-sim', 'archive');
+                const horizonClearance = currentUserEntry?.scope === 'specific' && currentUserEntry.allowedItems?.includes('asp-boardroom-sim');
+
+                return (
+                  <div 
+                    onClick={() => {
+                      gateItem('asp-boardroom-sim', 'archive', 'Executive Horizons & Strategic Governance Roadmaps', () => {});
+                    }}
+                    className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer transition-all ${
+                      isLight ? 'bg-gradient-to-r from-blue-50/90 via-indigo-50/70 to-sky-50/90 border-blue-200 shadow-2xs' : 'bg-gradient-to-r from-blue-950/30 via-indigo-950/20 to-zinc-900 border-blue-800/40 text-white'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                        <Target className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-600/20 text-blue-600 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30">
+                            CISO & dyCISO Strategic Horizons
+                          </span>
+                          <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300">
+                            Board & Search Committee Dossier
+                          </span>
+                          {horizonClearance && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider bg-purple-500/15 border-purple-500/30 text-purple-300">
+                              <KeyRound className="w-2.5 h-2.5 text-purple-400" /> Clearance Granted
+                            </span>
+                          )}
+                          {horizonLocked && !horizonClearance && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
+                              <Lock className="w-2.5 h-2.5" /> Locked
+                            </span>
+                          )}
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleItemLock('asp-boardroom-sim', 'archive');
+                              }}
+                              className="p-1 rounded bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                              title={horizonLocked ? 'Unlock item' : 'Lock item'}
+                            >
+                              {horizonLocked ? <Lock className="w-2.5 h-2.5 text-amber-400" /> : <Unlock className="w-2.5 h-2.5 text-emerald-400" />}
+                            </button>
+                          )}
+                        </div>
+                        <h4 className={`text-xs sm:text-sm font-bold mt-0.5 ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                          Executive Horizons & Strategic Governance Roadmaps
+                        </h4>
+                        <p className={`text-[11px] leading-relaxed max-w-2xl mt-0.5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                          Forward-looking blueprints engineered for Board of Directors, Audit Committees, and executive search partners: Day-1 CISO command, 1-page boardroom dossier, FAIR™ risk economics, and Enterprise GenAI defense.
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border ${
+                        isLight ? 'bg-white border-blue-300 text-blue-700' : 'bg-white/10 border-white/10 text-blue-300'
+                      }`}>
+                        {horizonLocked && !horizonClearance ? 'Clearance Required' : 'C-Suite Readiness'}
                       </span>
                     </div>
-                    <h4 className={`text-xs sm:text-sm font-bold mt-0.5 ${isLight ? 'text-zinc-900' : 'text-white'}`}>
-                      Executive Horizons & Strategic Governance Roadmaps
-                    </h4>
-                    <p className={`text-[11px] leading-relaxed max-w-2xl mt-0.5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                      Forward-looking blueprints engineered for Board of Directors, Audit Committees, and executive search partners: Day-1 CISO command, 1-page boardroom dossier, FAIR™ risk economics, and Enterprise GenAI defense.
-                    </p>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border ${
-                    isLight ? 'bg-white border-blue-300 text-blue-700' : 'bg-white/10 border-white/10 text-blue-300'
-                  }`}>
-                    C-Suite Readiness
-                  </span>
-                </div>
-              </div>
+                );
+              })()}
+
+              {/* In the making Patent Spotlight Banner */}
+              {(() => {
+                const patentLocked = isItemLocked('patent-cryptographic-binding', 'archive');
+                const patentClearance = currentUserEntry?.scope === 'specific' && currentUserEntry.allowedItems?.includes('patent-cryptographic-binding');
+
+                return (
+                  <div 
+                    onClick={() => {
+                      gateItem('patent-cryptographic-binding', 'archive', 'Method and Apparatus for Cryptographic Session Binding and Device Attestation™', () => {});
+                    }}
+                    className={`p-3.5 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 cursor-pointer transition-all ${
+                      isLight ? 'bg-blue-50/90 border-blue-200 shadow-2xs' : 'bg-blue-950/20 border-blue-800/40 text-white'
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md">
+                        <Shield className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-600/20 text-blue-600 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30">
+                            In the making Patent
+                          </span>
+                          <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300">
+                            US Pat. No. 11,222,333 B2 ®
+                          </span>
+                          {patentClearance && (
+                            <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider bg-purple-500/15 border-purple-500/30 text-purple-300">
+                              <KeyRound className="w-2.5 h-2.5 text-purple-400" /> Clearance Granted
+                            </span>
+                          )}
+                          {patentLocked && !patentClearance && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
+                              <Lock className="w-2.5 h-2.5" /> Locked
+                            </span>
+                          )}
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleItemLock('patent-cryptographic-binding', 'archive');
+                              }}
+                              className="p-1 rounded bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                              title={patentLocked ? 'Unlock patent' : 'Lock patent'}
+                            >
+                              {patentLocked ? <Lock className="w-2.5 h-2.5 text-amber-400" /> : <Unlock className="w-2.5 h-2.5 text-emerald-400" />}
+                            </button>
+                          )}
+                        </div>
+                        <h4 className={`text-xs sm:text-sm font-bold mt-0.5 ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                          Method and Apparatus for Cryptographic Session Binding and Device Attestation™
+                        </h4>
+                        <p className={`text-[11px] leading-relaxed max-w-2xl mt-0.5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                          Hardware-backed cryptographic assertion of device integrity and FIDO2 session binding during OAuth 2.0 / OIDC authorization code exchanges.
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border shrink-0 ${
+                      isLight ? 'bg-white border-blue-300 text-blue-700' : 'bg-white/10 border-white/10 text-blue-300'
+                    }`}>
+                      {patentLocked && !patentClearance ? 'Protected IP • Locked' : 'Protected IP & Defensibility'}
+                    </span>
+                  </div>
+                );
+              })()}
 
               {/* Aspirational Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
-                {ASPIRATIONAL_ROADMAPS.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`p-3.5 rounded-2xl border flex flex-col justify-between transition-all hover:border-blue-500/40 ${
-                      isLight 
-                        ? 'bg-white border-zinc-200 shadow-xs hover:shadow-md' 
-                        : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.04]'
-                    }`}
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1.5">
-                          <span className={`text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                            isLight ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
-                          }`}>
-                            {item.category}
-                          </span>
-                          <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${
-                            isLight ? 'bg-zinc-100 border-zinc-200 text-zinc-600' : 'bg-white/5 border-white/10 text-zinc-400'
-                          }`}>
-                            {item.badge}
-                          </span>
-                        </div>
-                        <span className="text-[10px] font-mono text-blue-500 font-semibold">{item.targetHorizon}</span>
-                      </div>
+                {ASPIRATIONAL_ROADMAPS.map((item) => {
+                  const locked = isItemLocked(item.id, 'archive');
+                  const hasSpecificClearance = currentUserEntry?.scope === 'specific' && currentUserEntry.allowedItems?.includes(item.id);
 
-                      <div>
-                        <h4 className={`text-xs sm:text-sm font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
-                          {item.title}
-                        </h4>
-                        <div className="text-[10px] text-zinc-500 font-medium mt-0.5 flex items-center gap-1">
-                          <Briefcase className="w-3 h-3 text-zinc-400" />
-                          <span>Target: {item.targetRole}</span>
-                        </div>
-                      </div>
-
-                      <p className={`text-[11px] leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                        {item.executiveSummary}
-                      </p>
-
-                      <div className={`p-2 rounded-xl text-[10.5px] border ${
-                        isLight ? 'bg-indigo-50/70 border-indigo-100 text-zinc-800' : 'bg-white/[0.03] border-white/5 text-zinc-300'
-                      }`}>
-                        <strong className="text-indigo-600 dark:text-indigo-400 font-bold block mb-0.5">Fiduciary Outcome:</strong>
-                        {item.fiduciaryImpact}
-                      </div>
-
-                      <div className="space-y-1 pt-1">
-                        <span className={`text-[8.5px] font-semibold uppercase tracking-wider ${isLight ? 'text-zinc-400' : 'text-zinc-500'}`}>
-                          Execution Highlights & Control Pillars
-                        </span>
-                        <div className="space-y-1">
-                          {item.phases.map((ph, pIdx) => (
-                            <div key={pIdx} className="text-[10px] flex items-start gap-1.5">
-                              <span className="font-bold text-blue-500 shrink-0 font-mono text-[9px] px-1 py-0.2 bg-blue-500/10 rounded">
-                                {ph.phase}:
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => {
+                        gateItem(item.id, 'archive', item.title, () => {
+                          setSelectedAspirational(item);
+                          trackAssetInteraction(item.id, item.title, 'Aspirational Roadmap');
+                        });
+                      }}
+                      className={`p-3.5 rounded-2xl border flex flex-col justify-between transition-all cursor-pointer hover:border-blue-500/40 ${
+                        isLight 
+                          ? 'bg-white border-zinc-200 shadow-xs hover:shadow-md' 
+                          : 'bg-white/[0.02] border-white/10 hover:bg-white/[0.04]'
+                      }`}
+                    >
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className={`text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                              isLight ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                            }`}>
+                              {item.category}
+                            </span>
+                            <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${
+                              isLight ? 'bg-zinc-100 border-zinc-200 text-zinc-600' : 'bg-white/5 border-white/10 text-zinc-400'
+                            }`}>
+                              {item.badge}
+                            </span>
+                            {hasSpecificClearance && (
+                              <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider ${
+                                isLight ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-purple-500/15 border-purple-500/30 text-purple-300'
+                              }`}>
+                                <KeyRound className="w-2.5 h-2.5 text-purple-400" />
+                                <span>Clearance Granted</span>
                               </span>
-                              <span className={`truncate ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
-                                <strong>{ph.title}</strong> — {ph.items[0]}
+                            )}
+                            {locked && !hasSpecificClearance && (
+                              <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
+                                <Lock className="w-2.5 h-2.5" /> Locked
                               </span>
-                            </div>
+                            )}
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleItemLock(item.id, 'archive');
+                                }}
+                                className="p-1 rounded bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                                title={locked ? 'Unlock roadmap' : 'Lock roadmap'}
+                              >
+                                {locked ? <Lock className="w-2.5 h-2.5 text-amber-400" /> : <Unlock className="w-2.5 h-2.5 text-emerald-400" />}
+                              </button>
+                            )}
+                          </div>
+                          <span className="text-[10px] font-mono text-blue-500 font-semibold">{item.targetHorizon}</span>
+                        </div>
+
+                        <div>
+                          <h4 className={`text-xs sm:text-sm font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                            {item.title}
+                          </h4>
+                          <div className="text-[10px] text-zinc-500 font-medium mt-0.5 flex items-center gap-1">
+                            <Briefcase className="w-3 h-3 text-zinc-400" />
+                            <span>Target: {item.targetRole}</span>
+                          </div>
+                        </div>
+
+                        <p className={`text-[11px] leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                          {item.executiveSummary}
+                        </p>
+
+                        <div className={`p-2 rounded-xl text-[10.5px] border ${
+                          isLight ? 'bg-indigo-50/70 border-indigo-100 text-zinc-800' : 'bg-white/[0.03] border-white/5 text-zinc-300'
+                        }`}>
+                          <strong className="text-indigo-600 dark:text-indigo-400 font-bold block mb-0.5">Fiduciary Outcome:</strong>
+                          {item.fiduciaryImpact}
+                        </div>
+
+                        <div className="space-y-1 pt-1">
+                          <span className={`text-[8.5px] font-semibold uppercase tracking-wider ${isLight ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                            Execution Highlights & Control Pillars
+                          </span>
+                          <div className="space-y-1">
+                            {item.phases.map((ph, pIdx) => (
+                              <div key={pIdx} className="text-[10px] flex items-start gap-1.5">
+                                <span className="font-bold text-blue-500 shrink-0 font-mono text-[9px] px-1 py-0.2 bg-blue-500/10 rounded">
+                                  {ph.phase}:
+                                </span>
+                                <span className={`truncate ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
+                                  <strong>{ph.title}</strong> — {ph.items[0]}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className={`pt-2.5 mt-2.5 border-t space-y-2 ${isLight ? 'border-zinc-100' : 'border-white/5'}`}>
+                        <div className="flex flex-wrap gap-1">
+                          {item.keyDeliverables.slice(0, 3).map((del, dIdx) => (
+                            <span key={dIdx} className={`text-[8.5px] px-1.5 py-0.5 rounded border ${
+                              isLight ? 'bg-zinc-50 border-zinc-200 text-zinc-600' : 'bg-white/[0.03] border-white/5 text-zinc-400'
+                            }`}>
+                              ✓ {del}
+                            </span>
                           ))}
                         </div>
+
+                        <div className="flex items-center justify-between pt-1 text-[10px]">
+                          <span className="text-zinc-400 font-mono text-[9.5px]">{item.status}</span>
+                          <button 
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              gateItem(item.id, 'archive', item.title, () => {
+                                setSelectedAspirational(item);
+                                trackAssetInteraction(item.id, item.title, 'Aspirational Roadmap');
+                              });
+                            }}
+                            className={`flex items-center gap-1 font-semibold hover:underline cursor-pointer ${
+                              locked && !hasSpecificClearance ? 'text-amber-500 hover:text-amber-400' : 'text-blue-600 dark:text-blue-400'
+                            }`}
+                          >
+                            {locked && !hasSpecificClearance ? (
+                              <>
+                                <Lock className="w-3 h-3" />
+                                <span>Unlock Strategic Blueprint</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>Inspect Strategic Blueprint</span>
+                                <ChevronRight className="w-3 h-3" />
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-                    <div className={`pt-2.5 mt-2.5 border-t space-y-2 ${isLight ? 'border-zinc-100' : 'border-white/5'}`}>
-                      <div className="flex flex-wrap gap-1">
-                        {item.keyDeliverables.slice(0, 3).map((del, dIdx) => (
-                          <span key={dIdx} className={`text-[8.5px] px-1.5 py-0.5 rounded border ${
-                            isLight ? 'bg-zinc-50 border-zinc-200 text-zinc-600' : 'bg-white/[0.03] border-white/5 text-zinc-400'
-                          }`}>
-                            ✓ {del}
-                          </span>
-                        ))}
-                      </div>
-
-                      <div className="flex items-center justify-between pt-1 text-[10px]">
-                        <span className="text-zinc-400 font-mono text-[9.5px]">{item.status}</span>
-                        <button 
-                          onClick={() => setSelectedAspirational(item)}
-                          className="flex items-center gap-1 font-semibold text-blue-600 dark:text-blue-400 hover:underline"
-                        >
-                          <span>Inspect Strategic Blueprint</span>
-                          <ChevronRight className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -791,7 +1078,9 @@ export const Archive: React.FC<ArchiveProps> = ({
                     <Cpu className="w-5 h-5" />
                   </div>
                   <div>
-                    <h4 className={`text-sm font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>Strategic Playbooks & Deployment Guides</h4>
+                    <div className="flex items-center gap-2">
+                      <h4 className={`text-sm font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>Strategic Playbooks & Deployment Guides</h4>
+                    </div>
                     <p className={`text-[11px] leading-relaxed mt-0.5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
                       Operational frameworks for analytics, institutional tracking, and secure infrastructure deployment.
                     </p>
@@ -801,64 +1090,119 @@ export const Archive: React.FC<ArchiveProps> = ({
 
               {/* Playbook Grid */}
               <div className="grid grid-cols-1 gap-3">
-                {STRATEGIC_PLAYBOOKS.map((pb) => (
-                  <div
-                    key={pb.id}
-                    className={`p-5 rounded-2xl border transition-all hover:border-emerald-500/30 ${
-                      isLight 
-                        ? 'bg-white border-zinc-200 shadow-sm' 
-                        : 'bg-white/[0.02] border-white/5'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                          isLight ? 'bg-emerald-50 text-emerald-700' : 'bg-emerald-500/10 text-emerald-400'
-                        }`}>
-                          {pb.category}
-                        </span>
-                        <span className="text-[10px] font-mono text-zinc-500">{pb.badge}</span>
-                      </div>
-                    </div>
+                {STRATEGIC_PLAYBOOKS.map((pb) => {
+                  const locked = isItemLocked(pb.id, 'archive');
+                  const hasSpecificClearance = currentUserEntry?.scope === 'specific' && currentUserEntry.allowedItems?.includes(pb.id);
 
-                    <h3 className={`text-base font-bold mb-2 ${isLight ? 'text-zinc-900' : 'text-white'}`}>{pb.title}</h3>
-                    <p className={`text-[12px] leading-relaxed mb-5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                      {pb.executiveSummary}
-                    </p>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
-                      {pb.sections.map((section, sIdx) => (
-                        <div key={sIdx} className="space-y-2">
-                          <h4 className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">{section.heading}</h4>
-                          <div className="space-y-1.5">
-                            {section.items.map((item, iIdx) => (
-                              <div key={iIdx} className="text-[11px]">
-                                <strong className={`block ${isLight ? 'text-zinc-800' : 'text-zinc-200'}`}>{item.label}</strong>
-                                <span className={isLight ? 'text-zinc-500' : 'text-zinc-500'}>{item.description}</span>
-                              </div>
-                            ))}
-                          </div>
+                  return (
+                    <div
+                      key={pb.id}
+                      onClick={() => {
+                        gateItem(pb.id, 'archive', pb.title, () => {
+                          setSelectedPlaybook(pb);
+                          trackAssetInteraction(pb.id, pb.title, 'Strategic Playbook');
+                        });
+                      }}
+                      className={`p-5 rounded-2xl border transition-all cursor-pointer hover:border-emerald-500/30 ${
+                        isLight 
+                          ? 'bg-white border-zinc-200 shadow-sm' 
+                          : 'bg-white/[0.02] border-white/5'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                            isLight ? 'bg-emerald-50 text-emerald-700' : 'bg-emerald-500/10 text-emerald-400'
+                          }`}>
+                            {pb.category}
+                          </span>
+                          <span className="text-[10px] font-mono text-zinc-500">{pb.badge}</span>
+                          {hasSpecificClearance && (
+                            <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider ${
+                              isLight ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-purple-500/15 border-purple-500/30 text-purple-300'
+                            }`}>
+                              <KeyRound className="w-2.5 h-2.5 text-purple-400" />
+                              <span>Clearance Granted</span>
+                            </span>
+                          )}
+                          {locked && !hasSpecificClearance && (
+                            <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
+                              <Lock className="w-2.5 h-2.5" /> Locked
+                            </span>
+                          )}
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                toggleItemLock(pb.id, 'archive');
+                              }}
+                              className="p-1 rounded bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                              title={locked ? 'Unlock playbook' : 'Lock playbook'}
+                            >
+                              {locked ? <Lock className="w-2.5 h-2.5 text-amber-400" /> : <Unlock className="w-2.5 h-2.5 text-emerald-400" />}
+                            </button>
+                          )}
                         </div>
-                      ))}
-                    </div>
-
-                    <div className={`p-3 rounded-xl border flex items-center justify-between ${
-                      isLight ? 'bg-zinc-50 border-zinc-200' : 'bg-white/[0.03] border-white/5'
-                    }`}>
-                      <div className="flex items-center gap-2 text-[11px]">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-                        <span className={isLight ? 'text-zinc-700' : 'text-zinc-300'}>{pb.implementationOutcome}</span>
                       </div>
-                      <button 
-                        onClick={() => setSelectedPlaybook(pb)}
-                        className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1"
-                      >
-                        Expand Playbook
-                        <ChevronRight className="w-3 h-3" />
-                      </button>
+
+                      <h3 className={`text-base font-bold mb-2 ${isLight ? 'text-zinc-900' : 'text-white'}`}>{pb.title}</h3>
+                      <p className={`text-[12px] leading-relaxed mb-5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                        {pb.executiveSummary}
+                      </p>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5">
+                        {pb.sections.map((section, sIdx) => (
+                          <div key={sIdx} className="space-y-2">
+                            <h4 className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">{section.heading}</h4>
+                            <div className="space-y-1.5">
+                              {section.items.map((item, iIdx) => (
+                                <div key={iIdx} className="text-[11px]">
+                                  <strong className={`block ${isLight ? 'text-zinc-800' : 'text-zinc-200'}`}>{item.label}</strong>
+                                  <span className={isLight ? 'text-zinc-500' : 'text-zinc-500'}>{item.description}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className={`p-3 rounded-xl border flex items-center justify-between ${
+                        isLight ? 'bg-zinc-50 border-zinc-200' : 'bg-white/[0.03] border-white/5'
+                      }`}>
+                        <div className="flex items-center gap-2 text-[11px]">
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                          <span className={isLight ? 'text-zinc-700' : 'text-zinc-300'}>{pb.implementationOutcome}</span>
+                        </div>
+                        <button 
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            gateItem(pb.id, 'archive', pb.title, () => {
+                              setSelectedPlaybook(pb);
+                              trackAssetInteraction(pb.id, pb.title, 'Strategic Playbook');
+                            });
+                          }}
+                          className={`text-[11px] font-bold hover:underline flex items-center gap-1 cursor-pointer ${
+                            locked && !hasSpecificClearance ? 'text-amber-500 hover:text-amber-400' : 'text-emerald-600 dark:text-emerald-400'
+                          }`}
+                        >
+                          {locked && !hasSpecificClearance ? (
+                            <>
+                              <Lock className="w-3 h-3" />
+                              <span>Unlock Playbook</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Expand Playbook</span>
+                              <ChevronRight className="w-3 h-3" />
+                            </>
+                          )}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
@@ -936,71 +1280,127 @@ export const Archive: React.FC<ArchiveProps> = ({
             {/* Scrollable Archive Grid */}
             <div className="max-h-[46vh] sm:max-h-[48vh] overflow-y-auto pr-1 sm:pr-2 flex-1">
               <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-2">
-                {filteredArchive.map((item) => (
-                  <div
-                    key={item.id}
-                    className={`rounded-xl p-3 sm:p-3.5 backdrop-blur-xl transition-all group flex flex-col justify-between border ${
-                      isLight 
-                        ? 'bg-white border-zinc-200 hover:border-zinc-300 shadow-2xs' 
-                        : 'bg-white/[0.02] border-white/10 hover:border-white/25'
-                    }`}
-                  >
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center space-x-1.5 border ${
-                          isLight ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white/[0.05] border-white/10 text-blue-400'
-                        }`}>
-                          <span>{item.type}</span>
-                          {item.type === 'Patent' && (
-                            <span className="text-[9px] bg-blue-500/20 text-blue-400 px-1 py-0.2 rounded font-mono">® TM</span>
-                          )}
-                        </span>
-                        <span className={`text-[10px] font-mono ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>{item.year}</span>
-                      </div>
+                {filteredArchive.map((item) => {
+                  const locked = isItemLocked(item.id, 'archive');
+                  const hasSpecificClearance = currentUserEntry?.scope === 'specific' && currentUserEntry.allowedItems?.includes(item.id);
 
-                      <h4 className={`text-xs sm:text-sm font-bold transition-colors tracking-tight ${isLight ? 'text-zinc-900 group-hover:text-blue-600' : 'text-white group-hover:text-blue-300'}`}>
-                        {item.title}
-                      </h4>
-
-                      <p className={`text-[11px] leading-relaxed line-clamp-2 ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
-                        {item.description}
-                      </p>
-                    </div>
-
-                    <div className={`pt-2 border-t space-y-1.5 mt-2 ${isLight ? 'border-zinc-100' : 'border-white/5'}`}>
-                      <div className="flex flex-wrap gap-1">
-                        {item.tags.map((t, i) => (
-                          <span key={i} className={`text-[9px] font-medium px-1.5 py-0.5 rounded-md border ${
-                            isLight ? 'bg-zinc-50 border-zinc-200 text-zinc-600' : 'bg-white/[0.03] border-white/5 text-zinc-400'
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => {
+                        gateItem(item.id, 'archive', item.title, () => {
+                          if (item.link) window.open(item.link, '_blank');
+                        });
+                      }}
+                      className={`rounded-xl p-3 sm:p-3.5 backdrop-blur-xl transition-all group flex flex-col justify-between border cursor-pointer ${
+                        isLight 
+                          ? 'bg-white border-zinc-200 hover:border-zinc-300 shadow-2xs' 
+                          : 'bg-white/[0.02] border-white/10 hover:border-white/25'
+                      }`}
+                    >
+                      <div className="space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium flex items-center space-x-1.5 border ${
+                            isLight ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-white/[0.05] border-white/10 text-blue-400'
                           }`}>
-                            #{t}
+                            <span>{item.type}</span>
+                            {item.type === 'Patent' && (
+                              <span className="text-[9px] bg-blue-500/20 text-blue-400 px-1 py-0.2 rounded font-mono">® TM</span>
+                            )}
                           </span>
-                        ))}
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {hasSpecificClearance && (
+                              <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider ${
+                                isLight ? 'bg-purple-50 border-purple-200 text-purple-700' : 'bg-purple-500/15 border-purple-500/30 text-purple-300'
+                              }`}>
+                                <KeyRound className="w-2.5 h-2.5 text-purple-400" />
+                                <span>Clearance Granted</span>
+                              </span>
+                            )}
+                            {locked && !hasSpecificClearance && (
+                              <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
+                                <Lock className="w-2.5 h-2.5" /> Locked
+                              </span>
+                            )}
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleItemLock(item.id, 'archive');
+                                }}
+                                className="p-1 rounded bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                                title={locked ? 'Unlock item' : 'Lock item'}
+                              >
+                                {locked ? <Lock className="w-2.5 h-2.5 text-amber-400" /> : <Unlock className="w-2.5 h-2.5 text-emerald-400" />}
+                              </button>
+                            )}
+                            <span className={`text-[10px] font-mono ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>{item.year}</span>
+                          </div>
+                        </div>
+
+                        <h4 className={`text-xs sm:text-sm font-bold transition-colors tracking-tight ${isLight ? 'text-zinc-900 group-hover:text-blue-600' : 'text-white group-hover:text-blue-300'}`}>
+                          {item.title}
+                        </h4>
+
+                        <p className={`text-[11px] leading-relaxed line-clamp-2 ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                          {item.description}
+                        </p>
                       </div>
 
-                      <div className="flex items-center justify-between pt-0.5">
-                        {item.stars ? (
-                          <div className="flex items-center space-x-1 text-[11px] text-amber-500">
-                            <Star className="w-3 h-3 fill-amber-500" />
-                            <span>{item.stars.toLocaleString()} stars</span>
-                          </div>
-                        ) : <div />}
+                      <div className={`pt-2 border-t space-y-1.5 mt-2 ${isLight ? 'border-zinc-100' : 'border-white/5'}`}>
+                        <div className="flex flex-wrap gap-1">
+                          {item.tags.map((t, i) => (
+                            <span key={i} className={`text-[9px] font-medium px-1.5 py-0.5 rounded-md border ${
+                              isLight ? 'bg-zinc-50 border-zinc-200 text-zinc-600' : 'bg-white/[0.03] border-white/5 text-zinc-400'
+                            }`}>
+                              #{t}
+                            </span>
+                          ))}
+                        </div>
 
-                        {item.link && (
-                          <a
-                            href={item.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center space-x-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                          >
-                            <span>View Source</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
+                        <div className="flex items-center justify-between pt-0.5">
+                          {item.stars ? (
+                            <div className="flex items-center space-x-1 text-[11px] text-amber-500">
+                              <Star className="w-3 h-3 fill-amber-500" />
+                              <span>{item.stars.toLocaleString()} stars</span>
+                            </div>
+                          ) : <div />}
+
+                          {locked && !hasSpecificClearance ? (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                gateItem(item.id, 'archive', item.title, () => {
+                                  if (item.link) window.open(item.link, '_blank');
+                                });
+                              }}
+                              className="flex items-center space-x-1 text-[11px] font-medium text-amber-500 hover:text-amber-400 hover:underline cursor-pointer bg-transparent border-none p-0"
+                            >
+                              <Lock className="w-3 h-3" />
+                              <span>Unlock Item</span>
+                            </button>
+                          ) : item.link ? (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                window.open(item.link, '_blank');
+                              }}
+                              className="flex items-center space-x-1 text-[11px] font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer bg-transparent border-none p-0"
+                            >
+                              <span>View Source</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </button>
+                          ) : (
+                            <span className="text-[10px] font-mono text-zinc-400">Archived Record</span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
 
               {filteredArchive.length === 0 && (
@@ -1365,22 +1765,22 @@ export const Archive: React.FC<ArchiveProps> = ({
       )}
 
       {/* Integrated Compact Executive Footer */}
-      <div className={`pt-1.5 mt-1 border-t shrink-0 ${isLight ? 'border-zinc-200 text-zinc-600' : 'border-white/10 text-zinc-400'}`}>
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-1 text-xs py-0">
+      <div className={`pt-2 mt-1.5 border-t shrink-0 ${isLight ? 'border-zinc-200 text-zinc-600' : 'border-white/10 text-zinc-400'}`}>
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-1.5 text-xs py-0.5">
           <div className="flex flex-wrap items-center space-x-2 sm:space-x-2.5">
             <span className={`font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>{PERSONAL_INFO.name}</span>
-            <span className="text-[10px] opacity-40">Executive Portfolio Vault</span>
+            <span className="text-[10px] font-bold opacity-40">Executive Portfolio Vault</span>
             
             {/* Light Grey Separator */}
             <div className={`h-3 w-px ${isLight ? 'bg-zinc-300' : 'bg-white/20'}`} />
 
             {/* Social & Contact Icons */}
-            <div className="flex items-center space-x-4 pl-0.5">
+            <div className="flex items-center space-x-3.5 pl-1">
               <a 
                 href={PERSONAL_INFO.github} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className={`hover:text-blue-500 transition-colors ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
+                className={`hover:text-blue-500 transition-colors p-0.5 ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
                 title="GitHub Profile"
               >
                 <Github className="w-3.5 h-3.5" />
@@ -1389,7 +1789,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                 href={PERSONAL_INFO.linkedin} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className={`hover:text-blue-500 transition-colors ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
+                className={`hover:text-blue-500 transition-colors p-0.5 ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
                 title="LinkedIn Profile"
               >
                 <Linkedin className="w-3.5 h-3.5" />
@@ -1397,7 +1797,7 @@ export const Archive: React.FC<ArchiveProps> = ({
               {onOpenContact && (
                 <button 
                   onClick={onOpenContact} 
-                  className={`hover:text-blue-500 transition-colors ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
+                  className={`hover:text-blue-500 transition-colors p-0.5 ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
                   title="Get in Touch via Email"
                 >
                   <Mail className="w-3.5 h-3.5" />

@@ -1,0 +1,82 @@
+{
+  "entities": {
+    "AllowlistItem": {
+      "title": "AllowlistItem",
+      "description": "Authorized email record for gated portfolio access with global or single-resource clearance",
+      "type": "object",
+      "properties": {
+        "authorized": {
+          "type": "boolean",
+          "description": "Whether the email is authorized to access gated artifacts"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["viewer", "admin"],
+          "description": "Access tier granted to the user"
+        },
+        "scope": {
+          "type": "string",
+          "enum": ["global", "specific"],
+          "description": "Whether the clearance is global or restricted to specific articles/resources"
+        },
+        "allowedItems": {
+          "type": "array",
+          "description": "Specific article and resource IDs that this user is explicitly permitted to access"
+        },
+        "allowedSections": {
+          "type": "array",
+          "description": "Specific sections (e.g. case-studies, publications, archives) permitted"
+        },
+        "addedBy": {
+          "type": "string",
+          "description": "Email or identifier of the administrative authorizer"
+        },
+        "addedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when authorization was provisioned"
+        }
+      },
+      "required": ["authorized", "role"]
+    },
+    "SecurityLocks": {
+      "title": "SecurityLocks",
+      "description": "Granular lock status configuration for sections and individual articles/resources",
+      "type": "object",
+      "properties": {
+        "lockedSections": {
+          "type": "array",
+          "description": "Sections currently locked (e.g., case-studies, publications, archives)"
+        },
+        "lockedItems": {
+          "type": "array",
+          "description": "Specific individual article and resource IDs explicitly locked"
+        },
+        "unlockedItems": {
+          "type": "array",
+          "description": "Specific individual article IDs explicitly unlocked even if parent section is locked"
+        },
+        "updatedBy": {
+          "type": "string",
+          "description": "Email of admin who updated lock configuration"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of the lock configuration update"
+        }
+      },
+      "required": ["lockedSections"]
+    }
+  },
+  "firestore": {
+    "/allowlist/{email}": {
+      "schema": "#/entities/AllowlistItem",
+      "description": "Collection storing allowlisted user emails with granted roles and granular resource clearance"
+    },
+    "/security_settings/{settingId}": {
+      "schema": "#/entities/SecurityLocks",
+      "description": "Configuration document storing section-level and item-level lock settings"
+    }
+  }
+}

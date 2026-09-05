@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Search, BookOpen, ShieldCheck, Scale, Sparkles, Lock, ArrowUpRight, FileText } from 'lucide-react';
+import { Search, BookOpen, ShieldCheck, Scale, Sparkles, Lock, Unlock, ArrowUpRight, FileText, KeyRound } from 'lucide-react';
 import { BLOG_POSTS } from '../data/portfolioData';
 import { BlogPost } from '../types';
 import { BlogPostModal } from './BlogPostModal';
 import { useHoverScroll } from '../lib/utils';
+import { trackAssetInteraction } from '../lib/analytics';
+import { useAuth } from '../context/AuthContext';
 
 interface TechnicalBlogProps {
   theme?: string;
@@ -22,10 +24,24 @@ const CATEGORIES = [
 
 export const TechnicalBlog: React.FC<TechnicalBlogProps> = ({ theme = 'apple-light' }) => {
   const isLight = theme === 'apple-light';
+  const { 
+    gateItem, 
+    user, 
+    isAdmin, 
+    isAuthorized, 
+    currentUserEntry,
+    isItemLocked, 
+    isSectionLocked, 
+    toggleSectionLock, 
+    toggleItemLock 
+  } = useAuth();
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [activePost, setActivePost] = useState<BlogPost | null>(null);
   const { scrollRef, onMouseMove, onMouseLeave } = useHoverScroll();
+
+  const isSectionGated = isSectionLocked('publications');
 
   // Top CISO executive flagship whitepapers
   const executiveFlagshipPosts = BLOG_POSTS.filter(p => 
@@ -61,20 +77,20 @@ export const TechnicalBlog: React.FC<TechnicalBlogProps> = ({ theme = 'apple-lig
       <div 
         className={`absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] sm:w-[850px] h-[320px] sm:h-[450px] rounded-full blur-[90px] sm:blur-[130px] pointer-events-none transition-all duration-700 ${
           isLight 
-            ? 'bg-gradient-to-tr from-blue-400/15 via-indigo-300/12 to-sky-300/10' 
-            : 'bg-gradient-to-tr from-blue-600/16 via-indigo-500/12 to-cyan-500/10'
-        }`} 
-      />
-      <div 
-        className={`absolute -bottom-20 -right-20 w-80 sm:w-96 h-80 sm:h-96 rounded-full blur-[80px] sm:blur-[110px] pointer-events-none ${
-          isLight ? 'bg-indigo-300/10' : 'bg-blue-600/12'
-        }`} 
-      />
-      <div 
-        className={`absolute -top-12 -left-12 w-72 sm:w-80 h-72 sm:h-80 rounded-full blur-[70px] sm:blur-[100px] pointer-events-none ${
-          isLight ? 'bg-sky-300/10' : 'bg-indigo-600/10'
-        }`} 
-      />
+              ? 'bg-gradient-to-tr from-blue-400/15 via-indigo-300/12 to-sky-300/10' 
+              : 'bg-gradient-to-tr from-blue-600/16 via-indigo-500/12 to-cyan-500/10'
+          }`} 
+        />
+        <div 
+          className={`absolute -bottom-20 -right-20 w-80 sm:w-96 h-80 sm:h-96 rounded-full blur-[80px] sm:blur-[110px] pointer-events-none ${
+            isLight ? 'bg-indigo-300/10' : 'bg-blue-600/12'
+          }`} 
+        />
+        <div 
+          className={`absolute -top-12 -left-12 w-72 sm:w-80 h-72 sm:h-80 rounded-full blur-[70px] sm:blur-[100px] pointer-events-none ${
+            isLight ? 'bg-sky-300/10' : 'bg-indigo-600/10'
+          }`} 
+        />
 
       {/* Section Header */}
       <div className="relative w-full space-y-2 mb-4 shrink-0 text-left">
@@ -93,13 +109,39 @@ export const TechnicalBlog: React.FC<TechnicalBlogProps> = ({ theme = 'apple-lig
           <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
           <span>Cyber Strategy • Enterprise Risk Governance • Whitepapers & Playbooks</span>
         </div>
-        <h3 className={`relative text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all ${
-          isLight 
-            ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
-            : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
-        }`}>
-          Publications
-        </h3>
+        <div className="relative flex items-center gap-3">
+          <h3 className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all ${
+            isLight 
+              ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
+              : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
+          }`}>
+            Publications
+          </h3>
+          <div className="inline-flex items-center gap-2">
+            <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
+              isSectionGated 
+                ? (isLight ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-amber-500/10 text-amber-400 border-amber-500/20')
+                : (isLight ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20')
+            }`}>
+              {isSectionGated ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
+              <span>{isSectionGated ? 'Locked Section' : 'Public Access'}</span>
+            </span>
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={() => toggleSectionLock('publications')}
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border transition-colors cursor-pointer ${
+                  isLight 
+                    ? 'bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border-zinc-300' 
+                    : 'bg-white/5 hover:bg-white/10 text-zinc-300 border-white/10'
+                }`}
+                title="Toggle publications section lock"
+              >
+                <span>{isSectionGated ? 'Unlock Section' : 'Lock Section'}</span>
+              </button>
+            )}
+          </div>
+        </div>
         <p className={`relative max-w-4xl text-xs sm:text-sm leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
           Playbooks on Cyber Risk, Identity Architecture, AI Security and Regulatory Disclosure.
         </p>
@@ -117,58 +159,103 @@ export const TechnicalBlog: React.FC<TechnicalBlogProps> = ({ theme = 'apple-lig
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2.5">
-          {executiveFlagshipPosts.map((post) => (
-            <div
-              key={post.id}
-              onClick={() => setActivePost(post)}
-              className={`group relative flex flex-col justify-between p-3.5 rounded-2xl border transition-all duration-300 cursor-pointer ${
-                isLight
-                  ? 'bg-white border-zinc-200/80 hover:border-blue-500 hover:shadow-lg shadow-sm'
-                  : 'bg-zinc-950/60 border-white/10 hover:border-blue-400/50 hover:bg-zinc-900/60 shadow-lg'
-              }`}
-            >
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[10px] font-semibold">
-                  <span className={`px-2 py-0.5 rounded-full border ${
-                    isLight 
-                      ? 'bg-blue-50 border-blue-200 text-blue-700' 
-                      : 'bg-blue-950/50 border-blue-800/60 text-blue-300'
+          {executiveFlagshipPosts.map((post) => {
+            const locked = isItemLocked(post.id, 'publications');
+            const hasSpecificClearance = currentUserEntry?.scope === 'specific' && currentUserEntry.allowedItems?.includes(post.id);
+
+            return (
+              <div
+                key={post.id}
+                onClick={() => {
+                  gateItem(post.id, 'publications', post.title, () => {
+                    setActivePost(post);
+                    trackAssetInteraction(post.id, post.title, 'Whitepaper');
+                  });
+                }}
+                className={`group relative flex flex-col justify-between p-3.5 rounded-2xl border transition-all duration-300 cursor-pointer ${
+                  isLight
+                    ? 'bg-white border-zinc-200/80 hover:border-blue-500 hover:shadow-lg shadow-sm'
+                    : 'bg-zinc-950/60 border-white/10 hover:border-blue-400/50 hover:bg-zinc-900/60 shadow-lg'
+                }`}
+              >
+                <div className="space-y-1.5 font-sans">
+                  <div className="flex items-center justify-between text-[10px] font-semibold flex-wrap gap-1">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className={`px-2 py-0.5 rounded-full border ${
+                        isLight 
+                          ? 'bg-blue-50 border-blue-200 text-blue-700' 
+                          : 'bg-blue-950/50 border-blue-800/60 text-blue-300'
+                      }`}>
+                        {post.category}
+                      </span>
+                      {hasSpecificClearance && (
+                        <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider ${
+                          isLight 
+                            ? 'bg-purple-50 border-purple-200 text-purple-700' 
+                            : 'bg-purple-500/15 border-purple-500/30 text-purple-300'
+                        }`}>
+                          <KeyRound className="w-2.5 h-2.5 text-purple-400" />
+                          <span>Clearance Granted</span>
+                        </span>
+                      )}
+                      {locked && !hasSpecificClearance && (
+                        <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider ${
+                          isLight 
+                            ? 'bg-amber-50 border-amber-200 text-amber-700' 
+                            : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                        }`}>
+                          <Lock className="w-2.5 h-2.5 text-amber-500" />
+                          <span>Locked</span>
+                        </span>
+                      )}
+                      {isAdmin && (
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleItemLock(post.id, 'publications');
+                          }}
+                          className="p-1 rounded bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                          title={locked ? 'Unlock this whitepaper' : 'Lock this whitepaper'}
+                        >
+                          {locked ? <Lock className="w-2.5 h-2.5 text-amber-400" /> : <Unlock className="w-2.5 h-2.5 text-emerald-400" />}
+                        </button>
+                      )}
+                    </div>
+                    <span className={isLight ? 'text-zinc-500' : 'text-zinc-400'}>{post.readTime}</span>
+                  </div>
+
+                  <h5 className={`text-[11px] sm:text-[13px] font-bold leading-snug group-hover:text-blue-500 transition-colors line-clamp-2 max-w-[90%] ${
+                    isLight ? 'text-zinc-900' : 'text-white'
                   }`}>
-                    {post.category}
-                  </span>
-                  <span className={isLight ? 'text-zinc-500' : 'text-zinc-400'}>{post.readTime}</span>
+                    {post.title}
+                  </h5>
+
+                  <p className={`text-[10px] leading-relaxed line-clamp-3 ${
+                    isLight ? 'text-zinc-600' : 'text-zinc-400'
+                  }`}>
+                    {post.excerpt}
+                  </p>
                 </div>
 
-                <h5 className={`text-[11px] sm:text-[13px] font-bold leading-snug group-hover:text-blue-500 transition-colors line-clamp-2 max-w-[90%] ${
-                  isLight ? 'text-zinc-900' : 'text-white'
-                }`}>
-                  {post.title}
-                </h5>
-
-                <p className={`text-[10px] leading-relaxed line-clamp-3 ${
-                  isLight ? 'text-zinc-600' : 'text-zinc-400'
-                }`}>
-                  {post.excerpt}
-                </p>
-              </div>
-
-              <div className="pt-3 mt-3 border-t border-zinc-200/60 dark:border-white/10 flex items-center justify-between text-[11px]">
-                <div className="flex flex-wrap gap-1">
-                  {post.tags.slice(0, 2).map((tag, idx) => (
-                    <span key={idx} className={`text-[9px] px-1.5 py-0.5 rounded ${
-                      isLight ? 'bg-zinc-100 text-zinc-600' : 'bg-white/5 text-zinc-400'
-                    }`}>
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-                <div className="inline-flex items-center gap-1 font-semibold text-blue-500 group-hover:translate-x-0.5 transition-transform">
-                  <span>Read</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                <div className="pt-3 mt-3 border-t border-zinc-200/60 dark:border-white/10 flex items-center justify-between text-[11px]">
+                  <div className="flex flex-wrap gap-1">
+                    {post.tags.slice(0, 2).map((tag, idx) => (
+                      <span key={idx} className={`text-[9px] px-1.5 py-0.5 rounded ${
+                        isLight ? 'bg-zinc-100 text-zinc-600' : 'bg-white/5 text-zinc-400'
+                      }`}>
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="inline-flex items-center gap-1 font-semibold text-blue-500 group-hover:translate-x-0.5 transition-transform">
+                    <span>Read</span>
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
 
@@ -237,11 +324,18 @@ export const TechnicalBlog: React.FC<TechnicalBlogProps> = ({ theme = 'apple-lig
                         const dateObj = new Date(post.date);
                         const month = dateObj.toLocaleString('default', { month: 'short' });
                         const isExecutive = post.category === 'Executive Risk & GRC' || post.category === 'AI Security Governance';
+                        const locked = isItemLocked(post.id, 'publications');
+                        const hasSpecificClearance = currentUserEntry?.scope === 'specific' && currentUserEntry.allowedItems?.includes(post.id);
 
                         return (
                           <div 
                             key={post.id}
-                            onClick={() => setActivePost(post)}
+                            onClick={() => {
+                              gateItem(post.id, 'publications', post.title, () => {
+                                setActivePost(post);
+                                trackAssetInteraction(post.id, post.title, 'Publication');
+                              });
+                            }}
                             className="relative flex items-center gap-2 cursor-pointer group"
                           >
                             {/* Timeline Dot */}
@@ -264,7 +358,7 @@ export const TechnicalBlog: React.FC<TechnicalBlogProps> = ({ theme = 'apple-lig
                                   ? 'bg-zinc-50/70 border-zinc-200/60 hover:border-zinc-300 hover:bg-white hover:shadow-sm' 
                                   : 'bg-white/[0.02] border-white/5 hover:border-white/10 hover:bg-white/[0.04]'
                             }`}>
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1 font-sans">
                                 <div className="flex items-center gap-2 flex-wrap">
                                   <span className={`text-[9px] uppercase tracking-wider font-bold shrink-0 px-2 py-0.5 rounded ${
                                     isExecutive
@@ -273,6 +367,39 @@ export const TechnicalBlog: React.FC<TechnicalBlogProps> = ({ theme = 'apple-lig
                                   }`}>
                                     {post.category}
                                   </span>
+                                  {hasSpecificClearance && (
+                                    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider shrink-0 ${
+                                      isLight 
+                                        ? 'bg-purple-50 border-purple-200 text-purple-700' 
+                                        : 'bg-purple-500/15 border-purple-500/30 text-purple-300'
+                                    }`}>
+                                      <KeyRound className="w-2.5 h-2.5 text-purple-400" />
+                                      <span>Clearance Granted</span>
+                                    </span>
+                                  )}
+                                  {locked && !hasSpecificClearance && (
+                                    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider shrink-0 ${
+                                      isLight 
+                                        ? 'bg-amber-50 border-amber-200 text-amber-700' 
+                                        : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                                    }`}>
+                                      <Lock className="w-2.5 h-2.5 text-amber-500" />
+                                      <span>Locked</span>
+                                    </span>
+                                  )}
+                                  {isAdmin && (
+                                    <button
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        toggleItemLock(post.id, 'publications');
+                                      }}
+                                      className="p-1 rounded bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+                                      title={locked ? 'Unlock this whitepaper' : 'Lock this whitepaper'}
+                                    >
+                                      {locked ? <Lock className="w-2.5 h-2.5 text-amber-400" /> : <Unlock className="w-2.5 h-2.5 text-emerald-400" />}
+                                    </button>
+                                  )}
                                   <h4 className={`text-[11px] sm:text-[13px] font-bold transition-colors max-w-[85%] lg:max-w-md ${isLight ? 'text-zinc-900 group-hover:text-blue-600' : 'text-white group-hover:text-blue-400'}`}>
                                     {post.title}
                                   </h4>

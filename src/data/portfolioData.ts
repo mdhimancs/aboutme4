@@ -8,7 +8,7 @@ export const PERSONAL_INFO = {
   bioShort: "Cybersecurity Executive with 21+ years directing enterprise defense, Zero Trust IAM, and AI risk governance across Goldman Sachs and global tech leaders. Trusted to manage multi-million-dollar defense programs, lead high-performing global engineering teams, and deliver 100% clean regulatory audit records.",
   location: "Bengaluru, India",
   email: "munish.world@gmail.com",
-  github: "https://github.com",
+  github: "https://github.com/mdhimancs",
   linkedin: "https://www.linkedin.com/in/munishd",
   twitter: "https://twitter.com",
   substack: "https://substack.com",

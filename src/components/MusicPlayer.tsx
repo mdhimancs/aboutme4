@@ -30,12 +30,12 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ theme = 'apple-light',
           {!isMobile && <span className="text-[10px] font-bold">Music</span>}
         </button>
       ) : (
-        <div className={`absolute top-8 right-0 p-3 rounded-2xl shadow-2xl w-64 border transition-all ${
+        <div className={`absolute top-8 right-0 p-2.5 rounded-2xl shadow-2xl w-[216px] border transition-all ${
           isLight
             ? 'bg-[#f4f4f6] border-zinc-300 text-zinc-900'
             : 'bg-zinc-900 border-zinc-800 text-white'
         }`}>
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center mb-1.5">
             <div className="flex items-center gap-1.5">
               <Music className="w-3.5 h-3.5 text-blue-500" />
               <span className={`text-xs font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>
@@ -51,13 +51,13 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ theme = 'apple-light',
           </div>
           <iframe
             width="100%"
-            height="150"
+            height="130"
             src={`https://www.youtube.com/embed/${videoId}?autoplay=${isPlaying ? 1 : 0}`}
             title="Music Player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
-            className="rounded-lg mb-2 shadow-inner"
+            className="rounded-lg mb-1 shadow-inner"
           ></iframe>
         </div>
       )}

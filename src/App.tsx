@@ -15,6 +15,7 @@ import { Archive } from './components/Archive';
 import { Projects } from './components/Projects';
 import { Philosophy } from './components/Philosophy';
 import { ContactModal } from './components/ContactModal';
+import { GateModal } from './components/GateModal';
 import { InterfaceOptionsModal, ThemeMode, AccentColor, FontStyle } from './components/InterfaceOptionsModal';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 
@@ -363,7 +364,7 @@ export default function App() {
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         className={`${
-          isSidebarCollapsed ? 'md:ml-0' : 'md:ml-[300px]'
+          isSidebarCollapsed ? 'md:ml-[72px]' : 'md:ml-[270px]'
         } h-screen overflow-y-auto scroll-container select-text transition-[margin] duration-300 ease-in-out`}
       >
         <main className="w-full">
@@ -498,6 +499,7 @@ export default function App() {
       </div>
 
       <ContactModal theme={theme} isOpen={contactOpen} onClose={() => setContactOpen(false)} />
+      <GateModal />
       <InterfaceOptionsModal
         isOpen={interfaceModalOpen}
         onClose={() => setInterfaceModalOpen(false)}

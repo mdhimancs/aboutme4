@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, Calendar, Clock, Eye, Heart, Share2, Terminal, Check, Printer } from 'lucide-react';
+import { X, Calendar, Clock, Eye, Heart, Share2, Terminal, Check, Printer, Lock, KeyRound, ShieldCheck } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { BlogPost } from '../types';
+import { useAuth } from '../context/AuthContext';
 
 interface BlogPostModalProps {
   post: BlogPost | null;
@@ -13,7 +14,12 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({ post, onClose }) =
   const [hasLiked, setHasLiked] = useState(false);
   const [copied, setCopied] = useState(false);
 
+  const { canAccessItem, setGateModalOpen, setTargetResource, user, isAuthorized, isAdmin } = useAuth();
+
   if (!post) return null;
+
+  const access = canAccessItem(post.id, 'publications');
+  const isAllowed = access.allowed;
 
   const handleLike = () => {
     if (!hasLiked) {
@@ -115,51 +121,85 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({ post, onClose }) =
             </div>
           </div>
 
-          {/* Markdown Content */}
-          <div className="prose prose-invert max-w-none text-zinc-300 text-sm sm:text-base leading-relaxed space-y-6 pt-4 border-t border-white/10">
-            <ReactMarkdown
-              components={{
-                h1: ({ node, ...props }) => <h1 className="text-2xl sm:text-3xl font-bold text-white mt-8 mb-4 tracking-tight" {...props} />,
-                h2: ({ node, ...props }) => <h2 className="text-xl sm:text-2xl font-bold text-white mt-6 mb-3 tracking-tight" {...props} />,
-                h3: ({ node, ...props }) => <h3 className="text-lg font-semibold text-white mt-4 mb-2" {...props} />,
-                p: ({ node, ...props }) => <p className="mb-4 text-zinc-300 leading-relaxed" {...props} />,
-                ul: ({ node, ...props }) => <ul className="list-disc pl-6 space-y-2 mb-4 text-zinc-300" {...props} />,
-                ol: ({ node, ...props }) => <ol className="list-decimal pl-6 space-y-2 mb-4 text-zinc-300" {...props} />,
-                li: ({ node, ...props }) => <li className="text-zinc-300" {...props} />,
-                strong: ({ node, ...props }) => <strong className="font-semibold text-white" {...props} />,
-                blockquote: ({ node, ...props }) => <blockquote className="border-l-2 border-blue-500 pl-4 italic text-zinc-400 my-4" {...props} />,
-                table: ({ node, ...props }) => (
-                  <div className="overflow-x-auto my-6">
-                    <table className="w-full text-left border-collapse border border-white/10 rounded-xl overflow-hidden" {...props} />
-                  </div>
-                ),
-                th: ({ node, ...props }) => <th className="bg-white/[0.05] p-3 text-white font-semibold border-b border-white/10" {...props} />,
-                td: ({ node, ...props }) => <td className="p-3 border-b border-white/5 text-zinc-300" {...props} />,
-                code({ node, inline, className, children, ...props }: any) {
-                  const match = /language-(\w+)/.exec(className || '');
-                  return !inline ? (
-                    <div className="my-6 rounded-2xl overflow-hidden border border-white/10 bg-[#000000]">
-                      <div className="flex items-center justify-between px-4 py-2 bg-white/[0.03] border-b border-white/10 text-xs text-zinc-400 font-mono">
-                        <span>{match ? match[1].toUpperCase() : 'CODE'}</span>
-                        <Terminal className="w-3.5 h-3.5 text-blue-400" />
-                      </div>
-                      <pre className="p-4 overflow-x-auto text-xs sm:text-sm font-mono text-blue-200">
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      </pre>
+          {/* Markdown Content or Zero-Trust Protected Banner */}
+          {isAllowed ? (
+            <div className="prose prose-invert max-w-none text-zinc-300 text-sm sm:text-base leading-relaxed space-y-6 pt-4 border-t border-white/10">
+              <ReactMarkdown
+                components={{
+                  h1: ({ node, ...props }) => <h1 className="text-2xl sm:text-3xl font-bold text-white mt-8 mb-4 tracking-tight" {...props} />,
+                  h2: ({ node, ...props }) => <h2 className="text-xl sm:text-2xl font-bold text-white mt-6 mb-3 tracking-tight" {...props} />,
+                  h3: ({ node, ...props }) => <h3 className="text-lg font-semibold text-white mt-4 mb-2" {...props} />,
+                  p: ({ node, ...props }) => <p className="mb-4 text-zinc-300 leading-relaxed" {...props} />,
+                  ul: ({ node, ...props }) => <ul className="list-disc pl-6 space-y-2 mb-4 text-zinc-300" {...props} />,
+                  ol: ({ node, ...props }) => <ol className="list-decimal pl-6 space-y-2 mb-4 text-zinc-300" {...props} />,
+                  li: ({ node, ...props }) => <li className="text-zinc-300" {...props} />,
+                  strong: ({ node, ...props }) => <strong className="font-semibold text-white" {...props} />,
+                  blockquote: ({ node, ...props }) => <blockquote className="border-l-2 border-blue-500 pl-4 italic text-zinc-400 my-4" {...props} />,
+                  table: ({ node, ...props }) => (
+                    <div className="overflow-x-auto my-6">
+                      <table className="w-full text-left border-collapse border border-white/10 rounded-xl overflow-hidden" {...props} />
                     </div>
+                  ),
+                  th: ({ node, ...props }) => <th className="bg-white/[0.05] p-3 text-white font-semibold border-b border-white/10" {...props} />,
+                  td: ({ node, ...props }) => <td className="p-3 border-b border-white/5 text-zinc-300" {...props} />,
+                  code({ node, inline, className, children, ...props }: any) {
+                    const match = /language-(\w+)/.exec(className || '');
+                    return !inline ? (
+                      <div className="my-6 rounded-2xl overflow-hidden border border-white/10 bg-[#000000]">
+                        <div className="flex items-center justify-between px-4 py-2 bg-white/[0.03] border-b border-white/10 text-xs text-zinc-400 font-mono">
+                          <span>{match ? match[1].toUpperCase() : 'CODE'}</span>
+                          <Terminal className="w-3.5 h-3.5 text-blue-400" />
+                        </div>
+                        <pre className="p-4 overflow-x-auto text-xs sm:text-sm font-mono text-blue-200">
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        </pre>
+                      </div>
+                    ) : (
+                      <code className="bg-white/10 text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono" {...props}>
+                        {children}
+                      </code>
+                    );
+                  }
+                }}
+              >
+                {post.content}
+              </ReactMarkdown>
+            </div>
+          ) : (
+            <div className="my-8 p-6 sm:p-8 rounded-3xl border border-amber-500/20 bg-amber-500/[0.04] text-center space-y-4 max-w-xl mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mx-auto">
+                <Lock className="w-6 h-6" />
+              </div>
+              <div className="space-y-1.5">
+                <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                  Publication Content Locked
+                </h3>
+                <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed max-w-md mx-auto">
+                  {access.reason === 'item_forbidden' ? (
+                    <>Your current clearance does not include this specific publication. Single-article access can be provisioned by an administrator.</>
                   ) : (
-                    <code className="bg-white/10 text-blue-300 px-1.5 py-0.5 rounded text-xs font-mono" {...props}>
-                      {children}
-                    </code>
-                  );
-                }
-              }}
-            >
-              {post.content}
-            </ReactMarkdown>
-          </div>
+                    <>This whitepaper is locked behind Firebase Authentication. Please verify your credentials or request clearance to access full implementation patterns.</>
+                  )}
+                </p>
+              </div>
+
+              <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTargetResource({ id: post.id, section: 'publications', title: post.title });
+                    setGateModalOpen(true);
+                  }}
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all shadow-lg shadow-blue-500/20 flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <KeyRound className="w-4 h-4" />
+                  <span>Authenticate with Firebase</span>
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Tags */}
           <div className="flex flex-wrap gap-2 pt-6 border-t border-white/10">

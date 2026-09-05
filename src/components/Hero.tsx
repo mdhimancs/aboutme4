@@ -160,18 +160,18 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreBlog, theme 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-1.5 text-xs py-0.5">
           <div className="flex flex-wrap items-center space-x-2 sm:space-x-2.5">
             <span className={`font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>{PERSONAL_INFO.name}</span>
-            <span className="text-[10px] opacity-40">Executive Portfolio Vault</span>
+            <span className="text-[10px] font-bold opacity-40">Executive Portfolio Vault</span>
             
             {/* Light Grey Separator */}
             <div className={`h-3 w-px ${isLight ? 'bg-zinc-300' : 'bg-white/20'}`} />
 
             {/* Social & Contact Icons */}
-            <div className="flex items-center space-x-2 pl-0.5">
+            <div className="flex items-center space-x-3.5 pl-1">
               <a 
                 href={PERSONAL_INFO.github} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className={`hover:text-blue-500 transition-colors ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
+                className={`hover:text-blue-500 transition-colors p-0.5 ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
                 title="GitHub Profile"
               >
                 <Github className="w-3.5 h-3.5" />
@@ -180,14 +180,14 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreBlog, theme 
                 href={PERSONAL_INFO.linkedin} 
                 target="_blank" 
                 rel="noopener noreferrer" 
-                className={`hover:text-blue-500 transition-colors ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
+                className={`hover:text-blue-500 transition-colors p-0.5 ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
                 title="LinkedIn Profile"
               >
                 <Linkedin className="w-3.5 h-3.5" />
               </a>
               <button 
                 onClick={onOpenContact} 
-                className={`hover:text-blue-500 transition-colors ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
+                className={`hover:text-blue-500 transition-colors p-0.5 ${isLight ? 'text-zinc-500 hover:text-zinc-900' : 'text-zinc-400 hover:text-white'}`}
                 title="Get in Touch via Email"
               >
                 <Mail className="w-3.5 h-3.5" />

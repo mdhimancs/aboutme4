@@ -1,0 +1,87 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all documents unless explicitly permitted
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSuperAdmin() {
+      return isSignedIn() && 
+        request.auth.token.email != null && 
+        request.auth.token.email.lower() == 'munish.world@gmail.com';
+    }
+
+    function isAdmin() {
+      return isSuperAdmin() || (
+        isSignedIn() && 
+        request.auth.token.email != null && 
+        exists(/databases/$(database)/documents/allowlist/$(request.auth.token.email.lower())) &&
+        get(/databases/$(database)/documents/allowlist/$(request.auth.token.email.lower())).data.role == 'admin'
+      );
+    }
+
+    function isValidEmailId(emailId) {
+      return emailId is string && emailId.size() > 3 && emailId.size() <= 128;
+    }
+
+    function isValidAllowlistItem(data) {
+      return data.authorized is bool &&
+        data.role is string &&
+        (data.role == 'viewer' || data.role == 'admin') &&
+        (!('scope' in data) || (data.scope is string && (data.scope == 'global' || data.scope == 'specific'))) &&
+        (!('allowedItems' in data) || (data.allowedItems is list && data.allowedItems.size() <= 200)) &&
+        (!('allowedSections' in data) || (data.allowedSections is list && data.allowedSections.size() <= 10)) &&
+        (!('addedBy' in data) || (data.addedBy is string && data.addedBy.size() <= 128));
+    }
+
+    function isValidSecurityLocks(data) {
+      return (!('lockedSections' in data) || (data.lockedSections is list && data.lockedSections.size() <= 20)) &&
+        (!('lockedItems' in data) || (data.lockedItems is list && data.lockedItems.size() <= 500)) &&
+        (!('unlockedItems' in data) || (data.unlockedItems is list && data.unlockedItems.size() <= 500)) &&
+        (!('updatedBy' in data) || (data.updatedBy is string && data.updatedBy.size() <= 128));
+    }
+
+    // Allowlist collection for Archive & granular article access control
+    match /allowlist/{email} {
+      // Users can only verify their own email authorization status; admins can read any
+      allow get: if isSignedIn() && (
+        (request.auth.token.email != null && request.auth.token.email.lower() == email.lower()) || 
+        isAdmin()
+      );
+
+      // Only administrators can list the allowlist registry
+      allow list: if isAdmin();
+
+      // Only administrators can create or modify allowlist authorizations
+      allow create, update: if isAdmin() && 
+        isValidEmailId(email) && 
+        isValidAllowlistItem(request.resource.data);
+
+      // Only administrators can revoke / delete allowlist records
+      allow delete: if isAdmin() && isValidEmailId(email);
+    }
+
+    // Global and granular lock status configuration
+    match /security_settings/{settingId} {
+      // Anyone can read lock state so the UI accurately displays lock badges & gate behavior
+      allow read: if true;
+      // Only authenticated administrators can configure security lock states
+      allow create, update: if isAdmin() && 
+        settingId is string && settingId.size() <= 64 &&
+        isValidSecurityLocks(request.resource.data);
+      allow delete: if isAdmin();
+    }
+
+    // Connection test document
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
-import { X, Send, CheckCircle2, Mail, MapPin, Linkedin, Github, Twitter, Copy, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Send, CheckCircle2, Mail, MapPin, Linkedin, Github, Twitter, Copy, Check, Clock, ShieldAlert } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
+import { trackContactSubmission } from '../lib/analytics';
 
 import { ThemeMode } from './InterfaceOptionsModal';
 
@@ -9,6 +10,9 @@ interface ContactModalProps {
   onClose: () => void;
   theme?: ThemeMode;
 }
+
+const COOLDOWN_STORAGE_KEY = 'portfolio_contact_last_submitted';
+const COOLDOWN_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 
 export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, theme = 'apple-dark' }) => {
   const isLight = theme === 'apple-light';
@@ -25,13 +29,58 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
   const [emailCopied, setEmailCopied] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cooldownRemaining, setCooldownRemaining] = useState<number>(0);
+
+  // Monitor submission cooldown from localStorage
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const checkCooldown = () => {
+      try {
+        const stored = localStorage.getItem(COOLDOWN_STORAGE_KEY);
+        if (!stored) {
+          setCooldownRemaining(0);
+          return;
+        }
+        const timestamp = parseInt(stored, 10);
+        if (isNaN(timestamp)) {
+          setCooldownRemaining(0);
+          return;
+        }
+        const elapsed = Date.now() - timestamp;
+        if (elapsed < COOLDOWN_DURATION_MS) {
+          setCooldownRemaining(Math.ceil((COOLDOWN_DURATION_MS - elapsed) / 1000));
+        } else {
+          setCooldownRemaining(0);
+        }
+      } catch (e) {
+        setCooldownRemaining(0);
+      }
+    };
+
+    checkCooldown();
+    const interval = setInterval(checkCooldown, 1000);
+    return () => clearInterval(interval);
+  }, [isOpen]);
 
   if (!isOpen) return null;
+
+  const formatRemainingTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m}m ${s < 10 ? '0' : ''}${s}s`;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (honeypot) return; // Honeypot triggered
     if (!name || !email || !message) return;
+
+    // Verify rate limiting cooldown before attempting network transmission
+    if (cooldownRemaining > 0) {
+      setError(`Rate limit active: Please wait ${formatRemainingTime(cooldownRemaining)} before transmitting another inquiry.`);
+      return;
+    }
 
     setIsSending(true);
     setError(null);
@@ -57,6 +106,15 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
         throw new Error(result.error || 'Failed to send message');
       }
 
+      // Record timestamp to enforce 5-minute quota protection
+      try {
+        localStorage.setItem(COOLDOWN_STORAGE_KEY, Date.now().toString());
+        setCooldownRemaining(Math.ceil(COOLDOWN_DURATION_MS / 1000));
+      } catch (e) {
+        // Fallback gracefully if localStorage is restricted
+      }
+
+      trackContactSubmission(subject || 'General Inquiry');
       setSubmitted(true);
       setTimeout(() => {
         setSubmitted(false);
@@ -82,7 +140,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
 
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-2xl animate-in fade-in duration-200 ${isTerminal ? 'font-mono' : ''}`}>
-      <div className={`relative w-full max-w-lg border rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 transition-colors duration-500 ${
+      <div className={`relative w-full max-w-2xl border rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 transition-colors duration-500 ${
         isLight 
           ? 'bg-white border-zinc-200 text-zinc-900' 
           : isObsidian
@@ -163,11 +221,11 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className={`block text-xs font-medium mb-1.5 ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Email Address</label>
+                  <label className={`block text-xs font-medium mb-1.5 ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Your Email address</label>
                   <input
                     type="email"
                     required
-                    placeholder="e.g. munish.world@gmail.com"
+                    placeholder="e.g. samuel.conner@gmail.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className={`w-full border rounded-xl px-4 py-3 text-sm transition-colors focus:outline-none ${
@@ -233,16 +291,40 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
                 />
               </div>
 
+              {cooldownRemaining > 0 && (
+                <div className={`p-3 rounded-xl border flex items-center justify-between text-xs animate-in fade-in ${
+                  isTerminal
+                    ? 'bg-[#00ff66]/10 border-[#00ff66]/30 text-[#00ff66]'
+                    : isLight
+                      ? 'bg-amber-50 border-amber-200 text-amber-800'
+                      : 'bg-amber-500/10 border-amber-500/20 text-amber-300'
+                }`}>
+                  <div className="flex items-center space-x-2">
+                    <Clock className="w-4 h-4 shrink-0" />
+                    <span>Rate limit cooldown: Transmission unlocked in</span>
+                  </div>
+                  <span className="font-mono font-bold">{formatRemainingTime(cooldownRemaining)}</span>
+                </div>
+              )}
+
               <button
                 type="submit"
-                disabled={isSending}
+                disabled={isSending || cooldownRemaining > 0}
                 className={`w-full flex items-center justify-center space-x-2 py-3.5 rounded-xl text-sm font-semibold tracking-wide transition-all shadow-lg ${
-                  isTerminal
-                    ? 'bg-[#00ff66] text-black hover:bg-[#00ff66]/90 shadow-[#00ff66]/20'
-                    : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30'
+                  cooldownRemaining > 0
+                    ? (isLight ? 'bg-zinc-200 text-zinc-500 cursor-not-allowed shadow-none' : 'bg-white/10 text-zinc-400 cursor-not-allowed shadow-none')
+                    : isTerminal
+                      ? 'bg-[#00ff66] text-black hover:bg-[#00ff66]/90 shadow-[#00ff66]/20'
+                      : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30'
                 } ${isSending ? 'opacity-70 cursor-not-allowed' : ''}`}
               >
-                <span>{isSending ? 'Transmitting Securely...' : 'Send Secure Message'}</span>
+                <span>
+                  {isSending 
+                    ? 'Transmitting Securely...' 
+                    : cooldownRemaining > 0
+                      ? `Rate Limited (${formatRemainingTime(cooldownRemaining)})`
+                      : 'Send Secure Message'}
+                </span>
                 <Send className={`w-4 h-4 ${isSending ? 'animate-pulse' : ''}`} />
               </button>
 
