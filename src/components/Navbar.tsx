@@ -266,32 +266,32 @@ export const Navbar: React.FC<NavbarProps> = ({
       </aside>
 
       {/* Desktop Top Right Floating Bar */}
-      <div className={`hidden md:flex fixed top-4 right-6 z-50 items-center gap-2.5 px-3 py-1.5 rounded-full border shadow-sm backdrop-blur-md transition-all ${
+      <div className={`hidden md:flex fixed top-4 right-6 z-50 items-center gap-1.5 px-2 py-1 rounded-full border shadow-sm backdrop-blur-md transition-all ${
         isLight
-          ? 'bg-[#f4f4f6] border-zinc-300 text-zinc-800 shadow-xs'
-          : 'bg-[#18181b] border-zinc-700 text-zinc-200 shadow-md'
+          ? 'bg-[#f4f4f6]/95 border-zinc-300/90 text-zinc-800 shadow-xs'
+          : 'bg-[#18181b]/95 border-zinc-700/80 text-zinc-200 shadow-md'
       }`}>
         {/* Theme Options */}
         <button
           onClick={onOpenInterfaceOptions}
-          className={`flex items-center space-x-1.5 transition-colors px-2 py-0.5 rounded-full ${
+          className={`flex items-center space-x-1 transition-colors px-1.5 py-0.5 rounded-full ${
             isLight 
               ? 'text-zinc-700 hover:text-zinc-950 hover:bg-zinc-200/70' 
               : 'text-zinc-300 hover:text-white hover:bg-white/10'
           }`}
           title="Theme & Interface Options"
         >
-          <Sliders className="w-3.5 h-3.5 text-blue-500" />
-          <span className="text-[10px] font-bold">Themes</span>
+          <Sliders className="w-3 h-3 text-blue-500" />
+          <span className="text-[9.5px] font-bold tracking-tight">Themes</span>
         </button>
-        <div className={`w-[1px] h-3.5 ${isLight ? 'bg-zinc-300' : 'bg-white/20'}`} />
+        <div className={`w-[1px] h-3 ${isLight ? 'bg-zinc-300' : 'bg-white/20'}`} />
         <MusicPlayer theme={theme} />
-        <div className={`w-[1px] h-3.5 ${isLight ? 'bg-zinc-300' : 'bg-white/20'}`} />
+        <div className={`w-[1px] h-3 ${isLight ? 'bg-zinc-300' : 'bg-white/20'}`} />
         <UserTelemetry theme={theme} />
-        <div className={`w-[1px] h-3.5 ${isLight ? 'bg-zinc-300' : 'bg-white/20'}`} />
+        <div className={`w-[1px] h-3 ${isLight ? 'bg-zinc-300' : 'bg-white/20'}`} />
         <button
           onClick={() => setGateModalOpen(true)}
-          className={`flex items-center space-x-1.5 transition-colors px-2.5 py-0.5 rounded-full cursor-pointer ${
+          className={`flex items-center space-x-1 transition-colors px-2 py-0.5 rounded-full cursor-pointer ${
             user && isAuthorized
               ? (isLight ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200' : 'bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25 border border-emerald-500/30')
               : (isLight ? 'text-zinc-700 hover:text-zinc-950 hover:bg-zinc-200/70' : 'text-zinc-300 hover:text-white hover:bg-white/10')
@@ -299,11 +299,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           title={user ? `Firebase Identity: ${user.email}` : "Firebase Authentication & Clearance"}
         >
           {user && isAuthorized ? (
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+            <ShieldCheck className="w-3 h-3 text-emerald-500" />
           ) : (
-            <Lock className="w-3.5 h-3.5 text-amber-500" />
+            <Lock className="w-3 h-3 text-amber-500" />
           )}
-          <span className="text-[10px] font-bold">
+          <span className="text-[9.5px] font-bold tracking-tight">
             {user ? (isAdmin ? 'Admin' : 'Verified') : 'Sign In'}
           </span>
         </button>

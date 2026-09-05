@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   X, ShieldCheck, TrendingUp, CheckCircle, Award, Share2, Check, 
   ArrowRight, Layers, FileText, Sparkles, Zap, Cpu, GitMerge, Scale, Lock, AlertTriangle 
@@ -16,8 +16,29 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ caseStudy, onClo
   const isLight = theme === 'apple-light';
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<'briefing' | 'star'>('briefing');
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setScrollProgress(0);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [caseStudy?.id, activeTab]);
 
   if (!caseStudy) return null;
+
+  const handleScroll = () => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const totalHeight = el.scrollHeight - el.clientHeight;
+    if (totalHeight <= 0) {
+      setScrollProgress(100);
+      return;
+    }
+    const currentProgress = (el.scrollTop / totalHeight) * 100;
+    setScrollProgress(Math.min(100, Math.max(0, currentProgress)));
+  };
 
   const handleShare = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -74,17 +95,27 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ caseStudy, onClo
 
   const catTheme = getCategoryTheme(caseStudy.category);
 
+  const progressPercent = Math.round(scrollProgress);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-2xl animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-2xl animate-in fade-in duration-200">
       <div className={`relative w-full max-w-4xl border rounded-3xl shadow-2xl overflow-hidden max-h-[92vh] flex flex-col ${
         isLight ? 'bg-[#ffffff] border-zinc-200 text-zinc-900' : 'bg-[#0a0a0c] border-white/10 text-white'
       }`}>
+        {/* Top Slim Reading Progress Bar */}
+        <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-zinc-200/50 dark:bg-white/10 z-30 overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 transition-all duration-100 ease-out" 
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
+
         {/* Modal Top Bar */}
-        <div className={`flex items-center justify-between px-6 py-4 border-b backdrop-blur-md shrink-0 ${
+        <div className={`flex items-center justify-between px-5 sm:px-6 py-3.5 border-b backdrop-blur-md shrink-0 ${
           isLight ? 'border-zinc-200 bg-zinc-50/80' : 'border-white/10 bg-black/40'
         }`}>
           <div className="flex items-center space-x-2 text-xs font-semibold">
-            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border ${catTheme.badgeClass}`}>
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] ${catTheme.badgeClass}`}>
               {catTheme.icon}
               <span>{caseStudy.category}</span>
             </span>
@@ -96,12 +127,16 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ caseStudy, onClo
             }`}>
               {caseStudy.status}
             </span>
+            <span className="text-zinc-400">•</span>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold">
+              {progressPercent}% read
+            </span>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={handleShare}
-              className={`p-2 rounded-full transition-colors ${
+              className={`p-1.5 sm:p-2 rounded-full transition-colors ${
                 isLight ? 'text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200' : 'text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10'
               }`}
               title="Copy link"
@@ -110,17 +145,21 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ caseStudy, onClo
             </button>
             <button
               onClick={onClose}
-              className={`p-2 rounded-full transition-colors ${
+              className={`p-1.5 sm:p-2 rounded-full transition-colors ${
                 isLight ? 'text-zinc-500 hover:text-zinc-900 bg-zinc-100 hover:bg-zinc-200' : 'text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10'
               }`}
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="p-6 sm:p-10 overflow-y-auto space-y-6">
+        <div 
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="p-5 sm:p-10 overflow-y-auto space-y-6"
+        >
           {/* Header & Scale Badge */}
           <div className="space-y-3">
             <div className={`text-[11px] font-mono font-bold tracking-wide uppercase ${catTheme.titleAccent}`}>

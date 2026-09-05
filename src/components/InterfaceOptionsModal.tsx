@@ -50,64 +50,64 @@ export const InterfaceOptionsModal: React.FC<InterfaceOptionsModalProps> = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className={`relative w-full max-w-xl border rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 space-y-6 transition-all ${
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
+      <div className={`relative w-full max-w-lg border rounded-2xl shadow-2xl overflow-hidden p-5 sm:p-6 space-y-4 transition-all ${
         isLight
           ? 'bg-[#f4f4f6] border-zinc-300 text-zinc-900'
           : 'bg-[#0a0a0c] border-white/10 text-white'
       }`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="p-2 bg-blue-500/10 text-blue-500 rounded-xl">
-              <Palette className="w-5 h-5" />
+            <div className="p-1.5 bg-blue-500/10 text-blue-500 rounded-lg">
+              <Palette className="w-4 h-4" />
             </div>
             <div>
-              <h3 className={`text-xl font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+              <h3 className={`text-base sm:text-lg font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
                 Interface Customizer
               </h3>
-              <p className={`text-xs ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+              <p className={`text-[11px] ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
                 Tailor the portfolio appearance to your exact aesthetic preference.
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className={`p-2 rounded-full transition-colors ${
+            className={`p-1.5 rounded-full transition-colors ${
               isLight ? 'text-zinc-600 hover:text-zinc-950 bg-zinc-200/80' : 'text-zinc-400 hover:text-white bg-white/5'
             }`}
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Themes */}
-        <div className="space-y-2.5">
-          <label className={`text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 ${
+        <div className="space-y-2">
+          <label className={`text-[11px] font-bold uppercase tracking-wider flex items-center space-x-1.5 ${
             isLight ? 'text-zinc-600' : 'text-zinc-400'
           }`}>
-            <Layout className="w-3.5 h-3.5" />
+            <Layout className="w-3 h-3" />
             <span>Theme & Surface Mode</span>
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {themes.map((t) => {
               const isSelected = currentTheme === t.id;
               return (
                 <div
                   key={t.id}
                   onClick={() => onThemeChange(t.id)}
-                  className={`p-3.5 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between ${
+                  className={`p-2.5 rounded-xl border cursor-pointer transition-all flex flex-col justify-between ${
                     isSelected
                       ? (isLight ? 'border-blue-600 bg-blue-50 shadow-xs' : 'border-blue-500 bg-blue-500/10 shadow-lg')
                       : (isLight ? 'border-zinc-200 bg-white hover:border-zinc-300' : 'border-white/10 bg-white/[0.02] hover:border-white/20')
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className={`text-xs sm:text-sm font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <span className={`text-xs font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>
                       {t.name}
                     </span>
-                    {isSelected && <Check className="w-4 h-4 text-blue-500" />}
+                    {isSelected && <Check className="w-3.5 h-3.5 text-blue-500" />}
                   </div>
-                  <p className={`text-xs ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>{t.desc}</p>
+                  <p className={`text-[10.5px] leading-tight ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>{t.desc}</p>
                 </div>
               );
             })}
@@ -115,27 +115,27 @@ export const InterfaceOptionsModal: React.FC<InterfaceOptionsModalProps> = ({
         </div>
 
         {/* Accent Colors */}
-        <div className="space-y-2.5">
-          <label className={`text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 ${
+        <div className="space-y-2">
+          <label className={`text-[11px] font-bold uppercase tracking-wider flex items-center space-x-1.5 ${
             isLight ? 'text-zinc-600' : 'text-zinc-400'
           }`}>
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3 h-3" />
             <span>Accent Color Palette</span>
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {accents.map((acc) => {
               const isSelected = currentAccent === acc.id;
               return (
                 <button
                   key={acc.id}
                   onClick={() => onAccentChange(acc.id)}
-                  className={`p-2.5 rounded-xl border flex items-center space-x-2 transition-all ${
+                  className={`p-2 rounded-lg border flex items-center space-x-1.5 transition-all ${
                     isSelected
                       ? (isLight ? 'border-zinc-800 bg-white shadow-xs' : 'border-white bg-white/10')
                       : (isLight ? 'border-zinc-200 bg-white hover:bg-zinc-100' : 'border-white/10 bg-white/[0.02] hover:bg-white/5')
                   }`}
                 >
-                  <span className={`w-3.5 h-3.5 rounded-full ${acc.colorClass}`} />
+                  <span className={`w-3 h-3 rounded-full ${acc.colorClass}`} />
                   <span className={`text-xs font-medium ${isLight ? 'text-zinc-900' : 'text-white'}`}>{acc.name}</span>
                 </button>
               );
@@ -144,28 +144,28 @@ export const InterfaceOptionsModal: React.FC<InterfaceOptionsModalProps> = ({
         </div>
 
         {/* Typography */}
-        <div className="space-y-2.5">
-          <label className={`text-xs font-semibold uppercase tracking-wider flex items-center space-x-1.5 ${
+        <div className="space-y-2">
+          <label className={`text-[11px] font-bold uppercase tracking-wider flex items-center space-x-1.5 ${
             isLight ? 'text-zinc-600' : 'text-zinc-400'
           }`}>
-            <Type className="w-3.5 h-3.5" />
+            <Type className="w-3 h-3" />
             <span>Typography Mode</span>
           </label>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {fonts.map((f) => {
               const isSelected = currentFont === f.id;
               return (
                 <div
                   key={f.id}
                   onClick={() => onFontChange(f.id)}
-                  className={`p-3 rounded-xl border cursor-pointer transition-all ${
+                  className={`p-2.5 rounded-xl border cursor-pointer transition-all ${
                     isSelected
                       ? (isLight ? 'border-blue-600 bg-blue-50' : 'border-blue-500 bg-blue-500/10')
                       : (isLight ? 'border-zinc-200 bg-white hover:border-zinc-300' : 'border-white/10 bg-white/[0.02] hover:border-white/20')
                   }`}
                 >
                   <div className={`text-xs font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>{f.name}</div>
-                  <div className={`text-[11px] mt-0.5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>{f.desc}</div>
+                  <div className={`text-[10.5px] mt-0.5 leading-tight ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>{f.desc}</div>
                 </div>
               );
             })}
@@ -173,10 +173,10 @@ export const InterfaceOptionsModal: React.FC<InterfaceOptionsModalProps> = ({
         </div>
 
         {/* Action */}
-        <div className={`pt-3 border-t flex justify-end ${isLight ? 'border-zinc-200' : 'border-white/10'}`}>
+        <div className={`pt-2.5 border-t flex justify-end ${isLight ? 'border-zinc-200' : 'border-white/10'}`}>
           <button
             onClick={onClose}
-            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-5 py-2 rounded-xl text-xs font-semibold tracking-wide transition-all shadow-md"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-500 text-white px-4 py-1.5 rounded-xl text-xs font-semibold tracking-wide transition-all shadow-md"
           >
             Apply Interface Preferences
           </button>

@@ -19,15 +19,15 @@ export const MusicPlayer: React.FC<MusicPlayerProps> = ({ theme = 'apple-light',
       {!isOpen ? (
         <button
           onClick={() => setIsOpen(true)}
-          className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full transition-colors ${
+          className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full transition-colors ${
             isLight
               ? 'text-zinc-700 hover:text-zinc-950 hover:bg-zinc-200/70'
               : 'text-zinc-300 hover:text-white hover:bg-white/10'
           }`}
           title="Music Player"
         >
-          <Music className="w-3.5 h-3.5 text-blue-500" />
-          {!isMobile && <span className="text-[10px] font-bold">Music</span>}
+          <Music className="w-3 h-3 text-blue-500" />
+          {!isMobile && <span className="text-[9.5px] font-bold tracking-tight">Music</span>}
         </button>
       ) : (
         <div className={`absolute top-8 right-0 p-2.5 rounded-2xl shadow-2xl w-[216px] border transition-all ${

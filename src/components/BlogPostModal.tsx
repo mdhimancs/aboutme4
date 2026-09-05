@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { X, Calendar, Clock, Eye, Heart, Share2, Terminal, Check, Printer, Lock, KeyRound, ShieldCheck } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { BlogPost } from '../types';
@@ -13,13 +13,35 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({ post, onClose }) =
   const [likes, setLikes] = useState(post ? post.likes : 0);
   const [hasLiked, setHasLiked] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const { canAccessItem, setGateModalOpen, setTargetResource, user, isAuthorized, isAdmin } = useAuth();
+
+  useEffect(() => {
+    // Reset scroll progress on post change
+    setScrollProgress(0);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [post?.id]);
 
   if (!post) return null;
 
   const access = canAccessItem(post.id, 'publications');
   const isAllowed = access.allowed;
+
+  const handleScroll = () => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const totalHeight = el.scrollHeight - el.clientHeight;
+    if (totalHeight <= 0) {
+      setScrollProgress(100);
+      return;
+    }
+    const currentProgress = (el.scrollTop / totalHeight) * 100;
+    setScrollProgress(Math.min(100, Math.max(0, currentProgress)));
+  };
 
   const handleLike = () => {
     if (!hasLiked) {
@@ -41,37 +63,55 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({ post, onClose }) =
     window.print();
   };
 
+  const progressPercent = Math.round(scrollProgress);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-2xl animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto bg-black/80 backdrop-blur-2xl animate-in fade-in duration-200">
       <div className="relative w-full max-w-4xl bg-[#0a0a0c] border border-white/10 rounded-3xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+        {/* Top Slim Reading Progress Bar */}
+        <div className="absolute top-0 left-0 right-0 h-[2.5px] bg-white/10 z-30 overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-emerald-400 transition-all duration-100 ease-out" 
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
+
         {/* Modal Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-black/40 backdrop-blur-md">
+        <div className="flex items-center justify-between px-5 sm:px-6 py-3.5 border-b border-white/10 bg-black/40 backdrop-blur-md shrink-0">
           <div className="flex items-center space-x-2 text-xs font-medium text-blue-400">
-            <span className="px-2.5 py-1 bg-blue-500/10 rounded-full border border-blue-500/20">
+            <span className="px-2.5 py-0.5 bg-blue-500/10 rounded-full border border-blue-500/20 text-[11px] font-bold">
               {post.category}
             </span>
-            <span>•</span>
-            <span>{post.readTime}</span>
+            <span className="text-zinc-500">•</span>
+            <span className="text-zinc-300 text-[11px] font-mono">{post.readTime}</span>
+            <span className="text-zinc-500">•</span>
+            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono text-[10px] font-bold">
+              {progressPercent}% read
+            </span>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="p-2 text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
+              className="p-1.5 sm:p-2 text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
               title="Print Whitepaper / Executive Brief"
             >
-              <Printer className="w-4 h-4" />
+              <Printer className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
+              className="p-1.5 sm:p-2 text-zinc-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
         {/* Modal Scrollable Content */}
-        <div className="p-6 sm:p-10 overflow-y-auto space-y-8">
+        <div 
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="p-5 sm:p-10 overflow-y-auto space-y-7"
+        >
           <div className="space-y-4">
             <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
               {post.title}

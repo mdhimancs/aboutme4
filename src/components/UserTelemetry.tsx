@@ -223,7 +223,7 @@ export const UserTelemetry: React.FC<UserTelemetryProps> = ({
                   ? (isLight ? 'bg-blue-500/15 border-blue-500/40 text-blue-600' : 'bg-blue-500/20 border-blue-500/50 text-blue-400')
                   : (isLight ? 'bg-[#f4f4f6] border-zinc-300 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-200/70' : 'bg-[#18181b] border-zinc-700 text-zinc-300 hover:text-white')
               }`
-            : `flex items-center space-x-1.5 px-2 py-0.5 rounded-full transition-colors cursor-pointer ${
+            : `flex items-center space-x-1 px-1.5 py-0.5 rounded-full transition-colors cursor-pointer ${
                 isOpen
                   ? (isLight ? 'bg-blue-500/15 text-blue-600 font-bold' : 'bg-blue-500/25 text-blue-400 font-bold')
                   : (isLight ? 'text-zinc-700 hover:text-zinc-950 hover:bg-zinc-200/70' : 'text-zinc-300 hover:text-white hover:bg-white/10')
@@ -231,14 +231,14 @@ export const UserTelemetry: React.FC<UserTelemetryProps> = ({
         }
       >
         <div className="relative flex items-center justify-center">
-          <Shield className="w-3.5 h-3.5 text-blue-500" />
+          <Shield className="w-3 h-3 text-blue-500" />
           <span className="absolute -top-0.5 -right-0.5 flex h-1.5 w-1.5">
             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${user && isAuthorized ? 'bg-emerald-400' : 'bg-blue-400'}`}></span>
             <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${user && isAuthorized ? 'bg-emerald-500' : 'bg-blue-500'}`}></span>
           </span>
         </div>
         {!isMobile && (
-          <span className="text-[10px] font-bold">Session Audit</span>
+          <span className="text-[9.5px] font-bold tracking-tight">Session Audit</span>
         )}
       </button>
 
