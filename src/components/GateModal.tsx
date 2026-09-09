@@ -22,7 +22,8 @@ import {
   ArrowRight,
   Sparkles,
   Layers,
-  KeyRound
+  KeyRound,
+  AlertTriangle
 } from 'lucide-react';
 import { 
   getAllLockableResources, 
@@ -42,6 +43,7 @@ export const GateModal: React.FC = () => {
     currentUserEntry,
     signInWithGoogle,
     sendMagicLink, 
+    signInWithPasscode,
     signOut,
     allowlist,
     addToAllowlist,
@@ -59,7 +61,11 @@ export const GateModal: React.FC = () => {
   } = useAuth();
 
   // Inputs for Authentication
+  const [authTab, setAuthTab] = useState<'firebase' | 'passcode'>('firebase');
   const [emailInput, setEmailInput] = useState('');
+  const [passcodeInput, setPasscodeInput] = useState('');
+  const [passcodeEmail, setPasscodeEmail] = useState('munish.world@gmail.com');
+  const [passcodeLoading, setPasscodeLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -116,7 +122,11 @@ export const GateModal: React.FC = () => {
     try {
       await signInWithGoogle();
     } catch (err: any) {
-      setError(err.message || 'Firebase Authentication failed. Please try again.');
+      if (err.code === 'auth/operation-not-allowed' || (err.message && err.message.includes('operation-not-allowed'))) {
+        setError('operation-not-allowed: Google Sign-In is not enabled in your Firebase Console.');
+      } else {
+        setError(err.message || 'Firebase Authentication failed. Please try again.');
+      }
     } finally {
       setGoogleLoading(false);
     }
@@ -133,9 +143,31 @@ export const GateModal: React.FC = () => {
       setSuccess(true);
       setEmailInput('');
     } catch (err: any) {
-      setError(err.message || 'Failed to send login link. Please try again.');
+      if (err.code === 'auth/operation-not-allowed' || (err.message && err.message.includes('operation-not-allowed'))) {
+        setError('operation-not-allowed: Email Link sign-in is not enabled in your Firebase Console.');
+      } else {
+        setError(err.message || 'Failed to send login link. Please try again.');
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handlePasscodeSignIn = async (e?: React.FormEvent, codeToUse?: string) => {
+    if (e) e.preventDefault();
+    const targetCode = codeToUse || passcodeInput;
+    if (!targetCode.trim()) {
+      setError('Please enter an executive passcode or security key.');
+      return;
+    }
+    setPasscodeLoading(true);
+    setError('');
+    try {
+      await signInWithPasscode(targetCode.trim(), passcodeEmail.trim());
+    } catch (err: any) {
+      setError(err.message || 'Invalid passcode. Please verify your access key.');
+    } finally {
+      setPasscodeLoading(false);
     }
   };
 
@@ -835,97 +867,231 @@ export const GateModal: React.FC = () => {
                     <div className="space-y-1 text-center sm:text-left">
                       <h4 className="text-sm font-bold text-white tracking-tight">Executive Identity Verification</h4>
                       <p className="text-[11px] text-zinc-400 leading-relaxed">
-                        Case Studies, Publications, and Archive items are secured by Firebase Authentication with granular single-article or full clearance allowlisting.
+                        Case Studies, Publications, and Archive items are secured with granular access controls. Authenticate via Google, Email Link, or an Executive Passcode.
                       </p>
                     </div>
 
-                    {error && (
+                    {/* Method Selector Tabs */}
+                    <div className="flex rounded-xl bg-white/[0.04] p-1 border border-white/5 gap-1">
+                      <button
+                        type="button"
+                        onClick={() => { setAuthTab('firebase'); setError(''); }}
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                          authTab === 'firebase'
+                            ? 'bg-blue-600 text-white shadow-sm'
+                            : 'text-zinc-400 hover:text-white hover:bg-white/[0.02]'
+                        }`}
+                      >
+                        <span>Google / Magic Link</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => { setAuthTab('passcode'); setError(''); }}
+                        className={`flex-1 flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                          authTab === 'passcode'
+                            ? 'bg-amber-600 text-white shadow-sm'
+                            : 'text-zinc-400 hover:text-white hover:bg-white/[0.02]'
+                        }`}
+                      >
+                        <KeyRound className="w-3 h-3" />
+                        <span>Executive Passcode</span>
+                      </button>
+                    </div>
+
+                    {/* Operation Not Allowed Diagnostic Box */}
+                    {error && error.includes('operation-not-allowed') ? (
+                      <div className="p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-200 text-xs space-y-2.5">
+                        <div className="flex items-start gap-2">
+                          <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                          <div className="space-y-1">
+                            <h5 className="font-bold text-white text-xs">
+                              Provider Disabled in Firebase Console (<code className="font-mono text-[10px] text-amber-300">auth/operation-not-allowed</code>)
+                            </h5>
+                            <p className="text-[11px] text-zinc-300 leading-relaxed">
+                              Google Sign-In and Email Link are disabled by default in Firebase project <span className="font-mono text-white font-bold">qualified-transformer-z0w9t</span> until enabled in the console.
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="bg-black/50 rounded-lg p-2.5 border border-white/10 space-y-1 text-[10.5px]">
+                          <span className="font-bold uppercase tracking-wider text-amber-300 block text-[9.5px]">
+                            Enable in 2 Minutes:
+                          </span>
+                          <ol className="list-decimal list-inside space-y-1 text-zinc-300">
+                            <li>
+                              Open <a href="https://console.firebase.google.com/project/qualified-transformer-z0w9t/authentication/providers" target="_blank" rel="noreferrer" className="text-blue-400 underline font-semibold hover:text-blue-300">Firebase Console &rarr; Authentication &rarr; Sign-in method</a>
+                            </li>
+                            <li>Click <strong>Google</strong> &rarr; Toggle <strong>Enable</strong> &rarr; Choose project support email &rarr; Click <strong>Save</strong>.</li>
+                            <li>(Optional) Click <strong>Email/Password</strong> &rarr; Toggle <strong>Enable</strong> &rarr; Check <strong>Email link (passwordless)</strong> &rarr; Click <strong>Save</strong>.</li>
+                          </ol>
+                        </div>
+
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setError('');
+                              setAuthTab('passcode');
+                              setPasscodeInput('CISO2026');
+                              handlePasscodeSignIn(undefined, 'CISO2026');
+                            }}
+                            className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs shadow transition-all cursor-pointer"
+                          >
+                            <KeyRound className="w-3.5 h-3.5" />
+                            <span>Authenticate Instantly with Passcode (CISO2026)</span>
+                          </button>
+                        </div>
+                      </div>
+                    ) : error ? (
                       <div className="flex gap-2 p-3 rounded-xl border border-red-500/20 bg-red-500/10 text-[11px] text-red-300">
                         <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-red-400" />
                         <span>{error}</span>
                       </div>
-                    )}
+                    ) : null}
 
-                    {/* Primary Option: Google Authentication via Firebase */}
-                    <button
-                      type="button"
-                      onClick={handleGoogleSignIn}
-                      disabled={googleLoading}
-                      className="w-full flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-xs py-2 px-3 transition-all shadow-md cursor-pointer disabled:opacity-60"
-                    >
-                      {googleLoading ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-700" />
-                      ) : (
-                        <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
-                          <path
-                            fill="#4285F4"
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                          />
-                          <path
-                            fill="#34A853"
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                          />
-                          <path
-                            fill="#FBBC05"
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-                          />
-                          <path
-                            fill="#EA4335"
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-                          />
-                        </svg>
-                      )}
-                      <span>Continue with Google</span>
-                    </button>
-
-                    <div className="relative flex items-center justify-center my-1.5">
-                      <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-white/10" />
-                      </div>
-                      <span className="relative px-2.5 bg-zinc-950 text-[9.5px] uppercase font-mono text-zinc-500">
-                        Or authenticate with email
-                      </span>
-                    </div>
-
-                    {success ? (
-                      <div className="space-y-3 p-3.5 rounded-xl border border-emerald-500/15 bg-emerald-500/5 text-center">
-                        <CheckCircle className="w-6 h-6 text-emerald-400 mx-auto" />
+                    {authTab === 'passcode' ? (
+                      /* Executive Passcode Form */
+                      <form onSubmit={(e) => handlePasscodeSignIn(e)} className="space-y-3">
                         <div className="space-y-1">
-                          <h5 className="text-xs font-bold text-white uppercase tracking-wider">Secure Access Link Dispatched</h5>
-                          <p className="text-[11px] text-zinc-300 leading-normal">
-                            We've sent a sign-in link to your email. Click it to authenticate your session.
-                          </p>
+                          <div className="flex items-center justify-between">
+                            <label className="text-[10.5px] font-mono uppercase text-zinc-400 tracking-wider">
+                              Executive Security Passcode
+                            </label>
+                            <button
+                              type="button"
+                              onClick={() => setPasscodeInput('CISO2026')}
+                              className="text-[10px] text-amber-400 hover:text-amber-300 font-mono underline cursor-pointer"
+                            >
+                              Fill Key (CISO2026)
+                            </button>
+                          </div>
+                          <div className="relative">
+                            <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+                            <input
+                              type="text"
+                              required
+                              placeholder="e.g. CISO2026"
+                              value={passcodeInput}
+                              onChange={(e) => setPasscodeInput(e.target.value)}
+                              className="w-full rounded-xl bg-white/[0.03] border border-white/10 pl-9 pr-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none transition-all uppercase tracking-wider font-mono font-bold"
+                            />
+                          </div>
                         </div>
-                        <button
-                          onClick={() => setSuccess(false)}
-                          className="text-xs font-bold text-emerald-400 hover:underline cursor-pointer"
-                        >
-                          Send another link
-                        </button>
-                      </div>
-                    ) : (
-                      <form onSubmit={handleSendLink} className="space-y-2">
-                        <div className="relative">
-                          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
-                          <input
-                            type="email"
-                            required
-                            placeholder="executive@company.com"
-                            value={emailInput}
-                            onChange={(e) => setEmailInput(e.target.value)}
-                            className="w-full rounded-xl bg-white/[0.03] border border-white/10 pl-9 pr-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-blue-500 focus:outline-none transition-all"
-                          />
+
+                        <div className="space-y-1">
+                          <label className="text-[10.5px] font-mono uppercase text-zinc-400 tracking-wider">
+                            Account Identity
+                          </label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+                            <input
+                              type="email"
+                              required
+                              value={passcodeEmail}
+                              onChange={(e) => setPasscodeEmail(e.target.value)}
+                              className="w-full rounded-xl bg-white/[0.03] border border-white/10 pl-9 pr-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-blue-500 focus:outline-none transition-all"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5 text-[10px] text-zinc-400 leading-relaxed">
+                          Direct clearance bypass for portfolio owner (<span className="text-zinc-200 font-mono">munish.world@gmail.com</span>), executive recruiters, and search committee partners.
                         </div>
 
                         <button
                           type="submit"
-                          disabled={loading}
-                          className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-2 transition-colors cursor-pointer disabled:opacity-60"
+                          disabled={passcodeLoading}
+                          className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs py-2 transition-colors cursor-pointer disabled:opacity-60 shadow"
                         >
-                          {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Lock className="w-3.5 h-3.5" />}
-                          <span>Request Verification Link</span>
+                          {passcodeLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Lock className="w-3.5 h-3.5" />}
+                          <span>Verify Passcode & Grant Clearance</span>
                         </button>
                       </form>
+                    ) : (
+                      /* Firebase Auth Form */
+                      <div className="space-y-3">
+                        {/* Primary Option: Google Authentication via Firebase */}
+                        <button
+                          type="button"
+                          onClick={handleGoogleSignIn}
+                          disabled={googleLoading}
+                          className="w-full flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-xs py-2 px-3 transition-all shadow-md cursor-pointer disabled:opacity-60"
+                        >
+                          {googleLoading ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-700" />
+                          ) : (
+                            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
+                              <path
+                                fill="#4285F4"
+                                d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                              />
+                              <path
+                                fill="#34A853"
+                                d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                              />
+                              <path
+                                fill="#FBBC05"
+                                d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
+                              />
+                              <path
+                                fill="#EA4335"
+                                d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
+                              />
+                            </svg>
+                          )}
+                          <span>Continue with Google</span>
+                        </button>
+
+                        <div className="relative flex items-center justify-center my-1">
+                          <div className="absolute inset-0 flex items-center">
+                            <div className="w-full border-t border-white/10" />
+                          </div>
+                          <span className="relative px-2.5 bg-zinc-950 text-[9.5px] uppercase font-mono text-zinc-500">
+                            Or authenticate with email link
+                          </span>
+                        </div>
+
+                        {success ? (
+                          <div className="space-y-3 p-3.5 rounded-xl border border-emerald-500/15 bg-emerald-500/5 text-center">
+                            <CheckCircle className="w-6 h-6 text-emerald-400 mx-auto" />
+                            <div className="space-y-1">
+                              <h5 className="text-xs font-bold text-white uppercase tracking-wider">Secure Access Link Dispatched</h5>
+                              <p className="text-[11px] text-zinc-300 leading-normal">
+                                We've sent a sign-in link to your email. Click it to authenticate your session.
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setSuccess(false)}
+                              className="text-xs font-bold text-emerald-400 hover:underline cursor-pointer"
+                            >
+                              Send another link
+                            </button>
+                          </div>
+                        ) : (
+                          <form onSubmit={handleSendLink} className="space-y-2">
+                            <div className="relative">
+                              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-500" />
+                              <input
+                                type="email"
+                                required
+                                placeholder="executive@company.com"
+                                value={emailInput}
+                                onChange={(e) => setEmailInput(e.target.value)}
+                                className="w-full rounded-xl bg-white/[0.03] border border-white/10 pl-9 pr-3.5 py-2 text-xs text-white placeholder-zinc-500 focus:border-blue-500 focus:outline-none transition-all"
+                              />
+                            </div>
+
+                            <button
+                              type="submit"
+                              disabled={loading}
+                              className="w-full flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-2 transition-colors cursor-pointer disabled:opacity-60"
+                            >
+                              {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Lock className="w-3.5 h-3.5" />}
+                              <span>Request Verification Link</span>
+                            </button>
+                          </form>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}

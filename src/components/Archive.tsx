@@ -405,7 +405,7 @@ export const Archive: React.FC<ArchiveProps> = ({
 
   const isSectionGated = isSectionLocked('archive');
 
-  const [activeTab, setActiveTab] = useState<'blueprints' | 'aspirational' | 'playbooks' | 'archive'>('aspirational');
+  const [activeTab, setActiveTab] = useState<'blueprints' | 'aspirational' | 'playbooks' | 'archive'>('blueprints');
   const [selectedType, setSelectedType] = useState<string>('All');
   const [selectedYear, setSelectedYear] = useState<string>('All');
   const [selectedBlueprint, setSelectedBlueprint] = useState<ExecutiveBlueprint | null>(null);

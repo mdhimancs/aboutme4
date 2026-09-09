@@ -149,6 +149,7 @@ interface AuthContextType {
   }>;
   signInWithGoogle: () => Promise<User>;
   sendMagicLink: (email: string) => Promise<void>;
+  signInWithPasscode: (passcode: string, email?: string) => Promise<void>;
   completeSignIn: () => Promise<void>;
   signOut: () => Promise<void>;
   addToAllowlist: (
@@ -577,15 +578,77 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  // Executive Passcode Validation list
+  const VALID_PASSCODES = ['CISO2026', 'MUNISH2026', 'EXECUTIVE-VAULT', 'GS-EXECUTIVE', 'GOLDMAN-CISO', 'ADMIN2026'];
+
+  // Sign in with Executive Passcode (Direct authorization for owners, search partners, and board reviewers)
+  const signInWithPasscode = async (passcode: string, customEmail?: string) => {
+    const code = passcode.trim().toUpperCase();
+    if (!VALID_PASSCODES.includes(code)) {
+      throw new Error('Invalid Executive Access Code. Please use an authorized security key (e.g. CISO2026).');
+    }
+
+    const email = (customEmail && customEmail.trim()) ? customEmail.trim().toLowerCase() : 'munish.world@gmail.com';
+    const isSuperAdmin = isSuperAdminEmail(email) || code === 'CISO2026' || code === 'MUNISH2026';
+
+    const executiveUser = {
+      uid: 'exec-' + btoa(email).replace(/[^a-zA-Z0-9]/g, '').slice(0, 12),
+      email: email,
+      displayName: isSuperAdmin ? 'Munish Dhiman (CISO)' : 'Executive Reviewer',
+      emailVerified: true,
+      isAnonymous: false,
+    } as unknown as User;
+
+    setUser(executiveUser);
+    setIsAdmin(isSuperAdmin);
+    setIsAuthorized(true);
+
+    const entry: AllowlistItem = {
+      email: email,
+      authorized: true,
+      role: isSuperAdmin ? 'admin' : 'viewer',
+      scope: 'global',
+      allowedItems: [],
+      allowedSections: [],
+      addedBy: 'executive-passcode',
+      addedAt: new Date().toISOString()
+    };
+    setCurrentUserEntry(entry);
+
+    try {
+      localStorage.setItem('executiveSession', JSON.stringify({
+        email,
+        role: isSuperAdmin ? 'admin' : 'viewer',
+        authorized: true,
+        timestamp: Date.now()
+      }));
+    } catch (e) {
+      console.warn('Could not persist executiveSession to localStorage', e);
+    }
+
+    if (isSuperAdmin) {
+      fetchAllowlist().catch(() => {});
+    }
+
+    if (pendingAction) {
+      pendingAction();
+      setPendingAction(null);
+    }
+    setGateModalOpen(false);
+  };
+
   // Sign out
   const signOut = async () => {
     try {
+      localStorage.removeItem('executiveSession');
       await firebaseSignOut(auth);
+    } catch (e) {
+      console.error("Error signing out:", e);
+    } finally {
+      setUser(null);
       setIsAdmin(false);
       setIsAuthorized(false);
       setCurrentUserEntry(null);
-    } catch (e) {
-      console.error("Error signing out:", e);
     }
   };
 
@@ -701,6 +764,42 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, [pendingAction]);
 
+  // Restore local executive session if valid
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('executiveSession');
+      if (saved) {
+        const data = JSON.parse(saved);
+        if (data && data.email && Date.now() - (data.timestamp || 0) < 14 * 24 * 60 * 60 * 1000) {
+          const isSuperAdmin = isSuperAdminEmail(data.email) || data.role === 'admin';
+          const execUser = {
+            uid: 'exec-stored',
+            email: data.email,
+            displayName: isSuperAdmin ? 'Munish Dhiman (CISO)' : 'Executive Reviewer',
+            emailVerified: true,
+            isAnonymous: false
+          } as unknown as User;
+
+          setUser(execUser);
+          setIsAdmin(isSuperAdmin);
+          setIsAuthorized(true);
+          setCurrentUserEntry({
+            email: data.email,
+            authorized: true,
+            role: isSuperAdmin ? 'admin' : 'viewer',
+            scope: 'global',
+            allowedItems: [],
+            allowedSections: [],
+            addedBy: 'stored-session',
+            addedAt: null
+          });
+        }
+      }
+    } catch (e) {
+      console.warn("Failed to restore executive session:", e);
+    }
+  }, []);
+
   // Try parsing landing login link
   useEffect(() => {
     completeSignIn();
@@ -726,6 +825,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       checkAllowlistStatus,
       signInWithGoogle,
       sendMagicLink,
+      signInWithPasscode,
       completeSignIn,
       signOut,
       addToAllowlist,
