@@ -532,7 +532,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       return currentUser;
     } catch (e: any) {
-      console.error("Error signing in with Google:", e);
+      if (e?.code === 'auth/operation-not-allowed' || e?.message?.includes('operation-not-allowed')) {
+        console.warn("Firebase Google Sign-In provider is disabled in Firebase Console:", e.message);
+      } else {
+        console.error("Error signing in with Google:", e);
+      }
       throw e;
     }
   };
@@ -546,8 +550,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       window.localStorage.setItem('emailForSignIn', email);
-    } catch (e) {
-      console.error("Error sending sign-in link:", e);
+    } catch (e: any) {
+      if (e?.code === 'auth/operation-not-allowed' || e?.message?.includes('operation-not-allowed')) {
+        console.warn("Firebase Email Link sign-in provider is disabled in Firebase Console:", e.message);
+      } else {
+        console.error("Error sending sign-in link:", e);
+      }
       throw e;
     }
   };
