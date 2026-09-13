@@ -57,9 +57,9 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Desktop Left Sidebar */}
       <aside 
         style={{
-          width: isSidebarCollapsed ? '72px' : '260.438px',
-          paddingLeft: isSidebarCollapsed ? undefined : '38px',
-          paddingRight: isSidebarCollapsed ? undefined : '30px',
+          width: isSidebarCollapsed ? '72px' : '295px',
+          paddingLeft: isSidebarCollapsed ? undefined : '32px',
+          paddingRight: isSidebarCollapsed ? undefined : '28px',
           paddingTop: '30px',
           paddingBottom: '20px',
           marginTop: '0px',
@@ -79,16 +79,16 @@ export const Navbar: React.FC<NavbarProps> = ({
             <a
               href="#overview"
               onClick={(e) => handleLinkClick(e, 'overview')}
-              className={`flex items-center group cursor-pointer min-w-0 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-xl ${isSidebarCollapsed ? 'justify-center p-1' : 'space-x-2.5 flex-1'}`}
+              className={`flex items-center group cursor-pointer min-w-0 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 rounded-xl ${isSidebarCollapsed ? 'justify-center p-1' : 'space-x-3 flex-1'}`}
               title="Overview"
             >
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-blue-400 via-indigo-400 to-blue-300 flex items-center justify-center text-white shadow-md shadow-blue-400/25 flex-shrink-0 relative overflow-hidden group-hover:scale-105 transition-transform">
-                {/* Thin, razor-sharp Crossed Swords / Spears behind Shield */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-90">
-                  <Swords className="w-5 h-5 text-white transform scale-110" strokeWidth={1} />
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center text-white shadow-lg shadow-blue-500/35 flex-shrink-0 relative overflow-hidden group-hover:scale-105 transition-transform border border-white/25">
+                {/* Thin, razor-sharp Crossed Swords behind Shield */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-85">
+                  <Swords className="w-6 h-6 text-blue-200 transform scale-110" strokeWidth={1.5} />
                 </div>
-                {/* Bigger Security Shield in foreground */}
-                <Shield className="w-4 h-4 text-white relative z-10 drop-shadow-sm fill-white/20" strokeWidth={2} />
+                {/* Security Shield Check in foreground */}
+                <ShieldCheck className="w-5 h-5 text-white relative z-10 drop-shadow-md fill-white/20" strokeWidth={2.2} />
               </div>
               {!isSidebarCollapsed && (
                 <div className="flex flex-col min-w-0">

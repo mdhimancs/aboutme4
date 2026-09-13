@@ -324,7 +324,7 @@ export default function App() {
         id="main-scroll-container"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        style={{ marginLeft: isSidebarCollapsed ? '72px' : '260.438px' }}
+        style={{ marginLeft: isSidebarCollapsed ? '72px' : '295px' }}
         className="h-screen overflow-y-auto scroll-container select-text transition-[margin] duration-300 ease-in-out relative"
       >
         {/* Atmospheric Top Scroll Progress Bar */}
