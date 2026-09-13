@@ -67,6 +67,27 @@
         }
       },
       "required": ["lockedSections"]
+    },
+    "PageStats": {
+      "title": "PageStats",
+      "description": "Analytics for each page, including read counts (stars)",
+      "type": "object",
+      "properties": {
+        "pageId": {
+          "type": "string",
+          "description": "Unique identifier for the page or section"
+        },
+        "stars": {
+          "type": "integer",
+          "description": "Number of stars/reads recorded for this page"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Last time a star was added"
+        }
+      },
+      "required": ["pageId", "stars"]
     }
   },
   "firestore": {
@@ -77,6 +98,10 @@
     "/security_settings/{settingId}": {
       "schema": "#/entities/SecurityLocks",
       "description": "Configuration document storing section-level and item-level lock settings"
+    },
+    "/page_stats/{pageId}": {
+      "schema": "#/entities/PageStats",
+      "description": "Collection storing stars/read counts for each section"
     }
   }
 }

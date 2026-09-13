@@ -15,10 +15,12 @@ import {
   Building2,
   Cpu,
   Compass,
-  Key
+  Key,
+  UserCheck
 } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
 import { useHoverScroll } from '../lib/utils';
+import { StarsCounter } from './StarsCounter';
 
 interface ExecutiveBioProps {
   theme?: string;
@@ -33,7 +35,7 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
   return (
     <section 
       id="bio" 
-      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center py-4 sm:py-5 pb-10 sm:pb-14 lg:pb-16 px-6 sm:px-10 lg:px-14 max-w-5xl lg:max-w-6xl mx-auto border-t ${
+      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center pt-8 sm:pt-10 pb-10 sm:pb-14 lg:pb-16 px-6 sm:px-10 lg:px-14 max-w-6xl lg:max-w-7xl mx-auto border-t ${
         isLight ? 'border-zinc-200 bg-[#fcfcfd]' : 'border-white/10 bg-[#000000]'
       }`}
     >
@@ -57,7 +59,9 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
       />
       
       {/* 1. Section Header with Aura Glow */}
-      <div className="relative text-left space-y-2 mb-4 sm:mb-5 shrink-0 px-4 sm:px-[6%]">
+      <div 
+        className="relative text-left space-y-0.5 shrink-0 mb-6"
+      >
         {/* Subtle luminous aura behind the heading */}
         <div 
           className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-24 sm:h-28 rounded-full blur-2xl pointer-events-none transition-all ${
@@ -67,14 +71,15 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
           }`} 
         />
 
-        <div className={`relative inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border backdrop-blur-md ${
+        <div className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase border backdrop-blur-md mb-1 ${
           isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
         }`}>
-          <Sparkles className="w-3.5 h-3.5 animate-pulse text-blue-500" />
+          <UserCheck className="w-3.5 h-3.5 text-blue-500" />
           <span>Executive Leadership & Defense Governance</span>
         </div>
         
-        <h2 className={`relative text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all ${
+        <h2 
+          className={`relative text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all leading-tight ${
           isLight 
             ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
             : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
@@ -82,18 +87,24 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
           Executive Bio & Leadership
         </h2>
         
-        <p className={`relative max-w-4xl text-[11px] sm:text-[13px] leading-relaxed truncate sm:overflow-visible ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+        <p 
+          className={`relative max-w-4xl text-[14px] font-normal leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}
+        >
           21+ years directing enterprise Cybersecurity, Zero Trust IAM architecture, and enterprise risk governance.
         </p>
       </div>
 
       {/* 2. Full-Width Executive Dossier Card */}
-      <div className={`rounded-3xl p-4 sm:p-5 lg:p-6 backdrop-blur-xl shadow-xl transition-all border shrink-0 w-full sm:w-[92%] lg:w-[88%] mx-auto ${
-        isLight ? 'bg-white border-zinc-200 shadow-sm' : 'bg-white/[0.02] border-white/10 shadow-2xl'
-      }`}>
+      <div 
+        className={`rounded-3xl backdrop-blur-xl shadow-xl transition-all border shrink-0 w-full pt-3 sm:pt-4 pb-2 sm:pb-3 px-4 sm:px-5 lg:px-6 flex flex-col justify-start overflow-y-auto ${
+          isLight ? 'bg-white border-zinc-200 shadow-sm' : 'bg-white/[0.02] border-white/10 shadow-2xl'
+        }`}
+      >
         
         {/* Navigation Tabs Header */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2.5 pb-3 mb-3.5 border-b border-zinc-100 dark:border-white/5">
+        <div 
+          className="flex flex-col sm:flex-row items-center justify-between gap-2.5 pb-1 mb-1.5 border-b border-zinc-100 dark:border-white/5"
+        >
           <div className="flex items-center space-x-2.5">
             <div className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-blue-600' : 'bg-blue-400'} animate-pulse`} />
             <span className={`text-xs sm:text-sm font-semibold tracking-wide uppercase ${isLight ? 'text-zinc-900' : 'text-white'}`}>
@@ -105,13 +116,13 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
             ref={scrollRef}
             onMouseMove={onMouseMove}
             onMouseLeave={onMouseLeave}
-            className={`flex items-center justify-center gap-1 p-1 rounded-2xl border whitespace-nowrap overflow-x-auto cursor-ew-resize select-none ${
+            className={`flex items-center justify-center gap-1 p-0.5 rounded-xl border whitespace-nowrap overflow-x-auto cursor-ew-resize select-none ${
               isLight ? 'bg-zinc-100 border-zinc-200' : 'bg-black/50 border-white/10'
             }`}
           >
             <button
               onClick={() => setActiveBioTab('philosophy')}
-              className={`px-3.5 py-1.5 rounded-xl text-[11px] sm:text-[13px] font-medium whitespace-nowrap transition-all ${
+              className={`px-2 py-1 rounded-lg text-[10px] sm:text-[11.5px] font-medium whitespace-nowrap transition-all ${
                 activeBioTab === 'philosophy'
                   ? (isLight ? 'bg-white text-zinc-900 shadow-sm font-semibold' : 'bg-white text-black shadow-sm font-semibold')
                   : (isLight ? 'text-zinc-600 hover:text-black' : 'text-zinc-400 hover:text-white')
@@ -121,7 +132,7 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
             </button>
             <button
               onClick={() => setActiveBioTab('summary')}
-              className={`px-3.5 py-1.5 rounded-xl text-[11px] sm:text-[13px] font-medium whitespace-nowrap transition-all ${
+              className={`px-2 py-1 rounded-lg text-[10px] sm:text-[11.5px] font-medium whitespace-nowrap transition-all ${
                 activeBioTab === 'summary'
                   ? (isLight ? 'bg-white text-zinc-900 shadow-sm font-semibold' : 'bg-white text-black shadow-sm font-semibold')
                   : (isLight ? 'text-zinc-600 hover:text-black' : 'text-zinc-400 hover:text-white')
@@ -131,13 +142,13 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
             </button>
             <button
               onClick={() => setActiveBioTab('credentials')}
-              className={`px-3.5 py-1.5 rounded-xl text-[11px] sm:text-[13px] font-medium whitespace-nowrap transition-all ${
+              className={`px-2 py-1 rounded-lg text-[10px] sm:text-[11.5px] font-medium whitespace-nowrap transition-all ${
                 activeBioTab === 'credentials'
                   ? (isLight ? 'bg-white text-zinc-900 shadow-sm font-semibold' : 'bg-white text-black shadow-sm font-semibold')
                   : (isLight ? 'text-zinc-600 hover:text-black' : 'text-zinc-400 hover:text-white')
               }`}
             >
-              Credentials & Governance
+              Credentials
             </button>
           </div>
         </div>
@@ -145,10 +156,49 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
         {/* Tab 1: Executive Summary & Leadership Pillars */}
         {activeBioTab === 'summary' && (
           <div className="space-y-4 animate-in fade-in duration-300">
-            <div className="space-y-1.5">
-              <p className={`text-xs sm:text-sm lg:text-base font-medium leading-relaxed ${isLight ? 'text-zinc-900' : 'text-zinc-100'}`}>
-                {PERSONAL_INFO.bioShort}
+            <div className="space-y-3">
+              <p className={`text-sm sm:text-base lg:text-md font-semibold leading-relaxed ${isLight ? 'text-zinc-950' : 'text-zinc-50'}`}>
+                Cybersecurity Executive & Enterprise Architect with <span className="text-blue-500 font-bold">21+ years</span> protecting Fortune 100 infrastructures across Goldman Sachs and global tech leaders.
               </p>
+              
+              {/* Horizontal 3 Points Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className={`py-1.5 px-3 rounded-2xl border ${isLight ? 'bg-blue-50/40 border-blue-100' : 'bg-blue-950/10 border-blue-900/20'}`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-500 font-bold text-lg leading-none shrink-0">•</span>
+                    <div>
+                      <span className={`font-bold text-[11px] uppercase tracking-wider block mb-1.5 ${isLight ? 'text-blue-700' : 'text-blue-400'}`}>Enterprise Strategy</span>
+                      <span className={`text-[12px] leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                        Directed Zero Trust IAM, AI risk governance, and Tier-1 capital market defense perimeters.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`py-1.5 px-3 rounded-2xl border ${isLight ? 'bg-indigo-50/40 border-indigo-100' : 'bg-indigo-950/10 border-indigo-900/20'}`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-indigo-500 font-bold text-lg leading-none shrink-0">•</span>
+                    <div>
+                      <span className={`font-bold text-[11px] uppercase tracking-wider block mb-1.5 ${isLight ? 'text-indigo-700' : 'text-indigo-400'}`}>Global Leadership</span>
+                      <span className={`text-[12px] leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                        Spearheaded multi-million-dollar defense programs and high-performing engineering squads.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`py-1.5 px-3 rounded-2xl border ${isLight ? 'bg-emerald-50/40 border-emerald-100' : 'bg-emerald-950/10 border-emerald-900/20'}`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold text-lg leading-none shrink-0">•</span>
+                    <div>
+                      <span className={`font-bold text-[11px] uppercase tracking-wider block mb-1.5 ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>Regulatory Assurance</span>
+                      <span className={`text-[12px] leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                        Maintained an unblemished 100% clean audit track record under rigorous supervision.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
@@ -438,7 +488,7 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
           </div>
         )}
 
-        {/* Tab 3: Edu & Credentials & Governance */}
+        {/* Tab 3: Edu & Credentials */}
         {activeBioTab === 'credentials' && (
           <div className="space-y-3 animate-in fade-in duration-300">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

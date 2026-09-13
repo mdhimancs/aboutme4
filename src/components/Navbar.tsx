@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Menu, X, ArrowRight, Github, Linkedin, Mail, Sliders, Shield, Swords, Music, ChevronLeft, ChevronRight, Lock, Unlock, ShieldCheck } from 'lucide-react';
+import { Menu, X, ArrowRight, Github, Linkedin, Mail, Sliders, Shield, Swords, Music, ChevronLeft, ChevronRight, Lock, ShieldCheck } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
 import { MusicPlayer } from './MusicPlayer';
 import { UserTelemetry } from './UserTelemetry';
@@ -32,7 +32,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'overview', name: 'Overview', href: '#overview', num: '1' },
     { id: 'bio', name: 'Executive Bio', href: '#bio', num: '2' },
     { id: 'competencies', name: 'Competencies', href: '#competencies', num: '3' },
-    { id: 'career', name: 'Career', href: '#career', num: '4' },
+    { id: 'career', name: 'Career Journey', href: '#career', num: '4' },
     { id: 'projects', name: 'Case Studies', href: '#projects', num: '5' },
     { id: 'blog', name: 'Publications', href: '#blog', num: '6' },
     { id: 'offkeyboard', name: 'Off Keyboard', href: '#offkeyboard', num: '7' },
@@ -55,8 +55,19 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <>
       {/* Desktop Left Sidebar */}
-      <aside className={`hidden md:flex fixed top-0 left-0 bottom-0 z-50 flex-col py-6 lg:py-7 border-r backdrop-blur-2xl transition-all duration-300 ease-in-out ${
-        isSidebarCollapsed ? 'w-[72px] px-2 items-center' : 'w-[270px] pl-8 pr-4'
+      <aside 
+        style={{
+          width: isSidebarCollapsed ? '72px' : '260.438px',
+          paddingLeft: isSidebarCollapsed ? undefined : '38px',
+          paddingRight: isSidebarCollapsed ? undefined : '30px',
+          paddingTop: '30px',
+          paddingBottom: '20px',
+          marginTop: '0px',
+          marginLeft: '0px',
+          marginRight: '0px'
+        }}
+        className={`hidden md:flex fixed top-0 left-0 bottom-0 z-50 flex-col border-r backdrop-blur-2xl transition-all duration-300 ease-in-out ${
+        isSidebarCollapsed ? 'px-2 items-center py-6' : ''
       } ${
         isLight
           ? 'bg-white/90 border-zinc-200 text-zinc-900 shadow-sm'
@@ -142,8 +153,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                       }
                     }}
                     data-nav-link
-                    className={`flex items-center rounded-xl text-xs sm:text-[13px] font-medium transition-all duration-150 group cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
-                      isSidebarCollapsed ? 'justify-center p-2 w-10' : 'justify-between pl-4 pr-2.5 py-1.5 w-full text-left'
+                    className={`flex items-center rounded-xl text-xs sm:text-[12.5px] font-medium transition-all duration-150 group cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
+                      isSidebarCollapsed ? 'justify-center p-2 w-10' : 'justify-between pl-3.5 pr-2.5 py-1.5 w-[80%] text-left'
                     } ${
                       isActive
                         ? isLight
@@ -156,9 +167,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   >
                     {!isSidebarCollapsed ? (
                       <>
-                        <span className="truncate">{link.name}</span>
+                        <span className="whitespace-nowrap tracking-tight">{link.name}</span>
                         {isActive && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] shrink-0 ml-1.5" aria-hidden="true" />
+                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)] shrink-0 ml-1" aria-hidden="true" />
                         )}
                       </>
                     ) : (
@@ -182,7 +193,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex items-center rounded-xl text-xs font-medium transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
-                  isSidebarCollapsed ? 'justify-center p-2 w-10' : 'space-x-2.5 py-1.5 px-2.5 w-full'
+                  isSidebarCollapsed ? 'justify-center p-2 w-10' : 'space-x-2.5 py-1.5 pl-3.5 pr-2.5 w-[80%]'
                 } ${
                   isLight ? 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/90 focus-visible:bg-zinc-100/90' : 'text-zinc-400 hover:text-white hover:bg-white/[0.06] focus-visible:bg-white/[0.06]'
                 }`}
@@ -190,14 +201,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-label="Visit GitHub Profile"
               >
                 <Github className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
-                {!isSidebarCollapsed && <span>GitHub</span>}
+                {!isSidebarCollapsed && <span className="whitespace-nowrap">GitHub</span>}
               </a>
               <a
                 href={PERSONAL_INFO.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`flex items-center rounded-xl text-xs font-medium transition-all duration-150 outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
-                  isSidebarCollapsed ? 'justify-center p-2 w-10' : 'space-x-2.5 py-1.5 px-2.5 w-full'
+                  isSidebarCollapsed ? 'justify-center p-2 w-10' : 'space-x-2.5 py-1.5 pl-3.5 pr-2.5 w-[80%]'
                 } ${
                   isLight ? 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/90 focus-visible:bg-zinc-100/90' : 'text-zinc-400 hover:text-white hover:bg-white/[0.06] focus-visible:bg-white/[0.06]'
                 }`}
@@ -205,12 +216,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-label="Visit LinkedIn Profile"
               >
                 <Linkedin className="w-4 h-4 text-blue-500 flex-shrink-0" aria-hidden="true" />
-                {!isSidebarCollapsed && <span>LinkedIn</span>}
+                {!isSidebarCollapsed && <span className="whitespace-nowrap">LinkedIn</span>}
               </a>
               <button
                 onClick={onOpenContact}
                 className={`flex items-center rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
-                  isSidebarCollapsed ? 'justify-center p-2 w-10' : 'space-x-2.5 py-1.5 px-2.5 w-full text-left'
+                  isSidebarCollapsed ? 'justify-center p-2 w-10' : 'space-x-2.5 py-1.5 pl-3.5 pr-2.5 w-[80%] text-left'
                 } ${
                   isLight ? 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/90 focus-visible:bg-zinc-100/90' : 'text-zinc-400 hover:text-white hover:bg-white/[0.06] focus-visible:bg-white/[0.06]'
                 }`}
@@ -218,28 +229,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 aria-label="Open contact form"
               >
                 <Mail className="w-4 h-4 text-red-500 flex-shrink-0" aria-hidden="true" />
-                {!isSidebarCollapsed && <span>Get in Touch</span>}
-              </button>
-              <button
-                onClick={() => setGateModalOpen(true)}
-                className={`flex items-center rounded-xl text-xs font-medium transition-all duration-150 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 ${
-                  isSidebarCollapsed ? 'justify-center p-2 w-10' : 'space-x-2.5 py-1.5 px-2.5 w-full text-left'
-                } ${
-                  user && isAuthorized
-                    ? (isLight ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100/80' : 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/15')
-                    : (isLight ? 'text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/90 focus-visible:bg-zinc-100/90' : 'text-zinc-400 hover:text-white hover:bg-white/[0.06] focus-visible:bg-white/[0.06]')
-                }`}
-                title="Identity Clearance Portal"
-                aria-label="Clearance Portal"
-              >
-                {user && isAuthorized ? (
-                  <Unlock className="w-4 h-4 text-emerald-500 flex-shrink-0" aria-hidden="true" />
-                ) : (
-                  <Lock className="w-4 h-4 text-emerald-500 flex-shrink-0" aria-hidden="true" />
-                )}
-                {!isSidebarCollapsed && (
-                  <span>{user && isAuthorized ? 'Clearance Verified' : 'Request Access'}</span>
-                )}
+                {!isSidebarCollapsed && <span className="whitespace-nowrap">Get in Touch</span>}
               </button>
             </div>
           </div>
@@ -266,11 +256,14 @@ export const Navbar: React.FC<NavbarProps> = ({
       </aside>
 
       {/* Desktop Top Right Floating Bar */}
-      <div className={`hidden md:flex fixed top-4 right-6 z-50 items-center gap-1.5 px-2 py-1 rounded-full border shadow-sm backdrop-blur-md transition-all ${
-        isLight
-          ? 'bg-[#f4f4f6]/95 border-zinc-300/90 text-zinc-800 shadow-xs'
-          : 'bg-[#18181b]/95 border-zinc-700/80 text-zinc-200 shadow-md'
-      }`}>
+      <div 
+        className={`hidden md:flex fixed top-4 right-6 z-50 items-center gap-1.5 px-2 py-1 rounded-full border shadow-sm backdrop-blur-md transition-all ${
+          isLight
+            ? 'bg-[#f4f4f6]/95 border-zinc-300/90 text-zinc-800 shadow-xs'
+            : 'bg-[#18181b]/95 border-zinc-700/80 text-zinc-200 shadow-md'
+        }`}
+        style={{ marginLeft: '0px', marginRight: '147px' }}
+      >
         {/* Theme Options */}
         <button
           onClick={onOpenInterfaceOptions}
@@ -372,7 +365,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setMobileMenuOpen(false);
                   handleLinkClick(e, link.id);
                 }}
-                className={`flex items-center justify-between px-4 py-2 rounded-xl text-[17px] font-medium ${
+                className={`flex items-center justify-between px-3.5 py-2 rounded-xl text-[16px] font-medium w-[80%] ${
                   activeSection === link.id
                     ? (isLight ? 'bg-blue-50 text-blue-600 font-semibold' : 'bg-white/10 text-white font-semibold')
                     : (isLight ? 'hover:bg-zinc-100 text-zinc-800' : 'hover:bg-white/5 text-zinc-200')
@@ -387,22 +380,6 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
 
           <div className="pt-3 border-t border-zinc-200 dark:border-white/10 space-y-3">
-            
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                setGateModalOpen(true);
-              }}
-              className={`w-full flex items-center justify-center space-x-2 py-2.5 rounded-xl text-xs font-semibold cursor-pointer shadow-lg transition-all ${
-                user && isAuthorized
-                  ? 'bg-emerald-600 text-white shadow-emerald-600/20'
-                  : 'bg-zinc-800 text-white hover:bg-zinc-700 shadow-zinc-800/10'
-              }`}
-            >
-              {user && isAuthorized ? <Unlock className="w-3.5 h-3.5" /> : <Lock className="w-3.5 h-3.5" />}
-              <span>{user && isAuthorized ? 'Clearance Verified' : 'Request Access'}</span>
-            </button>
-
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

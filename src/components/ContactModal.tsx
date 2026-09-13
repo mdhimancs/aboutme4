@@ -188,7 +188,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
                 Initiate Collaboration
               </h3>
               <p className={`text-xs sm:text-sm ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                Available for architecture advisory, staff engineering roles, and technical speaking engagements.
+                Available for architecture advisory, security engineering roles, technical speaking engagements and if you are
               </p>
             </div>
 

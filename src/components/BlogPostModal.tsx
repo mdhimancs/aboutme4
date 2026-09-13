@@ -3,6 +3,7 @@ import { X, Calendar, Clock, Eye, Heart, Share2, Terminal, Check, Printer, Lock,
 import ReactMarkdown from 'react-markdown';
 import { BlogPost } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { incrementStars } from '../lib/stars';
 
 interface BlogPostModalProps {
   post: BlogPost | null;
@@ -19,6 +20,9 @@ export const BlogPostModal: React.FC<BlogPostModalProps> = ({ post, onClose }) =
   const { canAccessItem, setGateModalOpen, setTargetResource, user, isAuthorized, isAdmin } = useAuth();
 
   useEffect(() => {
+    if (post) {
+      incrementStars(`blog-${post.id}`);
+    }
     // Reset scroll progress on post change
     setScrollProgress(0);
     if (scrollContainerRef.current) {

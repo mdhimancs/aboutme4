@@ -1,5 +1,6 @@
 import React from 'react';
 import { BookOpen, Heart, Users, Sparkles, Shield, Quote } from 'lucide-react';
+import { StarsCounter } from './StarsCounter';
 
 interface PhilosophyProps {
   theme?: string;
@@ -11,7 +12,7 @@ export const Philosophy: React.FC<PhilosophyProps> = ({ theme = 'apple-dark' }) 
   return (
     <section 
       id="philosophy" 
-      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center py-4 sm:py-5 pb-10 sm:pb-14 lg:pb-16 px-6 sm:px-10 lg:px-14 max-w-5xl lg:max-w-6xl mx-auto border-t ${
+      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center pt-8 sm:pt-10 pb-10 sm:pb-14 lg:pb-16 px-6 sm:px-10 lg:px-14 max-w-6xl lg:max-w-7xl mx-auto border-t ${
         isLight ? 'border-zinc-200 bg-[#fcfcfd]' : 'border-white/10 bg-[#000000]'
       }`}
     >
@@ -37,32 +38,35 @@ export const Philosophy: React.FC<PhilosophyProps> = ({ theme = 'apple-dark' }) 
       <div className="relative w-full max-w-5xl mx-auto flex flex-col flex-1 min-h-0 justify-center space-y-4">
         
         {/* Header */}
-        <div className="relative text-center space-y-1.5 shrink-0">
+        <div className="relative text-left space-y-0.5 mb-6 shrink-0">
           {/* Luminous aura behind heading */}
           <div 
-            className={`absolute -top-3 left-1/2 -translate-x-1/2 w-72 sm:w-96 h-24 sm:h-28 rounded-full blur-2xl pointer-events-none transition-all ${
+            className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-24 sm:h-28 rounded-full blur-2xl pointer-events-none transition-all ${
               isLight 
                 ? 'bg-gradient-to-r from-blue-400/25 via-sky-300/20 to-indigo-300/20 opacity-80' 
                 : 'bg-gradient-to-r from-blue-500/30 via-cyan-400/20 to-indigo-500/25 opacity-90'
             }`} 
           />
 
-          <div className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 backdrop-blur-md ${
-            isLight ? 'shadow-sm' : 'shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+          <div className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase border backdrop-blur-md mb-1 ${
+            isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
           }`}>
             <Heart className="w-3.5 h-3.5 text-blue-500" />
             <span>Leadership Heritage & Gratitude</span>
           </div>
-          <h2 className={`relative text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all ${
-            isLight 
-              ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
-              : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
-          }`}>
-            Philosophy & Gratitude
-          </h2>
-          <p className={`relative max-w-3xl mx-auto text-xs sm:text-sm ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
-            An executive journey grounded in intellectual humility, relentless curiosity, and profound gratitude to five generations of mentors, colleagues, and family.
-          </p>
+        <h2 className={`relative text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all text-left ${
+          isLight 
+            ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
+            : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
+        }`}>
+          Philosophy & Gratitude
+        </h2>
+         <p 
+           style={{ fontSize: '16px', paddingBottom: '20px' }}
+           className={`relative max-w-3xl font-normal text-left ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}
+         >
+          An executive journey Grounded in intellectual humility, relentless curiosity and profound gratitude.
+        </p>
         </div>
 
         {/* Buddha Quote Banner */}
@@ -76,19 +80,25 @@ export const Philosophy: React.FC<PhilosophyProps> = ({ theme = 'apple-dark' }) 
         </div>
 
         {/* 3 Refined Pillars Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0">
+        <div 
+          className="grid grid-cols-1 md:grid-cols-3 gap-3 shrink-0"
+          style={{ paddingTop: '12px' }}
+        >
           {/* Pillar 1 */}
           <div className={`p-3.5 rounded-2xl border flex flex-col justify-between ${
             isLight ? 'bg-white border-zinc-200 shadow-xs' : 'bg-white/[0.02] border-white/10'
           }`}>
             <div>
-              <div className="flex items-center space-x-2 mb-1.5 text-blue-500">
-                <div className="p-1.5 rounded-lg bg-blue-500/10">
-                  <BookOpen className="w-4 h-4" />
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center space-x-2 text-blue-500">
+                  <div className="p-1.5 rounded-lg bg-blue-500/10">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <h3 className={`text-[11.5px] sm:text-[12.5px] font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                    Intellectual Foundation
+                  </h3>
                 </div>
-                <h3 className={`text-[11.5px] sm:text-[12.5px] font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>
-                  Intellectual Foundation
-                </h3>
+                <StarsCounter pageId="philosophy-pillar-1" isLight={isLight} compact />
               </div>
               <p className={`text-[11px] leading-relaxed font-serif italic ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
                 True wisdom lies in acknowledging our knowledge is but a drop in an infinite ocean. Inspired by Stoic equanimity and existential inquiry, growth thrives at the intersection of disciplined action and radical curiosity.
@@ -104,13 +114,16 @@ export const Philosophy: React.FC<PhilosophyProps> = ({ theme = 'apple-dark' }) 
             isLight ? 'bg-white border-zinc-200 shadow-xs' : 'bg-white/[0.02] border-white/10'
           }`}>
             <div>
-              <div className="flex items-center space-x-2 mb-1.5 text-blue-500">
-                <div className="p-1.5 rounded-lg bg-blue-500/10">
-                  <Heart className="w-4 h-4" />
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center space-x-2 text-blue-500">
+                  <div className="p-1.5 rounded-lg bg-blue-500/10">
+                    <Heart className="w-4 h-4" />
+                  </div>
+                  <h3 className={`text-[11.5px] sm:text-[12.5px] font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                    Five Generations
+                  </h3>
                 </div>
-                <h3 className={`text-[11.5px] sm:text-[12.5px] font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>
-                  Five Generations
-                </h3>
+                <StarsCounter pageId="philosophy-pillar-2" isLight={isLight} compact />
               </div>
               <p className={`text-[11px] leading-relaxed font-serif italic ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
                 Deepest gratitude to near and extended family—elders, young ones, and contemporaries spanning 5 overlapping generations for their enduring foundation, love, and companionship through all tides.
@@ -126,13 +139,16 @@ export const Philosophy: React.FC<PhilosophyProps> = ({ theme = 'apple-dark' }) 
             isLight ? 'bg-white border-zinc-200 shadow-xs' : 'bg-white/[0.02] border-white/10'
           }`}>
             <div>
-              <div className="flex items-center space-x-2 mb-1.5 text-emerald-500">
-                <div className="p-1.5 rounded-lg bg-emerald-500/10">
-                  <Users className="w-4 h-4" />
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center space-x-2 text-emerald-500">
+                  <div className="p-1.5 rounded-lg bg-emerald-500/10">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <h3 className={`text-[11.5px] sm:text-[12.5px] font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>
+                    Mentors & Community
+                  </h3>
                 </div>
-                <h3 className={`text-[11.5px] sm:text-[12.5px] font-bold ${isLight ? 'text-zinc-900' : 'text-white'}`}>
-                  Mentors & Community
-                </h3>
+                <StarsCounter pageId="philosophy-pillar-3" isLight={isLight} compact />
               </div>
               <p className={`text-[11px] leading-relaxed font-serif italic ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
                 Enduring appreciation to academic guides, institutional leaders at Goldman Sachs, and the global cybersecurity open-source research community whose collective brilliance illuminates the defense craft.
@@ -145,7 +161,10 @@ export const Philosophy: React.FC<PhilosophyProps> = ({ theme = 'apple-dark' }) 
         </div>
  
         {/* Sign-off & Disclaimer */}
-        <div className="space-y-3 pt-1 shrink-0">
+        <div 
+          className="space-y-3 pt-1 shrink-0"
+          style={{ paddingTop: '26px' }}
+        >
           <div className="text-center space-y-0.5">
             <p className={`font-serif italic text-base sm:text-lg ${isLight ? 'text-zinc-900' : 'text-white'}`}>
               À la prochaine, Prenez soin de vous ... Au revoir !
@@ -155,7 +174,10 @@ export const Philosophy: React.FC<PhilosophyProps> = ({ theme = 'apple-dark' }) 
             </p>
           </div>
  
-          <div className={`p-3 rounded-xl border ${isLight ? 'bg-zinc-100/70 border-zinc-200' : 'bg-white/[0.02] border-white/5'}`}>
+          <div 
+            className={`p-3 rounded-xl border ${isLight ? 'bg-zinc-100/70 border-zinc-200' : 'bg-white/[0.02] border-white/5'}`}
+            style={{ paddingTop: '12px', marginTop: '13px', fontSize: '21px', lineHeight: '16px' }}
+          >
             <h4 className={`text-[11px] font-semibold mb-0.5 ${isLight ? 'text-zinc-900' : 'text-zinc-200'}`}>Disclaimer</h4>
             <p className={`text-[9.5px] leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
               The insights shared across this platform represent personal architectural reflections and intellectual exploration. Ideas presented are not necessarily my own; thoughts are personal and subject to change. Any resemblances to other works are purely coincidental or inspirational. Intellectual Property and credits belong to their respective original owners. No infringement is intended; this content is for informational purposes only. Brevities are human.

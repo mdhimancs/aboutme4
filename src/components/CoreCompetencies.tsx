@@ -6,12 +6,14 @@ import {
   Brain, 
   FileCheck, 
   Cpu, 
-  Layers,
+  Target,
   Server,
   Database,
-  Sparkles
+  Sparkles,
+  Layers
 } from 'lucide-react';
 import { SKILL_CATEGORIES } from '../data/portfolioData';
+import { StarsCounter } from './StarsCounter';
 
 interface CoreCompetenciesProps {
   theme?: string;
@@ -51,7 +53,7 @@ export const CoreCompetencies: React.FC<CoreCompetenciesProps> = ({ theme = 'app
   return (
     <section 
       id="competencies" 
-      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center py-4 sm:py-5 pb-10 sm:pb-14 lg:pb-16 px-6 sm:px-10 lg:px-14 max-w-5xl lg:max-w-6xl mx-auto border-t ${
+      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center pt-8 sm:pt-10 pb-10 sm:pb-14 lg:pb-16 px-6 sm:px-10 lg:px-14 max-w-6xl lg:max-w-7xl mx-auto border-t ${
         isLight ? 'border-zinc-200 bg-[#fcfcfd]' : 'border-white/10 bg-[#000000]'
       }`}
     >
@@ -75,7 +77,7 @@ export const CoreCompetencies: React.FC<CoreCompetenciesProps> = ({ theme = 'app
       />
 
       {/* 1. Header with Badge & Aura */}
-      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3 sm:mb-3.5 shrink-0">
+      <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6 shrink-0">
         {/* Luminous aura behind heading */}
         <div 
           className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-24 sm:h-28 rounded-full blur-2xl pointer-events-none transition-all ${
@@ -85,21 +87,24 @@ export const CoreCompetencies: React.FC<CoreCompetenciesProps> = ({ theme = 'app
           }`} 
         />
 
-        <div className="relative space-y-0.5 max-w-3xl">
-          <div className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-[11px] font-semibold uppercase tracking-wider border backdrop-blur-md ${
+        <div className="relative space-y-0.5 max-w-3xl flex-1">
+          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase border backdrop-blur-md mb-1 ${
             isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
           }`}>
-            <Sparkles className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
-            <span>Defense-in-Depth Architecture</span>
+            <Target className="w-3.5 h-3.5 text-blue-500" />
+            <span>Strategic Mastery & Core Competencies</span>
           </div>
-          <h2 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight transition-all ${
+          <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all ${
             isLight 
               ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
               : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
           }`}>
             Core Competencies & Strategic Pillars
           </h2>
-          <p className={`text-xs leading-tight ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+          <p 
+            style={{ fontSize: '14px' }}
+            className={`text-[14px] font-normal leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}
+          >
             Enterprise architecture, Zero Trust identity, cloud defense, and AI governance.
           </p>
         </div>
@@ -165,9 +170,9 @@ export const CoreCompetencies: React.FC<CoreCompetenciesProps> = ({ theme = 'app
                       </span>
                     </div>
                     <div className="flex items-center gap-2 shrink-0 ml-auto">
-                      <div className={`w-8 sm:w-10 h-1.5 rounded-full overflow-hidden shrink-0 ${isLight ? 'bg-zinc-200' : 'bg-white/10'}`}>
+                      <div className={`w-8 sm:w-10 h-1.5 rounded-full overflow-hidden shrink-0 ${isLight ? 'bg-sky-100/90 border border-sky-200/60' : 'bg-white/10 border border-white/10'}`}>
                         <div
-                          className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"
+                          className="h-full bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-300 rounded-full shadow-[0_0_8px_rgba(56,189,248,0.45)]"
                           style={{ width: `${skill.level}%` }}
                         />
                       </div>

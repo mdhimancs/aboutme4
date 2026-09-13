@@ -5,8 +5,8 @@ export const NEW_BLOG_POSTS: BlogPost[] = [
     id: "bp-2026-zero-trust",
     title: "The Zero Trust Blueprint: Architecting Identity-Centric Security for the Modern Enterprise",
     slug: "zero-trust-blueprint-identity-centric-security",
-    excerpt: "Moving beyond perimeter defense to a continuous verification model. A practical executive guide to implementing NIST 800-207, phishing-resistant MFA, and micro-segmentation at scale.",
-    date: "January 18, 2026",
+    excerpt: "A practical executive guide to implementing NIST 800-207, phishing-resistant MFA, and micro-segmentation at scale, moving beyond perimeter defense to a continuous verification model.",
+    date: "September 18, 2026",
     readTime: "11 min read",
     category: "Identity & Zero Trust",
     tags: ["Zero Trust", "NIST 800-207", "IAM Strategy", "Micro-segmentation", "Identity Fabric"],
@@ -54,8 +54,112 @@ The Zero Trust framework deconstructs total risk into two primary branches: **Lo
   │   Threat    │     │Vulnerability│                │   Primary   │     │  Secondary  │
   │ Event Freq  │     │ (Threat Cap │                │   Losses    │     │   Losses    │
   │   (TEF)     │     │ vs Control) │                │ (Response,  │     │(Fines, Brand│
-  └─────────────┘     └─────────────┘                │ Productivity)│    │  Legal, M&A)│
-                                                     └─────────────┘     └─────────────┘
+  │             │     │             │                │ Productivity)│    │  Legal, M&A)│
+  └─────────────┘     └─────────────┘                └─────────────┘     └─────────────┘
+\`\`\`
+
+---
+
+### High-Level Design (HLD): Continuous Identity-Centric Zero Trust Architecture
+
+The high-level architecture enforces NIST SP 800-207 principles: explicit verification, least privilege, and continuous trust evaluation across all ingress points.
+
+\`\`\`
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+  │                           HIGH-LEVEL ARCHITECTURE (NIST 800-207)                       │
+  └────────────────────────────────────────────────────────────────────────────────────────┘
+                                                                                            
+   [ USER / WORKLOAD ]                                                                      
+          │                                                                                 
+          │ 1. Identity, Device Health & Context                                            
+          ▼                                                                                 
+   ┌──────────────────────────────────────────────────────────────┐                         
+   │             POLICY ENFORCEMENT POINT (PEP / SASE)            │                         
+   │   - Cloudflare / Zscaler Edge Proxy                          │                         
+   │   - Mutual TLS (mTLS) Termination & Context Interception     │                         
+   └──────────────────────────────┬───────────────────────────────┘                         
+                                  │                                                         
+                   2. Continuous  │  3. Real-Time Risk & Auth                               
+                   Eval Request   ▼     Decision Grant                                      
+                 ┌────────────────────────────────┐                                         
+                 │  POLICY DECISION POINT (PDP)   │                                         
+                 │  - Okta / Azure Entra ID / OPA │                                         
+                 └────────────────┬───────────────┘                                         
+                                  │                                                         
+             ┌────────────────────┼────────────────────┐                                    
+             ▼                    ▼                    ▼                                    
+    ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐                           
+    │ Continuous Risk │  │  Device Posture │  │ Workload Identity│                           
+    │  Telemetry Feed │  │ (CrowdStrike /  │  │ (SPIFFE / SPIRE │                           
+    │ (SOC / SIEM)    │  │  Intune MDM)    │  │  Attestation)   │                           
+    └─────────────────┘  └─────────────────┘  └─────────────────┘                           
+                                  │                                                         
+                                  │ 4. Scoped Session Authorization                         
+                                  ▼                                                         
+   ┌──────────────────────────────────────────────────────────────┐                         
+   │                     ENTERPRISE TARGET FABRIC                 │                         
+   │  ┌────────────────────┐ ┌──────────────────┐ ┌─────────────┐ │                         
+   │  │ Micro-Segmented K8s│ │ Tier-1 Financial │ │ Multi-Cloud │ │                         
+   │  │     Workloads      │ │    Databases     │ │  SaaS Apps  │ │                         
+   │  └────────────────────┘ └──────────────────┘ └─────────────┘ │                         
+   └──────────────────────────────────────────────────────────────┘                         
+\`\`\`
+
+#### Key High-Level System Components:
+1. **Policy Enforcement Point (PEP):** Intercepts all traffic at the network/application edge, terminating mTLS and enforcing cryptographically validated token bindings before routing.
+2. **Policy Decision Point (PDP):** Evaluates Attribute-Based Access Control (ABAC) policies against real-time signals: user risk score, IP reputation, device compliance, and behavioral baselines.
+3. **Continuous Signal Ingestion Engine:** Aggregates real-time threat signals from SIEM/EDR to revoke or downgrade sessions mid-flight upon anomaly detection.
+
+---
+
+### Low-Level Design (LLD): Cryptographic Session Binding & Step-by-Step Auth Flow
+
+The low-level design details the end-to-end cryptographic exchange utilizing **FIDO2 WebAuthn**, **OAuth 2.0 with PKCE**, and **DPoP (Demonstrating Proof-of-Possession, RFC 9449)** to eliminate token replay attacks.
+
+\`\`\`
+ [Client App / Browser]         [PEP / Edge Gateway]             [PDP / IdP (OIDC)]           [Resource Server]
+          │                              │                                │                           │
+          │ 1. Initiate FIDO2 Challenge  │                                │                           │
+          ├──────────────────────────────┼───────────────────────────────►│                           │
+          │ 2. Signed CTAP2 Assertion    │                                │                           │
+          │    (Hardware TPM / Secure Enclave Auth)                       │                           │
+          │◄─────────────────────────────┼────────────────────────────────┤                           │
+          │                              │                                │                           │
+          │ 3. Exchange Code with PKCE + DPoP Proof                       │                           │
+          │    [DPoP Header: ES256 Signature(URI, Method, Nonce)]         │                           │
+          ├──────────────────────────────┼───────────────────────────────►│                           │
+          │ 4. Issue DPoP-Bound Access Token (ath + cnf public key thumbprint)│                       │
+          │◄─────────────────────────────┼────────────────────────────────┤                           │
+          │                              │                                │                           │
+          │ 5. API Request + DPoP Access Token + Cryptographic Proof      │                           │
+          ├─────────────────────────────►│                                │                           │
+          │                              │ 6. Verify DPoP Signature & Check Risk Matrix               │
+          │                              ├───────────────────────────────────────────────────────────►│
+          │                              │ 7. Grant Granular Resource Response                        │
+          │◄─────────────────────────────┴────────────────────────────────────────────────────────────┤
+\`\`\`
+
+#### Low-Level Token Binding Specification (DPoP + JKT Assertion):
+\`\`\`json
+{
+  "header": {
+    "typ": "at+jwt",
+    "alg": "RS256",
+    "kid": "prod-auth-key-2026-v1"
+  },
+  "payload": {
+    "iss": "https://auth.enterprise.bank/oauth2/v1",
+    "sub": "munish.dhiman@enterprise.bank",
+    "aud": "https://api.corebanking.enterprise.bank/v2",
+    "exp": 1773418200,
+    "cnf": {
+      "jkt": "0Z7eO8j3h2L5X9p7R1k0M3v6Y8b2T5u8W1q4N7z0"
+    },
+    "risk_score": 0.04,
+    "device_health": "COMPLIANT_SECURE_ENCLAVE",
+    "auth_factors": ["FIDO2_PASSKEY_LEVEL3", "NIST_SP_800_63B_AAL3"]
+  }
+}
 \`\`\`
 
 #### 1. Threat Event Frequency (TEF) & Vulnerability (Threat Capability vs. Resistance)
@@ -279,6 +383,83 @@ Operationalize the four core functions of NIST AI RMF: **Govern, Map, Measure, a
 
 ---
 
+### High-Level Design (HLD): Enterprise AI Gateway & Vector Security Fabric
+
+The high-level architecture enforces strict boundaries between untrusted user prompts, vectorized tenant knowledge bases, and autonomous tool execution environments.
+
+\`\`\`
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+  │                         ENTERPRISE GENAI HIGH-LEVEL ARCHITECTURE                       │
+  └────────────────────────────────────────────────────────────────────────────────────────┘
+
+    [ User / Employee ]                      [ Autonomous System Agent ]
+            │                                              │
+            ▼                                              ▼
+   ┌────────────────────────────────────────────────────────────────┐
+   │             ENTERPRISE AI INGRESS GATEWAY & PROXY              │
+   │  • WAF / Rate Limiter             • Context Tokenizer / DLP    │
+   │  • Adversarial Prompt Scanner     • User Context JWT Injector  │
+   └────────────────────────────────┬───────────────────────────────┘
+                                    │
+                                    ▼
+   ┌────────────────────────────────────────────────────────────────┐
+   │            ZERO-TRUST ORCHESTRATION & RAG ENGINE               │
+   │  ┌─────────────────────────┐      ┌─────────────────────────┐  │
+   │  │ Tenant Context Verifier │      │ Cosine Similarity Search│  │
+   │  │  (OPA / ABAC Filtering) │      │  with Metadata Tenancy  │  │
+   │  └────────────┬────────────┘      └────────────┬────────────┘  │
+   └───────────────┼────────────────────────────────┼───────────────┘
+                   │                                │
+                   ▼                                ▼
+   ┌───────────────────────────────┐  ┌─────────────────────────────┐
+   │     VECTOR STORE CLUSTER      │  │     FRONTIER LLM CORE       │
+   │   (Pinecone / Milvus / pgvector)│ │ (Gemini 1.5 Pro / GPT-4o)   │
+   │   • Row-Level Tenancy Keys    │  │ • Ephemeral Prompt Memory   │
+   │   • AES-256 Envelope Encrypt  │  │ • Zero Retention Agreement  │
+   └───────────────────────────────┘  └──────────────┬──────────────┘
+                                                     │
+                                                     ▼ [Tool Call]
+                                      ┌─────────────────────────────┐
+                                      │   SANDBOXED TOOL EXECUTOR   │
+                                      │ • Short-Lived Ephemeral PAM │
+                                      │ • Step-Up Approval Sandbox  │
+                                      └─────────────────────────────┘
+\`\`\`
+
+---
+
+### Low-Level Design (LLD): Contextual RAG Authorization & Tool Execution Protocol
+
+The low-level sequence guarantees that document chunks returned by semantic search are filtered by the calling subject's security clearances before LLM synthesis.
+
+\`\`\`
+ [Client / App]       [AI Gateway]          [Vector DB (pgvector)]       [LLM Model]       [PAM Agent Vault]
+       │                   │                           │                      │                    │
+       │ 1. Prompt + JWT   │                           │                      │                    │
+       ├──────────────────►│                           │                      │                    │
+       │                   │ 2. DLP Scrub PII & Extract Tenancy Claims        │                    │
+       │                   │ 3. Query Embeddings + Where Filter:              │                    │
+       │                   │    (tenant_id == claims.tenant && acl ∈ user_acls)│                   │
+       │                   ├──────────────────────────►│                      │                    │
+       │                   │ 4. Filtered Chunks Returned                      │                    │
+       │                   │◄──────────────────────────┤                      │                    │
+       │                   │                           │                      │                    │
+       │                   │ 5. Synthesize Prompt + Grounding Context         │                    │
+       │                   ├─────────────────────────────────────────────────►│                    │
+       │                   │ 6. Tool Invocation Request (e.g., execute_db_patch)                   │
+       │                   │◄─────────────────────────────────────────────────┤                    │
+       │                   │                                                  │                    │
+       │                   │ 7. Request 60-second Scoped Ephemeral Grant                           │
+       │                   ├──────────────────────────────────────────────────────────────────────►│
+       │                   │ 8. Issue Signed JIT Capability Token                                  │
+       │                   │◄──────────────────────────────────────────────────────────────────────┤
+       │                   │ 9. Execute in Sandboxed Container with Immutable Audit Log            │
+       │ 10. Final Response│                                                                       │
+       │◄──────────────────┴───────────────────────────────────────────────────────────────────────┤
+\`\`\`
+
+---
+
 ### Key Takeaways for Security Leadership
 * **AI Security is an Identity problem:** Without rigorous fine-grained IAM on Vector DBs and agent tools, sensitive data will inevitably leak across organizational silos.
 * **Do not build walls around innovation—build guardrails:** An enterprise AI Gateway empowers developers while guaranteeing cryptographic data isolation.
@@ -367,6 +548,88 @@ Traditional SIEM alerts fail on service accounts because high-frequency automate
 
 ---
 
+### High-Level Design (HLD): Non-Human Workload Identity Mesh & Federation Fabric
+
+The high-level architecture eliminates static API keys by orchestrating automated OIDC federation across multi-cloud workloads and CI/CD pipelines.
+
+\`\`\`
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+  │                 HIGH-LEVEL DESIGN: WORKLOAD IDENTITY FEDERATION FABRIC                 │
+  └────────────────────────────────────────────────────────────────────────────────────────┘
+
+   [ GitHub Actions / GitLab CI ]          [ Kubernetes Pod / Workload ]
+               │                                         │
+               │ 1. Short-Lived OIDC JWT                 │ 1. SPIFFE Workload SVID (mTLS)
+               ▼                                         ▼
+   ┌──────────────────────────────────────────────────────────────────────────────┐
+   │                  CENTRAL IDENTITY BROKER / FEDERATION GATEWAY                │
+   │               (Azure Entra ID / HashiCorp Vault / SPIRE Server)              │
+   └──────────────────────────────────────┬───────────────────────────────────────┘
+                                          │
+                     2. Validate OIDC /   │ 3. Return Scoped Ephemeral
+                     SPIFFE Cryptographic │    Session Credential
+                     Claims Matrix        │    (Valid for 15-60 min)
+                                          ▼
+   ┌──────────────────────────────────────────────────────────────────────────────┐
+   │                     MULTI-CLOUD TARGET CONTROL PLANES                        │
+   │  ┌───────────────────────┐ ┌───────────────────────┐ ┌─────────────────────┐ │
+   │  │   AWS STS Role        │ │   GCP Workload        │ │  Azure Managed      │ │
+   │  │ (AssumeRoleWithWebID) │ │   Identity Pool       │ │  Identity Provider  │ │
+   │  └───────────────────────┘ └───────────────────────┘ └─────────────────────┘ │
+   └──────────────────────────────────────┬───────────────────────────────────────┘
+                                          │
+                                          ▼ 4. Least-Privilege API Execution
+   ┌──────────────────────────────────────────────────────────────────────────────┐
+   │            CROWN JEWEL DATA / PRODUCTION KUBERNETES CLUSTERS                 │
+   └──────────────────────────────────────────────────────────────────────────────┘
+\`\`\`
+
+---
+
+### Low-Level Design (LLD): Cryptographic Workload SVID Attestation & Ephemeral Token Flow
+
+The low-level protocol flow demonstrates the zero-secret cryptographic exchange between a container workload and AWS STS via SPIFFE/SPIRE attestation.
+
+\`\`\`
+ [Container Workload]       [SPIRE Agent (Node Unix Socket)]     [SPIRE Server]          [AWS STS Gateway]
+          │                               │                            │                         │
+          │ 1. Fetch SVID via Unix Socket │                            │                         │
+          ├──────────────────────────────►│                            │                         │
+          │                               │ 2. Attest Kernel UID/PID   │                         │
+          │                               │    & Node Certificate      │                         │
+          │                               ├───────────────────────────►│                         │
+          │                               │ 3. Sign X.509 SVID + JWT   │                         │
+          │                               │◄───────────────────────────┤                         │
+          │ 4. Deliver Signed JWT SVID    │                            │                         │
+          │◄──────────────────────────────┤                            │                         │
+          │                                                            │                         │
+          │ 5. Call AssumeRoleWithWebIdentity(RoleArn, WebIdentityToken=JWT)                     │
+          ├─────────────────────────────────────────────────────────────────────────────────────►│
+          │                                                            │ 6. Verify Public JWKS   │
+          │                                                            │    from SPIRE Server    │
+          │                                                            │◄───────────────────────►│
+          │ 7. Return Temporary AWS Session Key (AccessKey, SecretKey, SessionToken - 15 min)    │
+          │◄─────────────────────────────────────────────────────────────────────────────────────┤
+\`\`\`
+
+#### Low-Level Workload Identity Token Payload (RFC 7519 / SPIFFE Claim):
+\`\`\`json
+{
+  "iss": "https://spire.prod.enterprise.internal",
+  "sub": "spiffe://enterprise.internal/ns/payments/sa/settlement-engine-v2",
+  "aud": "https://sts.amazonaws.com",
+  "exp": 1773419100,
+  "iat": 1773418200,
+  "spiffe_context": {
+    "cluster_id": "us-east-1-prod-k8s-04",
+    "git_commit_sha": "d3b07384d113edec49eaa6238ad5ff00",
+    "fips_mode": true
+  }
+}
+\`\`\`
+
+---
+
 ### Key Takeaways for Senior Security Leadership
 * **Non-Human Identities are the modern adversary's preferred path:** Stealing an unrotated service key bypasses MFA entirely.
 * **Eliminating static secrets is the highest-ROI hardening step:** OIDC workload federation renders credential theft impossible by design.
@@ -417,6 +680,87 @@ The solution lies in **Cryptographic Agility**. Organizations must inventory the
 - **Digital Trust**: Maintaining the integrity of digital signatures and identity federations in a post-quantum world.
 
 Implementing a "Hybrid Mode" approach—combining a classical algorithm with a PQC algorithm—offers a safety net. If the new PQC algorithm is found to have a classical vulnerability, the classical algorithm still provides the baseline security we rely on today.
+
+---
+
+### High-Level Design (HLD): Quantum-Resistant Hybrid PKI & TLS Edge Architecture
+
+The architecture illustrates a multi-tier enterprise edge utilizing Dual-Key Public Key Infrastructure (PKI) and Hybrid TLS 1.3 key exchange (X25519 + ML-KEM-768).
+
+\`\`\`
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+  │                    POST-QUANTUM HYBRID PKI & TLS EDGE ARCHITECTURE                     │
+  └────────────────────────────────────────────────────────────────────────────────────────┘
+
+    [ Quantum-Ready Client / Browser ]
+                   │
+                   │ 1. ClientHello (Offers X25519 + ML-KEM-768 Hybrid Key Share)
+                   ▼
+    ┌──────────────────────────────────────────────────────────────────────────────┐
+    │                      ENTERPRISE HYBRID TLS 1.3 INGRESS                       │
+    │  • Dual-Certificate Chain Evaluator (ECDSA + ML-DSA-65 Dilithium)            │
+    │  • Crypto-Agile Session Handshake Engine                                     │
+    └──────────────────────────────────────┬───────────────────────────────────────┘
+                                           │
+                        2. Establish PQC   │ 3. Forward Zero-Trust
+                        Encrypted Tunnel   │    Authenticated Payload
+                                           ▼
+    ┌──────────────────────────────────────────────────────────────────────────────┐
+    │                    INTERNAL HARDWARE SECURITY MODULE (HSM)                   │
+    │  ┌─────────────────────────┐                 ┌─────────────────────────┐     │
+    │  │ Classical Root CA       │                 │ Post-Quantum Root CA    │     │
+    │  │ (RSA-4096 / ECC P-384)  │                 │ (ML-DSA / Dilithium)    │     │
+    │  └────────────┬────────────┘                 └────────────┬────────────┘     │
+    │               └──────────────────────┬────────────────────┘                  │
+    │                                      │                                       │
+    │                                      ▼                                       │
+    │                     ┌──────────────────────────────────┐                     │
+    │                     │ Hybrid Composite X.509 V3 Certs  │                     │
+    │                     └──────────────────────────────────┘                     │
+    └──────────────────────────────────────────────────────────────────────────────┘
+\`\`\`
+
+---
+
+### Low-Level Design (LLD): ML-KEM (Kyber-768) Module Lattice Key Encapsulation Flow
+
+The low-level mathematical protocol flow details the Module Learning-With-Errors (M-LWE) lattice key exchange mechanism between client and server.
+
+\`\`\`
+ [Client Application]                                                        [Edge TLS Gateway]
+          │                                                                           │
+          │ 1. Generate Classical Ephemeral Keypair (sk_c, pk_c = X25519)             │
+          │    Generate Kyber-768 Ephemeral Keypair (sk_k, pk_k = ML-KEM)             │
+          │                                                                           │
+          │ 2. Send Combined Public Keys in ClientHello [pk_c || pk_k]                │
+          ├──────────────────────────────────────────────────────────────────────────►│
+          │                                                                           │
+          │                                 3. Encapsulate Shared Secret (ML-KEM.Encaps):
+          │                                    (ciphertext_k, ss_k) = Encaps(pk_k)    │
+          │                                    Compute Classical ECDH: ss_c = ECDH(pk_c)
+          │                                    Derive Hybrid Master Secret:           │
+          │                                    SS_hybrid = HKDF-Extract(ss_c || ss_k) │
+          │                                                                           │
+          │ 4. Send ServerHello [pk_s || ciphertext_k]                                │
+          │◄──────────────────────────────────────────────────────────────────────────┤
+          │                                                                           │
+          │ 5. Decapsulate Shared Secret (ML-KEM.Decaps):                             │
+          │    ss_k = Decaps(ciphertext_k, sk_k)                                      │
+          │    Compute Classical ECDH: ss_c = ECDH(sk_c, pk_s)                        │
+          │    Derive Matching Hybrid Secret: SS_hybrid = HKDF-Extract(ss_c || ss_k)  │
+          │                                                                           │
+          │ 6. Cryptographic Post-Quantum Session Established (AES-256-GCM)           │
+          ├──────────────────────────────────────────────────────────────────────────►│
+\`\`\`
+
+#### Low-Level Lattice Parameter Matrix (NIST FIPS 203 / ML-KEM):
+\`\`\`
+• Matrix Dimensions (k x k): 3 x 3 polynomial rings over Z_q / (X^256 + 1)
+• Modulus (q): 3329 (LWE Hardness Parameter)
+• Public Key Size: 1,184 Bytes
+• Ciphertext Size: 1,088 Bytes
+• Claimed Security: NIST Level 3 (Equivalent to AES-192 against Quantum / Classical Search)
+\`\`\`
 
 ### Key Takeaways
 - **Quantum computing will break RSA/ECC**: It is a mathematical certainty if large-scale quantum computers are realized.

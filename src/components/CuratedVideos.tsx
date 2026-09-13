@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Play, ExternalLink, Search, Film, Sparkles } from 'lucide-react';
 import { CURATED_VIDEOS, CuratedVideo } from '../data/curatedVideos';
+import { StarsCounter } from './StarsCounter';
+import { incrementStars } from '../lib/stars';
 
 interface CuratedVideosProps {
   theme?: string;
@@ -28,8 +30,10 @@ export const CuratedVideos: React.FC<CuratedVideosProps> = ({ theme = 'apple-dar
         
         {/* Header */}
         <div className="text-center space-y-2 mb-8 shrink-0">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20">
-            <Film className="w-3.5 h-3.5" />
+          <div className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase border backdrop-blur-md ${
+            isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+          }`}>
+            <Film className="w-3.5 h-3.5 text-blue-500" />
             <span>Curated Lectures & Masterclasses</span>
           </div>
           <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
@@ -86,6 +90,7 @@ export const CuratedVideos: React.FC<CuratedVideosProps> = ({ theme = 'apple-dar
               href={video.link}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => incrementStars(`video-${video.id}`)}
               className={`group flex flex-col rounded-2xl overflow-hidden border transition-all duration-300 hover:-translate-y-1 hover:shadow-xl ${
                 isLight 
                   ? 'bg-zinc-50/80 border-zinc-200 hover:border-blue-500/50 hover:bg-white hover:shadow-blue-500/5' 
@@ -139,8 +144,11 @@ export const CuratedVideos: React.FC<CuratedVideosProps> = ({ theme = 'apple-dar
                 </div>
 
                 <div className="pt-3 border-t flex items-center justify-between text-xs font-medium text-zinc-400 border-zinc-200 dark:border-white/10">
-                  <span className="group-hover:text-blue-500 transition-colors">Watch Lecture / Masterclass</span>
-                  <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-blue-500" />
+                  <div className="flex items-center gap-2">
+                    <span className="group-hover:text-blue-500 transition-colors">Watch Lecture / Masterclass</span>
+                    <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform text-blue-500" />
+                  </div>
+                  <StarsCounter pageId={`video-${video.id}`} isLight={isLight} compact />
                 </div>
               </div>
             </a>

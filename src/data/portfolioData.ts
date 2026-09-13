@@ -4,8 +4,8 @@ import { NEW_BLOG_POSTS } from './blogArticles';
 export const PERSONAL_INFO = {
   name: "Munish Dhiman",
   title: "CISO / dyCISO Track | Principal Cybersecurity & IAM Architect | Former SVP, Goldman Sachs",
-  tagline: "Transforming enterprise security posture through Zero Trust Architecture, Scalable IAM Governance & AI-Driven Risk Resilience. 21+ years securing Fortune 100 multi-cloud perimeters, modernizing identity fabrics, and aligning technical defense with enterprise risk governance.",
-  bioShort: "Cybersecurity Executive with 21+ years directing enterprise defense, Zero Trust IAM, and AI risk governance across Goldman Sachs and global tech leaders. Trusted to manage multi-million-dollar defense programs, lead high-performing global engineering teams, and deliver 100% clean regulatory audit records.",
+  tagline: "Transforming enterprise security posture through Zero Trust Architecture, Scalable IAM Governance & AI-Driven Risk Resilience. 21+ years securing Fortune 100 multi-cloud perimeters, modernizing identity fabrics, and aligning digital defense with enterprise risk governance.",
+  bioShort: "Cybersecurity Executive & Enterprise Architect with 21+ years protecting Fortune 100 infrastructures across Goldman Sachs and global tech leaders. Trusted to direct Zero Trust IAM, lead high-performing global teams, and deliver an unblemished 100% clean regulatory audit record.",
   location: "Bengaluru, India",
   email: "munish.world@gmail.com",
   github: "https://github.com/mdhimancs",
@@ -103,7 +103,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     company: "Goldman Sachs",
     location: "Bengaluru, India",
     period: "Nov 2020 — Dec 2025",
-    category: "Cybersecurity & IAM",
+    category: "AI, ZTNA, Cloud Security, Platform Engineering",
     summary: "Directed enterprise-wide Cybersecurity, Zero Trust IAM, and Data Security architecture across global infrastructures, overseeing an $18.5M modernization initiative and securing Tier-1 capital markets ($1T+ daily volume) and electronic trading enclaves.",
     achievements: [
       "Led a global organization of 30+ cybersecurity engineers, SOC analysts, and IAM architects across Bengaluru, New York, London, and Tokyo.",
@@ -124,8 +124,8 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     role: "Lead Cybersecurity & IAM Architect | Vice President",
     company: "Goldman Sachs",
     location: "Bengaluru, India",
-    period: "Jan 2016 — Nov 2020",
-    category: "Security Platform Engineering",
+    period: "Sep 2016 — Nov 2020",
+    category: "Cloud Security, IAM, Security Platform Engineering",
     summary: "Led Cybersecurity and IAM Engineering Programs across Cloud, Network, and Identity domains, authoring firmwide security standards and securing hybrid multi-cloud perimeters.",
     achievements: [
       "Directed cross-functional engineering pods securing hybrid multi-cloud perimeters across AWS, Azure, and private datacenter fabrics.",
@@ -145,8 +145,8 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     company: "Goldman Sachs",
     location: "Bengaluru, India",
     period: "Dec 2013 — Dec 2015",
-    category: "Security Platform Engineering",
-    summary: "Led incident detection, cyber defense operations, and vulnerability management across critical banking and trading infrastructure.",
+    category: "IRC, CTH/CTI, VAPT, SOC",
+    summary: "Led incident detection, cyber defense operations, and vulnerability management across critical Banking & trading infrastructure.",
     achievements: [
       "Directed the 24/7 Incident Response Center (IRC) managing high-severity security events across global PCI DSS Cardholder Data Environments (CDE) and trading enclaves.",
       "Implemented enterprise Data Loss Prevention (DLP) across 40,000+ endpoints and email gateways, safeguarding proprietary trading models and client financial data.",
@@ -163,7 +163,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     company: "Goldman Sachs",
     location: "Bengaluru, India",
     period: "Oct 2011 — Dec 2013",
-    category: "Critical Infrastructure Security",
+    category: "Site BCP/DR, Firewalls, DNS, Proxies, Critical Infra Security",
     summary: "Delivered cyber threat modeling, perimeter hardening, vulnerability management, and BCP/DR engineering for global capital markets infrastructure.",
     achievements: [
       "Architected micro-segmentation and low-latency firewall enclaves for high-frequency algorithmic trading platforms and Transaction Banking (TxB), securing $100B–$500B+ daily enclave transaction flows.",
@@ -197,7 +197,7 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     role: "Technical Associates",
     company: "Amrita Technologies",
     location: "Hyderabad, TG, India",
-    period: "Jan 2005 — Jul 2009",
+    period: "Sep 2005 — Jul 2009",
     category: "Cybersecurity Engineering",
     summary: "Architected enterprise SOC operations, IAM frameworks, and automated threat response protocols.",
     achievements: [

@@ -51,7 +51,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenContact }) => {
               <li><a href="#overview" className="hover:text-white transition-colors">Overview</a></li>
               <li><a href="#bio" className="hover:text-white transition-colors">Bio</a></li>
               <li><a href="#competencies" className="hover:text-white transition-colors">Competencies</a></li>
-              <li><a href="#career" className="hover:text-white transition-colors">Career</a></li>
+              <li><a href="#career" className="hover:text-white transition-colors">Career Journey</a></li>
               <li><a href="#blog" className="hover:text-white transition-colors">Tech Blog</a></li>
               <li><a href="#archive" className="hover:text-white transition-colors">Archive</a></li>
             </ul>

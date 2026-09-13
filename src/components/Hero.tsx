@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, ShieldCheck, CheckCircle2, ChevronRight, Sparkles, Github, Linkedin, Mail } from 'lucide-react';
+import { ShieldCheck, CheckCircle2, ChevronRight, Sparkles, Github, Linkedin, Mail } from 'lucide-react';
 import { PERSONAL_INFO } from '../data/portfolioData';
 
 interface HeroProps {
@@ -14,7 +14,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreBlog, theme 
   return (
     <section 
       id="overview" 
-      className={`relative min-h-screen lg:h-screen w-full flex flex-col justify-between py-3 sm:py-4 pb-3 sm:pb-4 lg:pb-5 px-6 sm:px-10 lg:px-14 max-w-5xl lg:max-w-6xl mx-auto overflow-hidden border-t ${
+      className={`relative min-h-screen lg:h-screen w-full flex flex-col justify-between pt-8 sm:pt-12 pb-3 sm:pb-4 lg:pb-5 px-6 sm:px-12 lg:px-16 max-w-5xl lg:max-w-6xl mx-auto overflow-hidden border-t ${
         isLight ? 'border-transparent bg-[#fcfcfd]' : 'border-transparent bg-[#000000]'
       }`}
     >
@@ -38,7 +38,9 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreBlog, theme 
       />
 
       {/* 1. Static Executive Header */}
-      <div className="relative flex items-center justify-start shrink-0 pt-1">
+      <div 
+        className="relative flex items-center justify-start shrink-0 mb-6 sm:mb-8"
+      >
         {/* Subtle luminous aura behind header */}
         <div 
           className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-20 sm:h-24 rounded-full blur-2xl pointer-events-none transition-all ${
@@ -48,13 +50,14 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreBlog, theme 
           }`} 
         />
 
-        <div className="flex items-center space-x-2">
-          <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border backdrop-blur-md ${
+        <div 
+          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider border backdrop-blur-md ${
             isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
-          }`}>
-            <Sparkles className="w-3.5 h-3.5 animate-pulse text-blue-500" />
-            <span>Strategic Executive Overview</span>
-          </div>
+          }`}
+          style={{ height: '22.8171px' }}
+        >
+          <Sparkles className="w-3.5 h-3.5 animate-pulse text-blue-500" />
+          <span>Strategic Executive Overview</span>
         </div>
       </div>
 
@@ -71,58 +74,57 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreBlog, theme 
         />
 
         {/* Main Headline */}
-        <div className="relative space-y-3 max-w-5xl mx-auto">
-          <h1 className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold tracking-tight leading-[1.12] transition-all ${
-            isLight 
-              ? 'text-zinc-900 drop-shadow-[0_2px_18px_rgba(59,130,246,0.22)]' 
-              : 'text-white drop-shadow-[0_0_28px_rgba(96,165,250,0.40)]'
-          }`}>
+        <div className="relative space-y-3 max-w-5xl mx-auto -translate-y-[10%]">
+          <h1 
+            className={`text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-[1.12] transition-all ${
+              isLight 
+                ? 'text-zinc-900 drop-shadow-[0_2px_18px_rgba(59,130,246,0.22)]' 
+                : 'text-white drop-shadow-[0_0_28px_rgba(96,165,250,0.40)]'
+            }`}
+            style={{ height: '145.482px' }}
+          >
             <span className="block">Enterprise Cyber Defense, <span className={`text-transparent bg-clip-text ${isLight ? 'bg-gradient-to-r from-blue-600 via-indigo-600 to-zinc-900' : 'bg-gradient-to-r from-blue-400 via-indigo-300 to-white'}`}>Zero Trust IAM</span></span>
             <span className="block mt-1 sm:mt-2">& AI Risk Resilience.</span>
           </h1>
-          <p className={`w-full max-w-4xl mx-auto text-sm sm:text-base lg:text-lg font-normal leading-relaxed px-1 sm:px-2 ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+          <p 
+            className={`w-full max-w-4xl mx-auto text-xs sm:text-sm md:text-base lg:text-lg font-medium leading-relaxed px-1 sm:px-2 ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}
+            style={{ width: '848.986px', height: '73.7724px' }}
+          >
             {PERSONAL_INFO.tagline}
           </p>
         </div>
 
         {/* Executive Action Row */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-1">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-6 sm:gap-8 lg:gap-12 pt-1">
           <a
             href="#projects"
-            className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold tracking-wide transition-all shadow-xl hover:scale-[1.02] active:scale-[0.98] ${
+            className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-5 sm:px-6 py-2.5 rounded-full text-xs font-semibold tracking-wide transition-all shadow-md hover:scale-[1.02] active:scale-[0.98] ${
               isLight ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-600/20' : 'bg-white text-black hover:bg-zinc-200 shadow-white/10'
             }`}
           >
             <span>Strategic Case Studies</span>
-            <ArrowRight className="w-4 h-4" />
+            <ChevronRight className={`w-3.5 h-3.5 ${isLight ? 'text-white/80' : 'text-zinc-600'}`} />
           </a>
 
           <a
             href="#career"
-            className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold tracking-wide backdrop-blur-md transition-all ${
+            className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-5 sm:px-6 py-2.5 rounded-full text-xs font-semibold tracking-wide backdrop-blur-md transition-all ${
               isLight ? 'bg-white hover:bg-zinc-100 text-zinc-900 border border-zinc-200 shadow-sm' : 'bg-white/[0.06] hover:bg-white/[0.1] text-white border border-white/10 hover:border-white/25'
             }`}
           >
             <span>21 Years- Leadership</span>
-            <ChevronRight className="w-4 h-4 text-zinc-400" />
+            <ChevronRight className="w-3.5 h-3.5 text-zinc-400" />
           </a>
-
-          <button
-            onClick={onOpenContact}
-            className={`w-full sm:w-auto flex items-center justify-center space-x-2 px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold tracking-wide backdrop-blur-md transition-all ${
-              isLight ? 'bg-zinc-100 hover:bg-zinc-200 text-zinc-800 border border-zinc-200' : 'bg-white/[0.03] hover:bg-white/[0.08] text-zinc-300 border border-white/10'
-            }`}
-          >
-            <span>Schedule Leadership Briefing</span>
-          </button>
         </div>
 
         {/* Stats Grid */}
-        <div className="pt-3 sm:pt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3 w-full max-w-4xl mx-auto px-2">
+        <div 
+          className="pt-3 sm:pt-4 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-6 sm:gap-x-8 lg:gap-x-10 gap-y-3 w-full max-w-5xl mx-auto px-2 sm:px-4 lg:px-6"
+        >
           {PERSONAL_INFO.stats.map((stat, idx) => (
             <div
               key={idx}
-              className={`p-2.5 sm:p-3 rounded-xl backdrop-blur-sm transition-all group border flex flex-col justify-center items-center text-center ${
+              className={`px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-xl backdrop-blur-sm transition-all group border flex flex-col justify-center items-center text-center ${
                 isLight ? 'bg-white/90 border-zinc-200 shadow-sm hover:border-zinc-300' : 'bg-white/[0.02] border-white/[0.07] hover:border-white/20'
               }`}
             >
@@ -137,18 +139,20 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreBlog, theme 
         </div>
 
         {/* Executive Governance Footprint Line */}
-        <div className="pt-1 flex flex-wrap items-center justify-center gap-x-6 gap-y-1.5 text-[11px] font-medium text-zinc-500">
-          <span className="flex items-center gap-1.5">
+        <div 
+          className="pt-1.5 flex flex-wrap items-center justify-center gap-x-10 sm:gap-x-12 lg:gap-x-16 gap-y-2 text-[11px] font-medium text-zinc-500"
+        >
+          <span className="flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
             Audit Committee Reporting & Zero Trust Quantification
           </span>
           <span className="hidden md:inline text-zinc-300 dark:text-zinc-700">•</span>
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5 text-blue-500" />
             Multi-Million Dollar CapEx / OpEx Defense Stewardship
           </span>
           <span className="hidden md:inline text-zinc-300 dark:text-zinc-700">•</span>
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-2">
             <CheckCircle2 className="w-3.5 h-3.5 text-indigo-500" />
             Global SecOps (SOC), IAM & GRC Team Orchestration
           </span>
@@ -157,8 +161,8 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreBlog, theme 
 
       {/* 3. Static Executive Footer */}
       <div className={`pt-2 mt-1.5 border-t shrink-0 ${isLight ? 'border-zinc-200 text-zinc-600' : 'border-white/10 text-zinc-400'}`}>
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-1.5 text-xs py-0.5">
-          <div className="flex flex-wrap items-center space-x-2 sm:space-x-2.5">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs py-0.5">
+          <div className="flex flex-wrap items-center gap-x-3 sm:gap-x-4">
             <span className={`font-semibold ${isLight ? 'text-zinc-900' : 'text-white'}`}>{PERSONAL_INFO.name}</span>
             <span className="text-[10px] font-bold opacity-40">Executive Portfolio Vault</span>
             
@@ -166,7 +170,7 @@ export const Hero: React.FC<HeroProps> = ({ onOpenContact, onExploreBlog, theme 
             <div className={`h-3 w-px ${isLight ? 'bg-zinc-300' : 'bg-white/20'}`} />
 
             {/* Social & Contact Icons */}
-            <div className="flex items-center space-x-3.5 pl-1">
+            <div className="flex items-center gap-x-4 sm:gap-x-5 pl-1">
               <a 
                 href={PERSONAL_INFO.github} 
                 target="_blank" 

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { StarsCounter } from './StarsCounter';
+import { incrementStars } from '../lib/stars';
 import { 
   Archive as ArchiveIcon, 
   ExternalLink, 
@@ -429,7 +431,7 @@ export const Archive: React.FC<ArchiveProps> = ({
   return (
     <section 
       id="archive" 
-      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-between py-3 sm:py-4 pb-3 sm:pb-4 lg:pb-5 px-6 sm:px-10 lg:px-14 max-w-6xl mx-auto border-t ${
+      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-between pt-8 sm:pt-10 pb-3 sm:pb-4 lg:pb-5 px-6 sm:px-10 lg:px-14 max-w-7xl mx-auto border-t ${
         isLight ? 'border-zinc-200 bg-[#fcfcfd]' : 'border-white/10 bg-[#000000]'
       }`}
     >
@@ -455,24 +457,24 @@ export const Archive: React.FC<ArchiveProps> = ({
       <div className="relative flex-1 flex flex-col justify-center min-h-0">
         
         {/* Section Header */}
-        <div className="relative w-full space-y-1 mb-3 shrink-0 text-center">
+        <div className="relative w-full space-y-0.5 mb-6 shrink-0 text-left">
           {/* Luminous aura behind heading */}
           <div 
-            className={`absolute -top-3 left-1/2 -translate-x-1/2 w-72 sm:w-96 h-24 sm:h-28 rounded-full blur-2xl pointer-events-none transition-all ${
+            className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-24 sm:h-28 rounded-full blur-2xl pointer-events-none transition-all ${
               isLight 
                 ? 'bg-gradient-to-r from-blue-400/25 via-sky-300/20 to-indigo-300/20 opacity-80' 
                 : 'bg-gradient-to-r from-blue-500/30 via-cyan-400/20 to-indigo-500/25 opacity-90'
             }`} 
           />
 
-          <div className={`relative inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 backdrop-blur-md ${
-            isLight ? 'shadow-sm' : 'shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+          <div className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase border backdrop-blur-md mb-1 ${
+            isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
           }`}>
-            <Award className="w-3 h-3 text-blue-500" />
-            <span>Defensibility, Patents & Standardized Blueprints</span>
+            <Award className="w-3.5 h-3.5 text-blue-500" />
+            <span>Defensibility & Standardized Blueprints</span>
           </div>
-          <div className="relative flex flex-col sm:flex-row items-center justify-center gap-3">
-            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all text-center ${
+          <div className="relative flex flex-wrap items-center justify-start gap-3">
+            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all text-left ${
               isLight 
                 ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
                 : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
@@ -490,7 +492,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                 }`}
               >
                 {isSectionGated ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
-                <span>{isSectionGated ? 'Locked Section' : 'Public Access'}</span>
+                <span>{isSectionGated ? 'Request Access' : 'Public Access'}</span>
               </button>
               {isAdmin && (
                 <button
@@ -508,67 +510,15 @@ export const Archive: React.FC<ArchiveProps> = ({
               )}
             </div>
           </div>
-          <p className={`relative max-w-3xl mx-auto text-xs sm:text-sm ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+          <p 
+            style={{ fontSize: '14px' }}
+            className={`relative max-w-3xl text-[14px] font-normal text-left leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}
+          >
             Granted intellectual property, institutional reference architectures, and standardized CISO operational blueprints.
           </p>
 
-          {/* Persistent Firebase Auth Locking Notice */}
-          <div className="max-w-4xl mx-auto pt-1">
-            {!isAuthorized ? (
-              <div className={`p-2 sm:p-2.5 rounded-xl border flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs transition-all ${
-                isLight ? 'bg-amber-50/90 border-amber-200 text-amber-950' : 'bg-amber-950/20 border-amber-500/30 text-amber-200'
-              }`}>
-                <div className="flex items-center gap-2 text-left">
-                  <div className="w-6 h-6 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-500 shrink-0">
-                    <Lock className="w-3.5 h-3.5" />
-                  </div>
-                  <div>
-                    <span className="font-bold text-[11px] block">
-                      {isSectionGated ? 'Section Gated by Default' : 'Granular Resource Protection Active'}
-                    </span>
-                    <span className="text-[10px] opacity-80 block">
-                      Each article and vault can be locked independently or granted specific individual clearance.
-                    </span>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => gateItem('sec-archive', 'archive', 'Archive Vaults & Blueprints', () => {})}
-                  className="shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-black font-bold text-[11px] shadow transition-all cursor-pointer"
-                >
-                  <Lock className="w-3 h-3" />
-                  <span>Authenticate & Request Access</span>
-                </button>
-              </div>
-            ) : (
-              <div className={`p-2 rounded-xl border flex items-center justify-between gap-2 text-xs transition-all ${
-                isLight ? 'bg-emerald-50/90 border-emerald-200 text-emerald-950' : 'bg-emerald-950/20 border-emerald-500/30 text-emerald-200'
-              }`}>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                  <span className="text-[11px]">
-                    <strong>Authenticated ({user?.email}):</strong> {
-                      isAdmin 
-                        ? 'Admin Clearance — Full control over individual locks & allowlists.'
-                        : currentUserEntry?.scope === 'specific'
-                          ? `Specific Clearance — Granted access to ${currentUserEntry.allowedItems?.length || 0} designated item(s).`
-                          : 'Global Clearance — Authorized for all archives, patents & blueprints.'
-                    }
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => gateItem('sec-archive', 'archive', 'Security Hub', () => {})}
-                  className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded uppercase font-bold hover:bg-emerald-500/20 transition-colors cursor-pointer"
-                >
-                  {isAdmin ? 'Manage Security' : 'View Clearance'}
-                </button>
-              </div>
-            )}
-          </div>
-
           {/* Primary View Switcher */}
-          <div className="flex flex-wrap items-center justify-center pt-1.5 gap-1.5">
+          <div className="flex flex-wrap items-center justify-start pt-1 gap-1.5 pb-0" style={{ paddingBottom: '0px', marginBottom: '2px' }}>
             <button
               onClick={() => setActiveTab('blueprints')}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${
@@ -627,9 +577,9 @@ export const Archive: React.FC<ArchiveProps> = ({
         {/* Tab 1: Standardized Executive Blueprints */}
         {activeTab === 'blueprints' && (
           <div className="relative w-full">
-            <div className="overflow-y-auto min-h-0 max-h-[360px] sm:max-h-[385px] lg:max-h-[405px] pr-1 pb-14 space-y-3 scrollbar-thin animate-in fade-in duration-300">
+            <div className="overflow-y-auto min-h-0 max-h-[380px] sm:max-h-[410px] lg:max-h-[430px] pr-1 pb-5 space-y-2.5 scrollbar-thin animate-in fade-in duration-300">
               {/* Blueprints Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 w-full">
                 {EXECUTIVE_BLUEPRINTS.map((bp) => {
                   const locked = isItemLocked(bp.id, 'archive');
                   const hasSpecificClearance = currentUserEntry?.scope === 'specific' && currentUserEntry.allowedItems?.includes(bp.id);
@@ -640,6 +590,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                       onClick={() => {
                         gateItem(bp.id, 'archive', bp.title, () => {
                           setSelectedBlueprint(bp);
+                          incrementStars(`archive-${bp.id}`);
                           trackAssetInteraction(bp.id, bp.title, 'Executive Blueprint');
                         });
                       }}
@@ -666,8 +617,15 @@ export const Archive: React.FC<ArchiveProps> = ({
                               </span>
                             )}
                             {locked && !hasSpecificClearance && (
-                              <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
-                                <Lock className="w-2.5 h-2.5" /> Locked
+                              <span 
+                                className={`inline-flex items-center justify-center p-1 rounded border ${
+                                  isLight 
+                                    ? 'bg-amber-50 border-amber-200 text-amber-700' 
+                                    : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                                }`}
+                                title="Locked - Request Access"
+                              >
+                                <Lock className="w-3 h-3 text-amber-500" />
                               </span>
                             )}
                             {isAdmin && (
@@ -684,7 +642,10 @@ export const Archive: React.FC<ArchiveProps> = ({
                               </button>
                             )}
                           </div>
-                          <span className="text-[10px] font-mono text-blue-500 font-semibold">{bp.regulatoryStandard}</span>
+                          <div className="flex items-center gap-2">
+                            <StarsCounter pageId={`archive-${bp.id}`} isLight={isLight} compact />
+                            <span className="text-[10px] font-mono text-blue-500 font-semibold">{bp.regulatoryStandard}</span>
+                          </div>
                         </div>
 
                         <h4 className={`text-xs sm:text-sm font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
@@ -755,7 +716,7 @@ export const Archive: React.FC<ArchiveProps> = ({
 
             {/* Bottom Gradient Fade Overlay */}
             <div 
-              className={`pointer-events-none absolute bottom-0 left-0 right-0 h-20 sm:h-24 bg-gradient-to-t ${
+              className={`pointer-events-none absolute bottom-0 left-0 right-0 h-8 sm:h-10 bg-gradient-to-t ${
                 isLight 
                   ? 'from-[#fcfcfd] via-[#fcfcfd]/90 to-transparent' 
                   : 'from-[#000000] via-[#000000]/90 to-transparent'
@@ -767,7 +728,7 @@ export const Archive: React.FC<ArchiveProps> = ({
         {/* Tab 2: Aspirational Horizons & Strategic Playbooks */}
         {activeTab === 'aspirational' && (
           <div className="relative w-full">
-            <div className="overflow-y-auto min-h-0 max-h-[360px] sm:max-h-[385px] lg:max-h-[405px] pr-1 pb-14 space-y-3 scrollbar-thin animate-in fade-in duration-300">
+            <div className="overflow-y-auto min-h-0 max-h-[380px] sm:max-h-[410px] lg:max-h-[430px] pr-1 pb-5 space-y-2.5 scrollbar-thin animate-in fade-in duration-300">
               {/* Executive Horizon Spotlight Banner */}
               {(() => {
                 const horizonLocked = isItemLocked('asp-boardroom-sim', 'archive');
@@ -788,7 +749,9 @@ export const Archive: React.FC<ArchiveProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-600/20 text-blue-600 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                            isLight ? 'bg-zinc-800 text-zinc-100 border-zinc-700' : 'bg-zinc-800/90 text-zinc-200 border-zinc-700'
+                          }`}>
                             CISO & dyCISO Strategic Horizons
                           </span>
                           <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300">
@@ -800,8 +763,15 @@ export const Archive: React.FC<ArchiveProps> = ({
                             </span>
                           )}
                           {horizonLocked && !horizonClearance && (
-                            <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
-                              <Lock className="w-2.5 h-2.5" /> Locked
+                            <span 
+                              className={`inline-flex items-center justify-center p-1 rounded border ${
+                                isLight 
+                                  ? 'bg-amber-50 border-amber-200 text-amber-700' 
+                                  : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                              }`}
+                              title="Locked - Request Access"
+                            >
+                              <Lock className="w-3 h-3 text-amber-500" />
                             </span>
                           )}
                           {isAdmin && (
@@ -857,7 +827,9 @@ export const Archive: React.FC<ArchiveProps> = ({
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="text-[10px] font-bold uppercase tracking-wider bg-blue-600/20 text-blue-600 dark:text-blue-300 px-2 py-0.5 rounded-full border border-blue-500/30">
+                          <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
+                            isLight ? 'bg-zinc-800 text-zinc-100 border-zinc-700' : 'bg-zinc-800/90 text-zinc-200 border-zinc-700'
+                          }`}>
                             In the making Patent
                           </span>
                           <span className="text-[11px] font-mono font-bold text-zinc-700 dark:text-zinc-300">
@@ -869,8 +841,15 @@ export const Archive: React.FC<ArchiveProps> = ({
                             </span>
                           )}
                           {patentLocked && !patentClearance && (
-                            <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
-                              <Lock className="w-2.5 h-2.5" /> Locked
+                            <span 
+                              className={`inline-flex items-center justify-center p-1 rounded border ${
+                                isLight 
+                                  ? 'bg-amber-50 border-amber-200 text-amber-700' 
+                                  : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                              }`}
+                              title="Locked - Request Access"
+                            >
+                              <Lock className="w-3 h-3 text-amber-500" />
                             </span>
                           )}
                           {isAdmin && (
@@ -890,7 +869,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                         <h4 className={`text-xs sm:text-sm font-bold mt-0.5 ${isLight ? 'text-zinc-900' : 'text-white'}`}>
                           Method and Apparatus for Cryptographic Session Binding and Device Attestation™
                         </h4>
-                        <p className={`text-[11px] leading-relaxed max-w-2xl mt-0.5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                        <p className={`text-[11px] leading-relaxed whitespace-nowrap mt-0.5 ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
                           Hardware-backed cryptographic assertion of device integrity and FIDO2 session binding during OAuth 2.0 / OIDC authorization code exchanges.
                         </p>
                       </div>
@@ -898,7 +877,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                     <span className={`text-[10px] font-semibold px-2.5 py-1 rounded-lg border shrink-0 ${
                       isLight ? 'bg-white border-blue-300 text-blue-700' : 'bg-white/10 border-white/10 text-blue-300'
                     }`}>
-                      {patentLocked && !patentClearance ? 'Protected IP • Locked' : 'Protected IP & Defensibility'}
+                      Protected IP & Defensibility
                     </span>
                   </div>
                 );
@@ -916,6 +895,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                       onClick={() => {
                         gateItem(item.id, 'archive', item.title, () => {
                           setSelectedAspirational(item);
+                          incrementStars(`archive-${item.id}`);
                           trackAssetInteraction(item.id, item.title, 'Aspirational Roadmap');
                         });
                       }}
@@ -929,7 +909,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-1.5 flex-wrap">
                             <span className={`text-[9.5px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${
-                              isLight ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                              isLight ? 'bg-zinc-800 text-zinc-100 border-zinc-700' : 'bg-zinc-800/90 text-zinc-200 border-zinc-700'
                             }`}>
                               {item.category}
                             </span>
@@ -947,8 +927,15 @@ export const Archive: React.FC<ArchiveProps> = ({
                               </span>
                             )}
                             {locked && !hasSpecificClearance && (
-                              <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
-                                <Lock className="w-2.5 h-2.5" /> Locked
+                              <span 
+                                className={`inline-flex items-center justify-center p-1 rounded border ${
+                                  isLight 
+                                    ? 'bg-amber-50 border-amber-200 text-amber-700' 
+                                    : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                                }`}
+                                title="Locked - Request Access"
+                              >
+                                <Lock className="w-3 h-3 text-amber-500" />
                               </span>
                             )}
                             {isAdmin && (
@@ -965,7 +952,10 @@ export const Archive: React.FC<ArchiveProps> = ({
                               </button>
                             )}
                           </div>
-                          <span className="text-[10px] font-mono text-blue-500 font-semibold">{item.targetHorizon}</span>
+                          <div className="flex items-center gap-2">
+                            <StarsCounter pageId={`archive-${item.id}`} isLight={isLight} compact />
+                            <span className="text-[10px] font-mono text-blue-500 font-semibold">{item.targetHorizon}</span>
+                          </div>
                         </div>
 
                         <div>
@@ -996,7 +986,9 @@ export const Archive: React.FC<ArchiveProps> = ({
                           <div className="space-y-1">
                             {item.phases.map((ph, pIdx) => (
                               <div key={pIdx} className="text-[10px] flex items-start gap-1.5">
-                                <span className="font-bold text-blue-500 shrink-0 font-mono text-[9px] px-1 py-0.2 bg-blue-500/10 rounded">
+                                <span className={`font-bold shrink-0 font-mono text-[9px] px-1.5 py-0.2 rounded border ${
+                                  isLight ? 'bg-zinc-800 text-zinc-100 border-zinc-700' : 'bg-zinc-800/90 text-zinc-200 border-zinc-700'
+                                }`}>
                                   {ph.phase}:
                                 </span>
                                 <span className={`truncate ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
@@ -1056,7 +1048,7 @@ export const Archive: React.FC<ArchiveProps> = ({
 
             {/* Bottom Gradient Fade Overlay */}
             <div 
-              className={`pointer-events-none absolute bottom-0 left-0 right-0 h-20 sm:h-24 bg-gradient-to-t ${
+              className={`pointer-events-none absolute bottom-0 left-0 right-0 h-8 sm:h-10 bg-gradient-to-t ${
                 isLight 
                   ? 'from-[#fcfcfd] via-[#fcfcfd]/90 to-transparent' 
                   : 'from-[#000000] via-[#000000]/90 to-transparent'
@@ -1068,7 +1060,7 @@ export const Archive: React.FC<ArchiveProps> = ({
         {/* Tab 3: Strategic Playbooks & Operational Intelligence */}
         {activeTab === 'playbooks' && (
           <div className="relative w-full">
-            <div className="overflow-y-auto min-h-0 max-h-[360px] sm:max-h-[385px] lg:max-h-[405px] pr-1 pb-14 space-y-3 scrollbar-thin animate-in fade-in duration-300">
+            <div className="overflow-y-auto min-h-0 max-h-[380px] sm:max-h-[410px] lg:max-h-[430px] pr-1 pb-5 space-y-2.5 scrollbar-thin animate-in fade-in duration-300">
               {/* Playbook Header */}
               <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
                 isLight ? 'bg-emerald-50/50 border-emerald-100' : 'bg-emerald-500/5 border-emerald-500/10'
@@ -1100,6 +1092,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                       onClick={() => {
                         gateItem(pb.id, 'archive', pb.title, () => {
                           setSelectedPlaybook(pb);
+                          incrementStars(`archive-${pb.id}`);
                           trackAssetInteraction(pb.id, pb.title, 'Strategic Playbook');
                         });
                       }}
@@ -1126,8 +1119,15 @@ export const Archive: React.FC<ArchiveProps> = ({
                             </span>
                           )}
                           {locked && !hasSpecificClearance && (
-                            <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
-                              <Lock className="w-2.5 h-2.5" /> Locked
+                            <span 
+                              className={`inline-flex items-center justify-center p-1 rounded border ${
+                                isLight 
+                                  ? 'bg-amber-50 border-amber-200 text-amber-700' 
+                                  : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                              }`}
+                              title="Locked - Request Access"
+                            >
+                              <Lock className="w-3 h-3 text-amber-500" />
                             </span>
                           )}
                           {isAdmin && (
@@ -1144,6 +1144,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                             </button>
                           )}
                         </div>
+                        <StarsCounter pageId={`archive-${pb.id}`} isLight={isLight} compact />
                       </div>
 
                       <h3 className={`text-base font-bold mb-2 ${isLight ? 'text-zinc-900' : 'text-white'}`}>{pb.title}</h3>
@@ -1208,7 +1209,7 @@ export const Archive: React.FC<ArchiveProps> = ({
 
             {/* Bottom Gradient Fade Overlay */}
             <div 
-              className={`pointer-events-none absolute bottom-0 left-0 right-0 h-20 sm:h-24 bg-gradient-to-t ${
+              className={`pointer-events-none absolute bottom-0 left-0 right-0 h-8 sm:h-10 bg-gradient-to-t ${
                 isLight 
                   ? 'from-[#fcfcfd] via-[#fcfcfd]/90 to-transparent' 
                   : 'from-[#000000] via-[#000000]/90 to-transparent'
@@ -1289,6 +1290,7 @@ export const Archive: React.FC<ArchiveProps> = ({
                       key={item.id}
                       onClick={() => {
                         gateItem(item.id, 'archive', item.title, () => {
+                          incrementStars(`archive-${item.id}`);
                           if (item.link) window.open(item.link, '_blank');
                         });
                       }}
@@ -1318,8 +1320,15 @@ export const Archive: React.FC<ArchiveProps> = ({
                               </span>
                             )}
                             {locked && !hasSpecificClearance && (
-                              <span className="inline-flex items-center gap-1 text-[9px] font-mono text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded">
-                                <Lock className="w-2.5 h-2.5" /> Locked
+                              <span 
+                                className={`inline-flex items-center justify-center p-1 rounded border ${
+                                  isLight 
+                                    ? 'bg-amber-50 border-amber-200 text-amber-700' 
+                                    : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                                }`}
+                                title="Locked - Request Access"
+                              >
+                                <Lock className="w-3 h-3 text-amber-500" />
                               </span>
                             )}
                             {isAdmin && (
@@ -1335,7 +1344,10 @@ export const Archive: React.FC<ArchiveProps> = ({
                                 {locked ? <Lock className="w-2.5 h-2.5 text-amber-400" /> : <Unlock className="w-2.5 h-2.5 text-emerald-400" />}
                               </button>
                             )}
-                            <span className={`text-[10px] font-mono ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>{item.year}</span>
+                            <div className="flex items-center gap-2">
+                              <StarsCounter pageId={`archive-${item.id}`} isLight={isLight} compact />
+                              <span className={`text-[10px] font-mono ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>{item.year}</span>
+                            </div>
                           </div>
                         </div>
 
@@ -1619,16 +1631,16 @@ export const Archive: React.FC<ArchiveProps> = ({
                     <span>Identity Fabric Maturity (CISA Pillar 1)</span>
                     <span className="font-mono font-bold text-blue-500">98%</span>
                   </div>
-                  <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-blue-500 rounded-full w-[98%]" />
+                  <div className="w-full h-1.5 rounded-full bg-sky-100/90 dark:bg-white/10 overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-300 rounded-full w-[98%] shadow-[0_0_8px_rgba(56,189,248,0.45)]" />
                   </div>
 
                   <div className="flex items-center justify-between text-zinc-500 text-[10px] pt-1">
                     <span>Privileged Access Elimination (Zero Standing Rights)</span>
                     <span className="font-mono font-bold text-emerald-500">95%</span>
                   </div>
-                  <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
-                    <div className="h-full bg-emerald-500 rounded-full w-[95%]" />
+                  <div className="w-full h-1.5 rounded-full bg-emerald-100/90 dark:bg-white/10 overflow-hidden">
+                    <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-300 rounded-full w-[95%] shadow-[0_0_8px_rgba(52,211,153,0.45)]" />
                   </div>
                 </div>
               </div>

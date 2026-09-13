@@ -27,7 +27,7 @@ const SECTION_LABELS: Record<SectionId, string> = {
   overview: 'Overview',
   bio: 'Executive Bio',
   competencies: 'Competencies',
-  career: 'Career',
+  career: 'Career Journey',
   projects: 'Case Studies',
   blog: 'Publications',
   offkeyboard: 'Off Keyboard',
@@ -44,10 +44,11 @@ const SnapSection: React.FC<SnapSectionProps> = ({ id, children }) => {
   return (
     <div id={id} className="snap-section w-full">
       <motion.div
-        initial={{ opacity: 0, y: 32 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: false, amount: 0.15 }}
-        transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+        initial={{ opacity: 0.1, scale: 0.98, y: 24 }}
+        whileInView={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0.1, scale: 0.98, y: -24 }}
+        viewport={{ once: false, amount: 0.2 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         className="w-full h-full"
       >
         {children}
@@ -60,6 +61,7 @@ export default function App() {
   const [contactOpen, setContactOpen] = useState(false);
   const [interfaceModalOpen, setInterfaceModalOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<SectionId>('overview');
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const [theme, setTheme] = useState<ThemeMode>('apple-light');
   const [accent, setAccent] = useState<AccentColor>('blue');
@@ -125,6 +127,11 @@ export default function App() {
     if (!container) return;
 
     const handleScroll = () => {
+      const totalScroll = container.scrollHeight - container.clientHeight;
+      if (totalScroll > 0) {
+        setScrollProgress(container.scrollTop / totalScroll);
+      }
+
       if (isTransitioningRef.current) return;
       const scrollPosition = container.scrollTop + container.clientHeight / 2;
 
@@ -256,77 +263,9 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNextPage, handlePrevPage, navigateToIndex, handleToggleSidebar]);
 
-  // Security: Content protection (anti-copy, anti-save, anti-drag, context menu suppression)
+  // Security: Content protection removed per user request to allow copying/cutting/selecting
   useEffect(() => {
-    // Disable right-click context menu
-    const handleContextMenu = (e: MouseEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (
-        target?.tagName === 'INPUT' || 
-        target?.tagName === 'TEXTAREA' || 
-        target?.isContentEditable ||
-        target?.closest('.allow-context-menu')
-      ) {
-        return;
-      }
-      e.preventDefault();
-    };
-
-    // Prevent unauthorized copying/cutting of DOM text
-    const handleCopy = (e: ClipboardEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (
-        target?.tagName === 'INPUT' || 
-        target?.tagName === 'TEXTAREA' || 
-        target?.isContentEditable ||
-        target?.closest('.allow-copy')
-      ) {
-        return;
-      }
-      e.preventDefault();
-    };
-
-    const handleCut = (e: ClipboardEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (
-        target?.tagName === 'INPUT' || 
-        target?.tagName === 'TEXTAREA' || 
-        target?.isContentEditable
-      ) {
-        return;
-      }
-      e.preventDefault();
-    };
-
-    // Prevent dragging images, links, or text out of the window
-    const handleDragStart = (e: DragEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (target?.closest('.allow-drag')) {
-        return;
-      }
-      e.preventDefault();
-    };
-
-    // Intercept Save (Ctrl+S / Cmd+S) and View Source (Ctrl+U / Cmd+U) shortcuts
-    const handleSaveShortcuts = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && (e.key === 's' || e.key === 'S' || e.key === 'u' || e.key === 'U')) {
-        e.preventDefault();
-      }
-    };
-
-    document.addEventListener('contextmenu', handleContextMenu);
-    document.addEventListener('copy', handleCopy);
-    document.addEventListener('cut', handleCut);
-    document.addEventListener('dragstart', handleDragStart);
-    window.addEventListener('keydown', handleSaveShortcuts);
-
-    return () => {
-      document.removeEventListener('contextmenu', handleContextMenu);
-      document.removeEventListener('copy', handleCopy);
-      document.removeEventListener('cut', handleCut);
-      document.removeEventListener('dragstart', handleDragStart);
-      window.removeEventListener('keydown', handleSaveShortcuts);
-    };
+    // Keep standard browser behavior for contextmenu, copy, cut, drag, and save/view source
   }, []);
 
   // Touch swipe support for mobile stops
@@ -385,10 +324,17 @@ export default function App() {
         id="main-scroll-container"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
-        className={`${
-          isSidebarCollapsed ? 'md:ml-[72px]' : 'md:ml-[270px]'
-        } h-screen overflow-y-auto scroll-container select-text transition-[margin] duration-300 ease-in-out`}
+        style={{ marginLeft: isSidebarCollapsed ? '72px' : '260.438px' }}
+        className="h-screen overflow-y-auto scroll-container select-text transition-[margin] duration-300 ease-in-out relative"
       >
+        {/* Subtle Top Scroll Progress Bar */}
+        <div className="sticky top-0 left-0 right-0 h-[2.5px] z-50 pointer-events-none bg-transparent">
+          <div 
+            className="h-full bg-blue-500 transition-all duration-100 ease-out shadow-xs"
+            style={{ width: `${scrollProgress * 100}%` }}
+          />
+        </div>
+
         <main className="w-full">
           {/* Stop 1: Overview */}
           <SnapSection id="overview">

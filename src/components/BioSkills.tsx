@@ -57,14 +57,14 @@ export const BioSkills: React.FC<BioSkillsProps> = ({ theme = 'apple-dark' }) =>
     : SKILL_CATEGORIES.filter(cat => cat.title.toLowerCase().includes(selectedFilter.toLowerCase()));
 
   return (
-    <section id="bio" className={`pt-12 pb-20 px-4 sm:px-6 lg:px-8 w-full max-w-7xl lg:max-w-[1360px] mx-auto border-t ${isLight ? 'border-zinc-200' : 'border-white/10'}`}>
+    <section id="bio" className={`pt-12 pb-20 px-4 sm:px-6 lg:px-8 w-full max-w-[1410px] lg:max-w-[1500px] mx-auto border-t ${isLight ? 'border-zinc-200' : 'border-white/10'}`}>
       
       {/* 1. Section Header */}
       <div className="text-center space-y-2.5 mb-7">
-        <div className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider border ${
-          isLight ? 'bg-blue-50 border-blue-200 text-blue-700' : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+        <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase border backdrop-blur-md ${
+          isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
         }`}>
-          <Sparkles className="w-3.5 h-3.5" />
+          <Sparkles className="w-3.5 h-3.5 text-blue-500 animate-pulse" />
           <span>Professional Profile & Architecture</span>
         </div>
         <h2 className={`text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
@@ -81,7 +81,7 @@ export const BioSkills: React.FC<BioSkillsProps> = ({ theme = 'apple-dark' }) =>
       }`}>
         
         {/* Navigation Tabs Header */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pb-3 mb-3.5 border-b border-zinc-100 dark:border-white/5 relative">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2.5 pb-1 mb-1.5 border-b border-zinc-100 dark:border-white/5 relative">
           <div className="hidden lg:flex items-center space-x-2.5 absolute left-0">
             <div className={`w-2.5 h-2.5 rounded-full ${isLight ? 'bg-blue-600' : 'bg-blue-400'} animate-pulse`} />
             <span className={`text-xs sm:text-sm font-semibold tracking-wide uppercase ${isLight ? 'text-zinc-900' : 'text-white'}`}>
@@ -93,13 +93,13 @@ export const BioSkills: React.FC<BioSkillsProps> = ({ theme = 'apple-dark' }) =>
             ref={scrollRef}
             onMouseMove={onMouseMove}
             onMouseLeave={onMouseLeave}
-            className={`flex items-center justify-center gap-1 p-1 rounded-2xl border mx-auto whitespace-nowrap overflow-x-auto cursor-ew-resize select-none ${
+            className={`flex items-center justify-center gap-1 p-0.5 rounded-xl border mx-auto whitespace-nowrap overflow-x-auto cursor-ew-resize select-none ${
               isLight ? 'bg-zinc-100 border-zinc-200' : 'bg-black/50 border-white/10'
             }`}
           >
             <button
               onClick={() => setActiveBioTab('summary')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+              className={`px-2 py-1 rounded-lg text-[10px] sm:text-[11.5px] font-medium whitespace-nowrap transition-all ${
                 activeBioTab === 'summary'
                   ? (isLight ? 'bg-white text-zinc-900 shadow-sm font-semibold' : 'bg-white text-black shadow-sm font-semibold')
                   : (isLight ? 'text-zinc-600 hover:text-black' : 'text-zinc-400 hover:text-white')
@@ -109,7 +109,7 @@ export const BioSkills: React.FC<BioSkillsProps> = ({ theme = 'apple-dark' }) =>
             </button>
             <button
               onClick={() => setActiveBioTab('philosophy')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+              className={`px-2 py-1 rounded-lg text-[10px] sm:text-[11.5px] font-medium whitespace-nowrap transition-all ${
                 activeBioTab === 'philosophy'
                   ? (isLight ? 'bg-white text-zinc-900 shadow-sm font-semibold' : 'bg-white text-black shadow-sm font-semibold')
                   : (isLight ? 'text-zinc-600 hover:text-black' : 'text-zinc-400 hover:text-white')
@@ -119,7 +119,7 @@ export const BioSkills: React.FC<BioSkillsProps> = ({ theme = 'apple-dark' }) =>
             </button>
             <button
               onClick={() => setActiveBioTab('credentials')}
-              className={`px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+              className={`px-2 py-1 rounded-lg text-[10px] sm:text-[11.5px] font-medium whitespace-nowrap transition-all ${
                 activeBioTab === 'credentials'
                   ? (isLight ? 'bg-white text-zinc-900 shadow-sm font-semibold' : 'bg-white text-black shadow-sm font-semibold')
                   : (isLight ? 'text-zinc-600 hover:text-black' : 'text-zinc-400 hover:text-white')
@@ -133,11 +133,51 @@ export const BioSkills: React.FC<BioSkillsProps> = ({ theme = 'apple-dark' }) =>
         {/* Tab 1: Executive Summary */}
         {activeBioTab === 'summary' && (
           <div className="space-y-4 animate-in fade-in duration-300">
-            <div className="space-y-2">
-              <p className={`text-sm sm:text-base lg:text-lg font-medium leading-relaxed ${isLight ? 'text-zinc-900' : 'text-zinc-100'}`}>
-                {PERSONAL_INFO.bioShort}
+            <div className="space-y-3">
+              <p className={`text-sm sm:text-base lg:text-md font-semibold leading-relaxed ${isLight ? 'text-zinc-950' : 'text-zinc-50'}`}>
+                Cybersecurity Executive & Enterprise Architect with <span className="text-blue-500 font-bold">21+ years</span> protecting Fortune 100 infrastructures across Goldman Sachs and global tech leaders.
               </p>
-              <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
+              
+              {/* Horizontal 3 Points Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className={`py-1.5 px-3 rounded-2xl border ${isLight ? 'bg-blue-50/40 border-blue-100' : 'bg-blue-950/10 border-blue-900/20'}`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-blue-500 font-bold text-lg leading-none shrink-0">•</span>
+                    <div>
+                      <span className={`font-bold text-[11px] uppercase tracking-wider block mb-1.5 ${isLight ? 'text-blue-700' : 'text-blue-400'}`}>Enterprise Strategy</span>
+                      <span className={`text-[12px] leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                        Directed Zero Trust IAM, AI risk governance, and Tier-1 capital market defense perimeters.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`py-1.5 px-3 rounded-2xl border ${isLight ? 'bg-indigo-50/40 border-indigo-100' : 'bg-indigo-950/10 border-indigo-900/20'}`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-indigo-500 font-bold text-lg leading-none shrink-0">•</span>
+                    <div>
+                      <span className={`font-bold text-[11px] uppercase tracking-wider block mb-1.5 ${isLight ? 'text-indigo-700' : 'text-indigo-400'}`}>Global Leadership</span>
+                      <span className={`text-[12px] leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                        Spearheaded multi-million-dollar defense programs and high-performing engineering squads.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={`py-1.5 px-3 rounded-2xl border ${isLight ? 'bg-emerald-50/40 border-emerald-100' : 'bg-emerald-950/10 border-emerald-900/20'}`}>
+                  <div className="flex items-start gap-2">
+                    <span className="text-emerald-500 font-bold text-lg leading-none shrink-0">•</span>
+                    <div>
+                      <span className={`font-bold text-[11px] uppercase tracking-wider block mb-1.5 ${isLight ? 'text-emerald-700' : 'text-emerald-400'}`}>Regulatory Assurance</span>
+                      <span className={`text-[12px] leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+                        Maintained an unblemished 100% clean audit track record under rigorous supervision.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p className={`text-xs sm:text-sm leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-300'} pt-1`}>
                 Over two decades of hands-on and strategic leadership across tier-1 financial institutions and global cloud enterprises. Proven track record modernizing legacy federations into cloud-native passwordless authentication, implementing least-privilege Zero Trust boundaries, and embedding AI-driven behavioral defense mechanisms across high-consequence production perimeters.
               </p>
             </div>
@@ -333,7 +373,7 @@ export const BioSkills: React.FC<BioSkillsProps> = ({ theme = 'apple-dark' }) =>
         <div className={`text-xs font-semibold px-3 py-1 rounded-full border self-start sm:self-auto shrink-0 ${
           isLight ? 'bg-zinc-100 border-zinc-200 text-zinc-800' : 'bg-white/[0.05] border-white/10 text-zinc-300'
         }`}>
-          6 Strategic Pillars
+          3 Strategic Pillars
         </div>
       </div>
 
@@ -392,9 +432,9 @@ export const BioSkills: React.FC<BioSkillsProps> = ({ theme = 'apple-dark' }) =>
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0 ml-auto">
-                      <div className={`w-9 sm:w-11 h-1.5 rounded-full overflow-hidden shrink-0 ${isLight ? 'bg-zinc-200' : 'bg-white/10'}`}>
+                      <div className={`w-9 sm:w-11 h-1.5 rounded-full overflow-hidden shrink-0 ${isLight ? 'bg-sky-100/90 border border-sky-200/60' : 'bg-white/10 border border-white/10'}`}>
                         <div
-                          className="h-full bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full"
+                          className="h-full bg-gradient-to-r from-sky-400 via-blue-400 to-indigo-300 rounded-full shadow-[0_0_8px_rgba(56,189,248,0.45)]"
                           style={{ width: `${skill.level}%` }}
                         />
                       </div>

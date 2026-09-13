@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   X, ShieldCheck, TrendingUp, CheckCircle, Award, Share2, Check, 
-  ArrowRight, Layers, FileText, Sparkles, Zap, Cpu, GitMerge, Scale, Lock, AlertTriangle 
+  ArrowRight, Layers, FileText, Sparkles, Zap, Cpu, GitMerge, Landmark, Lock, AlertTriangle 
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { ExecutiveCaseStudy } from '../types';
+import { incrementStars } from '../lib/stars';
 
 interface CaseStudyModalProps {
   caseStudy: ExecutiveCaseStudy | null;
@@ -20,6 +21,9 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ caseStudy, onClo
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (caseStudy) {
+      incrementStars(`project-${caseStudy.id}`);
+    }
     setScrollProgress(0);
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
@@ -80,9 +84,9 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ caseStudy, onClo
         };
       case 'Board Governance & Crisis Command':
         return {
-          icon: <Scale className="w-3.5 h-3.5 text-rose-500" />,
-          badgeClass: isLight ? 'bg-rose-50 border-rose-200 text-rose-700' : 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-          titleAccent: isLight ? 'text-rose-600' : 'text-rose-400',
+          icon: <Landmark className="w-3.5 h-3.5 text-indigo-500" />,
+          badgeClass: isLight ? 'bg-indigo-50 border-indigo-200 text-indigo-700' : 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
+          titleAccent: isLight ? 'text-indigo-600' : 'text-indigo-400',
         };
       default:
         return {

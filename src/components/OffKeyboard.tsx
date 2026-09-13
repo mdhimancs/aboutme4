@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Compass, Film, Sparkles, Shield, BookOpen, Music, Globe, Cpu, Search, Play, ExternalLink, Utensils, Plane, Trophy, Smile, Footprints, ChevronLeft, ChevronRight, Users, Heart } from 'lucide-react';
 import { CURATED_VIDEOS } from '../data/curatedVideos';
 import { useHoverScroll } from '../lib/utils';
+import { StarsCounter } from './StarsCounter';
+import { incrementStars } from '../lib/stars';
 
 interface OffKeyboardProps {
   theme?: string;
@@ -111,7 +113,7 @@ export const OffKeyboard: React.FC<OffKeyboardProps> = ({ theme = 'apple-dark' }
   return (
     <section 
       id="offkeyboard" 
-      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center py-3 sm:py-4 lg:py-5 pb-8 sm:pb-12 lg:pb-14 px-6 sm:px-10 lg:px-14 max-w-5xl lg:max-w-6xl mx-auto border-t ${
+      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center pt-8 sm:pt-10 pb-8 sm:pb-12 lg:pb-14 px-6 sm:px-10 lg:px-14 max-w-6xl lg:max-w-7xl mx-auto border-t ${
         isLight ? 'border-zinc-200 bg-[#fcfcfd]' : 'border-white/10 bg-[#000000]'
       }`}
     >
@@ -137,32 +139,38 @@ export const OffKeyboard: React.FC<OffKeyboardProps> = ({ theme = 'apple-dark' }
       <div className="relative w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col flex-1 min-h-0 justify-center space-y-2 sm:space-y-2.5">
         
         {/* Header & Sub-Navigation */}
-        <div className="relative text-center space-y-1 mb-1.5 sm:mb-2 shrink-0">
+        <div className="relative text-left space-y-0.5 mb-3 shrink-0">
           {/* Luminous aura behind heading */}
           <div 
-            className={`absolute -top-3 left-1/2 -translate-x-1/2 w-72 sm:w-96 h-20 sm:h-24 rounded-full blur-2xl pointer-events-none transition-all ${
+            className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-20 sm:h-24 rounded-full blur-2xl pointer-events-none transition-all ${
               isLight 
                 ? 'bg-gradient-to-r from-blue-400/25 via-sky-300/20 to-indigo-300/20 opacity-80' 
                 : 'bg-gradient-to-r from-blue-500/30 via-cyan-400/20 to-indigo-500/25 opacity-90'
             }`} 
           />
 
-          <div className={`relative inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[10.5px] font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20 backdrop-blur-md ${
-            isLight ? 'shadow-sm' : 'shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+          <div className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase border backdrop-blur-md mb-1 ${
+            isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
           }`}>
-            <Compass className="w-3 h-3 text-blue-500" />
+            <Compass className="w-3.5 h-3.5 text-blue-500" />
             <span>Intellectual Curiosity, Life & Pursuits</span>
           </div>
-          <h2 className={`relative text-lg sm:text-2xl lg:text-3xl font-bold tracking-tight transition-all ${
+          <h2 className={`relative text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all text-left ${
             isLight 
               ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
               : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
           }`}>
             Off Keyboard: Interests & Pursuits
           </h2>
+          <p 
+            style={{ fontSize: '14px', paddingBottom: '12px' }}
+            className={`relative max-w-4xl text-[14px] font-normal leading-relaxed text-left ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}
+          >
+            Exploring the intersection of technology, humanities, and the physical world through curated interests and lifelong learning.
+          </p>
 
           {/* Sub-Tabs: Interests vs Curated Videos */}
-          <div className="flex items-center justify-center pt-0.5 gap-2">
+          <div className="flex items-center justify-start pt-0.5 gap-2 pb-0.5" style={{ paddingBottom: '2px', marginBottom: '6px' }}>
             <button
               onClick={() => setActiveTab('interests')}
               className={`flex items-center gap-1.5 px-3 py-0.5 sm:py-1 rounded-xl text-[10px] sm:text-[11px] font-semibold transition-all ${
@@ -196,7 +204,10 @@ export const OffKeyboard: React.FC<OffKeyboardProps> = ({ theme = 'apple-dark' }
         <div className="flex-1 overflow-y-auto min-h-0 pb-1 pr-0.5">
         {/* Tab Content: Interests */}
         {activeTab === 'interests' && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 lg:gap-3 pb-1 animate-in fade-in duration-300">
+          <div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-2.5 lg:gap-3 pb-1 animate-in fade-in duration-300"
+            style={{ paddingBottom: '2px', width: '1135.41px', height: '442.366px' }}
+          >
             {interestsList.map((item, index) => (
               <div
                 key={index}
@@ -232,19 +243,22 @@ export const OffKeyboard: React.FC<OffKeyboardProps> = ({ theme = 'apple-dark' }
                   </p>
                 </div>
 
-                <div className="pt-1.5 border-t border-zinc-200/70 dark:border-white/10 flex items-center gap-1 flex-wrap">
-                  {item.highlights.map((h, i) => (
-                    <span
-                      key={i}
-                      className={`text-[7.5px] sm:text-[8px] lg:text-[8.5px] px-1.5 py-0.5 rounded font-medium border leading-none ${
-                        isLight 
-                          ? 'bg-blue-50/80 border-blue-100 text-blue-700' 
-                          : 'bg-blue-500/10 border-blue-500/20 text-blue-300'
-                      }`}
-                    >
-                      {h}
-                    </span>
-                  ))}
+                <div className="pt-1.5 border-t border-zinc-200/70 dark:border-white/10 flex items-center justify-between">
+                  <div className="flex items-center gap-1 flex-wrap">
+                    {item.highlights.map((h, i) => (
+                      <span
+                        key={i}
+                        className={`text-[7.5px] sm:text-[8px] lg:text-[8.5px] px-1.5 py-0.5 rounded font-medium border leading-none ${
+                          isLight 
+                            ? 'bg-zinc-800 text-zinc-100 border-zinc-700' 
+                            : 'bg-zinc-800/90 text-zinc-200 border-zinc-700'
+                        }`}
+                      >
+                        {h}
+                      </span>
+                    ))}
+                  </div>
+                  <StarsCounter pageId={`interest-${item.title.toLowerCase().replace(/\s+/g, '-')}`} isLight={isLight} compact />
                 </div>
               </div>
             ))}

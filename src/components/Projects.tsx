@@ -10,7 +10,7 @@ import {
   Zap, 
   FileText, 
   Cpu, 
-  Scale, 
+  Landmark, 
   GitMerge, 
   CheckCircle,
   Award,
@@ -23,6 +23,7 @@ import { CaseStudyModal } from './CaseStudyModal';
 import { useHoverScroll } from '../lib/utils';
 import { trackAssetInteraction } from '../lib/analytics';
 import { useAuth } from '../context/AuthContext';
+import { StarsCounter } from './StarsCounter';
 
 interface ProjectsProps {
   theme?: string;
@@ -49,7 +50,8 @@ export const Projects: React.FC<ProjectsProps> = ({ theme = 'apple-dark' }) => {
     isItemLocked, 
     isSectionLocked, 
     toggleSectionLock, 
-    toggleItemLock 
+    toggleItemLock,
+    setGateModalOpen
   } = useAuth();
 
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -116,13 +118,13 @@ export const Projects: React.FC<ProjectsProps> = ({ theme = 'apple-dark' }) => {
         };
       case 'Board Governance & Crisis Command':
         return {
-          icon: <Scale className="w-3.5 h-3.5 text-rose-500" />,
-          lightBg: 'bg-rose-50 border-rose-200 text-rose-600',
-          darkBg: 'bg-rose-500/10 border-rose-500/20 text-rose-400',
-          textColor: isLight ? 'text-rose-600' : 'text-rose-400',
-          dotColor: 'bg-rose-500',
-          hoverBorder: isLight ? 'hover:border-rose-500' : 'hover:border-rose-500/50',
-          ctaText: isLight ? 'text-rose-600' : 'text-rose-400',
+          icon: <Landmark className="w-3.5 h-3.5 text-indigo-500" />,
+          lightBg: 'bg-indigo-50 border-indigo-200 text-indigo-600',
+          darkBg: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
+          textColor: isLight ? 'text-indigo-600' : 'text-indigo-400',
+          dotColor: 'bg-indigo-500',
+          hoverBorder: isLight ? 'hover:border-indigo-500' : 'hover:border-indigo-500/50',
+          ctaText: isLight ? 'text-indigo-600' : 'text-indigo-400',
         };
       default:
         return {
@@ -140,7 +142,7 @@ export const Projects: React.FC<ProjectsProps> = ({ theme = 'apple-dark' }) => {
   return (
     <section 
       id="projects" 
-      className={`relative overflow-hidden min-h-screen w-full flex flex-col justify-center py-6 sm:py-8 pb-12 sm:pb-16 lg:pb-20 px-6 sm:px-10 lg:px-14 max-w-5xl lg:max-w-6xl mx-auto border-t ${
+      className={`relative overflow-hidden min-h-screen w-full flex flex-col justify-center pt-8 sm:pt-10 pb-10 sm:pb-14 lg:pb-16 px-6 sm:px-10 lg:px-14 max-w-6xl lg:max-w-7xl mx-auto border-t ${
         isLight ? 'border-zinc-200 bg-[#fcfcfd]' : 'border-white/10 bg-[#000000]'
       }`}
     >
@@ -164,7 +166,7 @@ export const Projects: React.FC<ProjectsProps> = ({ theme = 'apple-dark' }) => {
         />
 
         {/* Section Header */}
-        <div className="relative w-full space-y-1 mb-3.5 sm:mb-4 shrink-0 text-left">
+        <div className="relative w-full space-y-0.5 mb-6 shrink-0 text-left">
           {/* Luminous aura behind heading */}
           <div 
             className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-24 sm:h-28 rounded-full blur-2xl pointer-events-none transition-all ${
@@ -174,28 +176,32 @@ export const Projects: React.FC<ProjectsProps> = ({ theme = 'apple-dark' }) => {
             }`} 
           />
 
-          <div className={`relative inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] sm:text-[10.5px] font-semibold tracking-wider uppercase backdrop-blur-md border ${
+          <div className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase border backdrop-blur-md mb-1 ${
             isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
           }`}>
-            <ShieldCheck className="w-3 h-3 text-blue-500" />
-            <span>Executive Transformation Programs • CISO Case Studies</span>
+            <ShieldCheck className="w-3.5 h-3.5 text-blue-500" />
+            <span>Executive Transformation Programs • Case Studies</span>
           </div>
           <div className="relative flex flex-wrap items-center gap-3">
-            <h3 className={`text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight transition-all ${
+            <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight transition-all ${
               isLight 
                 ? 'text-zinc-900 drop-shadow-[0_2px_16px_rgba(59,130,246,0.22)]' 
                 : 'text-white drop-shadow-[0_0_24px_rgba(96,165,250,0.40)]'
             }`}>
               Strategic Case Studies
-            </h3>
+            </h2>
             <div className="inline-flex items-center gap-2">
-              <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
+              <span 
+                onClick={isSectionGated ? () => setGateModalOpen(true) : undefined}
+                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider border ${
+                  isSectionGated ? 'cursor-pointer hover:opacity-85' : ''
+                } ${
                 isSectionGated
                   ? (isLight ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-amber-500/10 text-amber-400 border-amber-500/20')
                   : (isLight ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20')
               }`}>
                 {isSectionGated ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
-                <span>{isSectionGated ? 'Locked Section' : 'Public Access'}</span>
+                <span>{isSectionGated ? 'Request Access' : 'Open Access'}</span>
               </span>
               {isAdmin && (
                 <button
@@ -213,7 +219,10 @@ export const Projects: React.FC<ProjectsProps> = ({ theme = 'apple-dark' }) => {
               )}
             </div>
           </div>
-          <p className={`relative max-w-3xl text-xs leading-normal break-words line-clamp-2 ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
+          <p 
+            style={{ fontSize: '14px' }}
+            className={`relative max-w-4xl text-[14px] font-normal leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}
+          >
             Enterprise cybersecurity and IAM transformations delivering Zero Standing Privileges, autonomous SOC resilience, and zero audit weaknesses.
           </p>
         </div>
@@ -302,13 +311,15 @@ export const Projects: React.FC<ProjectsProps> = ({ theme = 'apple-dark' }) => {
                       )}
 
                       {locked && !hasSpecificClearance && (
-                        <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded text-[8px] font-bold border uppercase tracking-wider ${
-                          isLight 
-                            ? 'bg-amber-50 border-amber-200 text-amber-700' 
-                            : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
-                        }`}>
-                          <Lock className="w-2.5 h-2.5 text-amber-500" />
-                          <span>Locked</span>
+                        <span 
+                          className={`inline-flex items-center justify-center p-1 rounded border ${
+                            isLight 
+                              ? 'bg-amber-50 border-amber-200 text-amber-700' 
+                              : 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                          }`}
+                          title="Locked - Request Access"
+                        >
+                          <Lock className="w-3 h-3 text-amber-500" />
                         </span>
                       )}
 
@@ -388,9 +399,12 @@ export const Projects: React.FC<ProjectsProps> = ({ theme = 'apple-dark' }) => {
                     ))}
                   </div>
 
-                  <div className="inline-flex items-center gap-1 text-[10.5px] font-bold text-blue-500 dark:text-blue-400 group-hover:translate-x-0.5 transition-transform whitespace-nowrap shrink-0">
-                    <span>Executive Briefing</span>
-                    <ArrowUpRight className="w-3 h-3 text-blue-500 dark:text-blue-400" />
+                  <div className="flex items-center gap-3">
+                    <StarsCounter pageId={`project-${cs.id}`} isLight={isLight} compact />
+                    <div className="inline-flex items-center gap-1 text-[10.5px] font-bold text-blue-500 dark:text-blue-400 group-hover:translate-x-0.5 transition-transform whitespace-nowrap shrink-0">
+                      <span>Executive Briefing</span>
+                      <ArrowUpRight className="w-3 h-3 text-blue-500 dark:text-blue-400" />
+                    </div>
                   </div>
                 </div>
               </motion.div>

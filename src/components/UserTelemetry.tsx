@@ -244,7 +244,7 @@ export const UserTelemetry: React.FC<UserTelemetryProps> = ({
 
       {/* Expanded Interactive Telemetry Card Dropdown */}
       {isOpen && (
-        <div className={`fixed top-14 right-3 sm:right-6 z-50 w-[78vw] sm:w-[216px] max-w-[216px] rounded-2xl border font-mono transition-all duration-300 text-left shadow-2xl backdrop-blur-2xl animate-in fade-in slide-in-from-top-3 duration-200 overflow-hidden flex flex-col ${
+        <div className={`fixed top-14 right-3 sm:right-6 z-50 w-[88vw] sm:w-[260px] max-w-[260px] rounded-2xl border font-mono transition-all duration-300 text-left shadow-2xl backdrop-blur-2xl animate-in fade-in slide-in-from-top-3 duration-200 overflow-hidden flex flex-col ${
           isLight 
             ? 'bg-white/95 border-zinc-200/90 text-zinc-800 shadow-zinc-300/80' 
             : 'bg-[#101012]/95 border-white/15 text-zinc-200 shadow-black/95'

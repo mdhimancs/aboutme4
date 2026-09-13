@@ -48,6 +48,11 @@ service cloud.firestore {
         (!('updatedBy' in data) || (data.updatedBy is string && data.updatedBy.size() <= 128));
     }
 
+    function isValidPageStats(data) {
+      return data.pageId is string && data.pageId.size() <= 64 &&
+        data.stars is int && data.stars >= 0;
+    }
+
     // Allowlist collection for Archive & granular article access control
     match /allowlist/{email} {
       // Users can only verify their own email authorization status; admins can read any
@@ -77,6 +82,17 @@ service cloud.firestore {
         settingId is string && settingId.size() <= 64 &&
         isValidSecurityLocks(request.resource.data);
       allow delete: if isAdmin();
+    }
+
+    // Page stats and stars tracking
+    match /page_stats/{pageId} {
+      allow read: if true;
+      // Allow creation of a new page stat doc
+      allow create: if true && isValidPageStats(request.resource.data);
+      // Allow updates to increment stars
+      allow update: if true && 
+        isValidPageStats(request.resource.data) &&
+        request.resource.data.stars == resource.data.stars + 1;
     }
 
     // Connection test document

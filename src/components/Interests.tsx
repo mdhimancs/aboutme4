@@ -59,8 +59,10 @@ export const Interests: React.FC<InterestsProps> = ({ theme = 'apple-dark' }) =>
         
         {/* Header */}
         <div className="text-center space-y-2 mb-10 shrink-0">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-500 border border-blue-500/20">
-            <Compass className="w-3.5 h-3.5" />
+          <div className={`relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] sm:text-xs font-semibold tracking-wider uppercase border backdrop-blur-md ${
+            isLight ? 'bg-blue-50/90 border-blue-200 text-blue-700 shadow-sm' : 'bg-blue-500/10 border-blue-500/20 text-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.15)]'
+          }`}>
+            <Compass className="w-3.5 h-3.5 text-blue-500" />
             <span>Passions & Intellectual Pursuits</span>
           </div>
           <h2 className={`text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight ${isLight ? 'text-zinc-900' : 'text-white'}`}>
@@ -111,8 +113,8 @@ export const Interests: React.FC<InterestsProps> = ({ theme = 'apple-dark' }) =>
                       key={i}
                       className={`text-[11px] px-2.5 py-1 rounded-lg font-medium border ${
                         isLight 
-                          ? 'bg-blue-50/80 border-blue-100 text-blue-700' 
-                          : 'bg-blue-500/10 border-blue-500/20 text-blue-300'
+                          ? 'bg-zinc-800 text-zinc-100 border-zinc-700 shadow-2xs' 
+                          : 'bg-zinc-800/90 text-zinc-200 border-zinc-700'
                       }`}
                     >
                       {h}
