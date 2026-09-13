@@ -30,7 +30,7 @@ export const EXECUTIVE_CASE_STUDIES: ExecutiveCaseStudy[] = [
     tags: ['Zero Trust', 'IGA', 'PAM', 'SailPoint', 'CyberArk', 'Entra ID', 'SOX 404'],
     status: 'Enterprise Standard',
     leadershipRole: 'Executive Security Architect & Program Lead (governing 32 cross-functional engineers, identity specialists, and GRC auditors).',
-    imageUrl: '/images/zero_trust_iam.jpg',
+    imageUrl: './images/zero_trust_iam.jpg',
     imageAlt: 'Enterprise Zero Trust & Identity Command Center Enclave',
     fullBriefingMarkdown: `
 # Executive Defense Briefing: Enterprise Identity Fabric & Zero Trust Privilege Modernization
@@ -110,7 +110,7 @@ The executive directive was to establish a unified, automated, and audit-proof *
     tags: ['AI Security', 'LLM Governance', 'NIST AI RMF', 'OWASP Top 10 for LLMs', 'DLP', 'Data Sovereignty'],
     status: 'Operational',
     leadershipRole: 'Lead Security Strategist & AI Governance Chair (collaborating with Chief Data Officer, Legal, and VP of AI Engineering).',
-    imageUrl: '/images/ai_security_gateway.jpg',
+    imageUrl: './images/ai_security_gateway.jpg',
     imageAlt: 'Futuristic artificial intelligence cybersecurity neural network shield',
     fullBriefingMarkdown: `
 # Executive Defense Briefing: Enterprise AI Security Gateway & Contextual Data Protection
@@ -191,7 +191,7 @@ The mandate: Build a resilient security envelope that fosters rapid AI innovatio
     tags: ['SOC Modernization', 'SIEM', 'SOAR', 'UEBA', 'Incident Response', 'Threat Hunting', 'MITRE ATT&CK'],
     status: 'Operational',
     leadershipRole: 'Director of Security Operations & Incident Commander (overseeing 45 SOC analysts, threat hunters, and detection engineers).',
-    imageUrl: '/images/autonomous_soc_center.jpg',
+    imageUrl: './images/autonomous_soc_center.jpg',
     imageAlt: 'Global 24/7 cybersecurity operations center with curved ultra-wide tactical monitoring displays',
     fullBriefingMarkdown: `
 # Executive Defense Briefing: Autonomous SOC Modernization & Global Threat Intelligence Matrix
@@ -273,7 +273,7 @@ The executive goal was to build an automated, intelligence-driven Security Opera
     tags: ['Identity', 'Identity Security', 'OIDC Federation', 'AWS IAM', 'Azure Entra', 'CIEM', 'CSPM'],
     status: 'Enterprise Standard',
     leadershipRole: 'Chief Cloud Security Architect (partnering with Enterprise Cloud COE, DevOps Leadership, and AppSec).',
-    imageUrl: '/images/cloud_identity_mesh.jpg',
+    imageUrl: './images/cloud_identity_mesh.jpg',
     imageAlt: 'Multi-cloud architecture network mesh with interconnected cloud infrastructure nodes',
     fullBriefingMarkdown: `
 # Executive Defense Briefing: Multi-Cloud Security Posture & Identity Security Eradication
@@ -351,7 +351,7 @@ The CISO directive: Eliminate all static secrets and enforce cryptographic workl
     tags: ['M&A Due Diligence', 'Cross-Tenant Federation', 'ZTNA', 'Active Directory', 'EDR Deployment', 'Clean Room'],
     status: 'Delivered',
     leadershipRole: 'Cyber Integration Leader (directing joint M&A taskforce with CIO, Legal Counsel, and Corporate Development).',
-    imageUrl: '/images/ma_cyber_due_diligence.jpg',
+    imageUrl: './images/ma_cyber_due_diligence.jpg',
     imageAlt: 'Corporate M&A cybersecurity due diligence boardroom with global network topology',
     fullBriefingMarkdown: `
 # Executive Defense Briefing: M&A Cyber Due Diligence & Day-1 Rapid Identity Integration
@@ -423,7 +423,7 @@ The Board required Day-1 business collaboration without creating insecure networ
     tags: ['Board Governance', 'SEC 8-K', 'Zero Trust Model', 'Crisis Command', 'Audit Committee', 'Cyber Insurance'],
     status: 'Operational',
     leadershipRole: 'Deputy CISO & Chair of Executive Incident Working Group (reporting directly to Board Audit Committee and C-Suite).',
-    imageUrl: '/images/executive_crisis_room.jpg',
+    imageUrl: './images/executive_crisis_room.jpg',
     imageAlt: 'Executive boardroom crisis command with holographic financial risk charts',
     fullBriefingMarkdown: `
 # Executive Defense Briefing: Crisis Command, SEC Disclosure Governance & Cyber Resilience
