@@ -76,6 +76,22 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
     if (honeypot) return; // Honeypot triggered
     if (!name || !email || !message) return;
 
+    // Validate email addresses (supports single or multiple separated by ; or ,)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const senderEmails = email.split(/[;,]/).map(e => e.trim()).filter(Boolean);
+    if (senderEmails.length === 0 || !senderEmails.every(e => emailRegex.test(e))) {
+      setError('Please enter valid email address(es). Multiple addresses can be separated by a semicolon (;).');
+      return;
+    }
+
+    if (cc.trim()) {
+      const ccEmails = cc.split(/[;,]/).map(e => e.trim()).filter(Boolean);
+      if (ccEmails.length > 0 && !ccEmails.every(e => emailRegex.test(e))) {
+        setError('Please enter valid CC email address(es). Multiple addresses can be separated by a semicolon (;).');
+        return;
+      }
+    }
+
     // Verify rate limiting cooldown before attempting network transmission
     if (cooldownRemaining > 0) {
       setError(`Rate limit active: Please wait ${formatRemainingTime(cooldownRemaining)} before transmitting another inquiry.`);
@@ -188,7 +204,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
                 Initiate Collaboration
               </h3>
               <p className={`text-xs sm:text-sm ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                Available for architecture advisory, security engineering roles, technical speaking engagements and if you are
+                Available for architecture advisory, Senior Security engineering & Software development roles, technical speaking engagements and if you are exploring, learning or building anything interesting in Opensource or otherwise.
               </p>
             </div>
 
@@ -209,7 +225,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
                   placeholder="e.g. Sarah Connor"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className={`w-full border rounded-xl px-4 py-3 text-sm transition-colors focus:outline-none ${
+                  className={`w-full border rounded-xl px-3.5 py-2.5 text-sm transition-colors focus:outline-none ${
                     isLight 
                       ? 'bg-zinc-50 border-zinc-200 text-zinc-900 placeholder-zinc-400 focus:border-blue-500' 
                       : isTerminal
@@ -219,16 +235,19 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2.5 gap-y-3.5">
                 <div>
-                  <label className={`block text-xs font-medium mb-1.5 ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Your Email address</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className={`block text-xs font-medium ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>Your Email address</label>
+                    <span className={`text-[10px] ${isLight ? 'text-zinc-400' : 'text-zinc-500'}`}>sep with ;</span>
+                  </div>
                   <input
-                    type="email"
+                    type="text"
                     required
-                    placeholder="e.g. samuel.conner@gmail.com"
+                    placeholder="e.g. samuel@domain.com; partner@domain.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className={`w-full border rounded-xl px-4 py-3 text-sm transition-colors focus:outline-none ${
+                    className={`w-full border rounded-xl px-3.5 py-2.5 text-sm transition-colors focus:outline-none ${
                       isLight 
                         ? 'bg-zinc-50 border-zinc-200 text-zinc-900 placeholder-zinc-400 focus:border-blue-500' 
                         : isTerminal
@@ -238,13 +257,16 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
                   />
                 </div>
                 <div>
-                  <label className={`block text-xs font-medium mb-1.5 ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>CC</label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className={`block text-xs font-medium ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>CC</label>
+                    <span className={`text-[10px] ${isLight ? 'text-zinc-400' : 'text-zinc-500'}`}>sep with ;</span>
+                  </div>
                   <input
-                    type="email"
-                    placeholder="Optional"
+                    type="text"
+                    placeholder="e.g. colleague@domain.com; team@domain.com (Optional)"
                     value={cc}
                     onChange={(e) => setCc(e.target.value)}
-                    className={`w-full border rounded-xl px-4 py-3 text-sm transition-colors focus:outline-none ${
+                    className={`w-full border rounded-xl px-3.5 py-2.5 text-sm transition-colors focus:outline-none ${
                       isLight 
                         ? 'bg-zinc-50 border-zinc-200 text-zinc-900 placeholder-zinc-400 focus:border-blue-500' 
                         : isTerminal
@@ -263,7 +285,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
                   placeholder="e.g. Strategic Advisory Inquiry"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
-                  className={`w-full border rounded-xl px-4 py-3 text-sm transition-colors focus:outline-none ${
+                  className={`w-full border rounded-xl px-3.5 py-2.5 text-sm transition-colors focus:outline-none ${
                     isLight 
                       ? 'bg-zinc-50 border-zinc-200 text-zinc-900 placeholder-zinc-400 focus:border-blue-500' 
                       : isTerminal
@@ -281,7 +303,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
                   placeholder="Describe project scope, timeline, or consultation needs..."
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  className={`w-full border rounded-xl px-4 py-3 text-sm transition-colors focus:outline-none resize-none ${
+                  className={`w-full border rounded-xl px-3.5 py-2.5 text-sm transition-colors focus:outline-none resize-none ${
                     isLight 
                       ? 'bg-zinc-50 border-zinc-200 text-zinc-900 placeholder-zinc-400 focus:border-blue-500' 
                       : isTerminal
@@ -307,26 +329,28 @@ export const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose, the
                 </div>
               )}
 
-              <button
-                type="submit"
-                disabled={isSending || cooldownRemaining > 0}
-                className={`w-full flex items-center justify-center space-x-2 py-3.5 rounded-xl text-sm font-semibold tracking-wide transition-all shadow-lg ${
-                  cooldownRemaining > 0
-                    ? (isLight ? 'bg-zinc-200 text-zinc-500 cursor-not-allowed shadow-none' : 'bg-white/10 text-zinc-400 cursor-not-allowed shadow-none')
-                    : isTerminal
-                      ? 'bg-[#00ff66] text-black hover:bg-[#00ff66]/90 shadow-[#00ff66]/20'
-                      : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30'
-                } ${isSending ? 'opacity-70 cursor-not-allowed' : ''}`}
-              >
-                <span>
-                  {isSending 
-                    ? 'Transmitting Securely...' 
-                    : cooldownRemaining > 0
-                      ? `Rate Limited (${formatRemainingTime(cooldownRemaining)})`
-                      : 'Send Secure Message'}
-                </span>
-                <Send className={`w-4 h-4 ${isSending ? 'animate-pulse' : ''}`} />
-              </button>
+              <div className="flex justify-end pt-1">
+                <button
+                  type="submit"
+                  disabled={isSending || cooldownRemaining > 0}
+                  className={`inline-flex items-center justify-center space-x-2 px-4 py-2 rounded-lg text-xs font-semibold tracking-wide transition-all shadow-md ${
+                    cooldownRemaining > 0
+                      ? (isLight ? 'bg-zinc-200 text-zinc-500 cursor-not-allowed shadow-none' : 'bg-white/10 text-zinc-400 cursor-not-allowed shadow-none')
+                      : isTerminal
+                        ? 'bg-[#00ff66] text-black hover:bg-[#00ff66]/90 shadow-[#00ff66]/20'
+                        : 'bg-blue-600 hover:bg-blue-500 text-white shadow-blue-600/30'
+                  } ${isSending ? 'opacity-70 cursor-not-allowed' : ''}`}
+                >
+                  <span>
+                    {isSending 
+                      ? 'Transmitting...' 
+                      : cooldownRemaining > 0
+                        ? `Rate Limited (${formatRemainingTime(cooldownRemaining)})`
+                        : 'Send Secure Message'}
+                  </span>
+                  <Send className={`w-3.5 h-3.5 ${isSending ? 'animate-pulse' : ''}`} />
+                </button>
+              </div>
 
               {error && (
                 <div className={`p-3 border rounded-xl text-xs text-center animate-in fade-in slide-in-from-top-1 ${

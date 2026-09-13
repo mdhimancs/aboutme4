@@ -59,6 +59,8 @@ export interface ExecutiveCaseStudy {
   status: 'Operational' | 'Active' | 'Delivered' | 'Enterprise Standard';
   leadershipRole: string;
   fullBriefingMarkdown?: string;
+  imageUrl?: string;
+  imageAlt?: string;
 }
 
 export interface SkillCategory {

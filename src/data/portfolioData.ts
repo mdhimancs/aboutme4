@@ -167,13 +167,13 @@ export const CAREER_MILESTONES: CareerMilestone[] = [
     summary: "Delivered cyber threat modeling, perimeter hardening, vulnerability management, and BCP/DR engineering for global capital markets infrastructure.",
     achievements: [
       "Architected micro-segmentation and low-latency firewall enclaves for high-frequency algorithmic trading platforms and Transaction Banking (TxB), securing $100B–$500B+ daily enclave transaction flows.",
-      "Led Business Continuity Planning (BCP) and Disaster Recovery (DR) engineering, ensuring 99.999% availability for critical trading perimeters during market volatility.",
+      "Led Business Continuity Planning (BCP) and Disaster Recovery (DR) engineering, ensuring 99.99% availability for critical trading perimeters during market volatility.",
       "Produced 100+ actionable CTI intelligence reports integrating OSINT, FS-ISAC, FireEye, and commercial dark-web intel to counter financial cyber syndicates.",
       "Orchestrated automated vulnerability discovery and remediation for 500+ critical Unix/Windows server clusters via CVSS risk-score prioritization.",
       "Executed STRIDE threat modeling for critical electronic trading, clearing, and SWIFT settlement infrastructure.",
       "Hardened core network routing, DNS/DHCP infrastructure, and remote access VPNs against distributed denial-of-service (DDoS) and intrusion attempts."
     ],
-    technologies: ["Micro-segmentation", "BCP/DR (99.999% SLA)", "High-Frequency Trading", "Threat Intelligence", "OSINT", "FS-ISAC", "FireEye", "CVSS Risk Prioritization", "STRIDE", "Network Enclave Defense"]
+    technologies: ["Micro-segmentation", "BCP/DR (99.99% SLA)", "High-Frequency Trading", "Threat Intelligence", "OSINT", "FS-ISAC", "FireEye", "CVSS Risk Prioritization", "STRIDE", "Network Enclave Defense"]
   },
   {
     id: "ca-tech-sol",

@@ -113,7 +113,7 @@ export const OffKeyboard: React.FC<OffKeyboardProps> = ({ theme = 'apple-dark' }
   return (
     <section 
       id="offkeyboard" 
-      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center pt-8 sm:pt-10 pb-8 sm:pb-12 lg:pb-14 px-6 sm:px-10 lg:px-14 max-w-6xl lg:max-w-7xl mx-auto border-t ${
+      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-center pt-5 sm:pt-6 pb-8 sm:pb-12 lg:pb-14 px-6 sm:px-10 lg:px-14 max-w-6xl lg:max-w-7xl mx-auto border-t ${
         isLight ? 'border-zinc-200 bg-[#fcfcfd]' : 'border-white/10 bg-[#000000]'
       }`}
     >
@@ -139,7 +139,7 @@ export const OffKeyboard: React.FC<OffKeyboardProps> = ({ theme = 'apple-dark' }
       <div className="relative w-full max-w-5xl lg:max-w-6xl mx-auto flex flex-col flex-1 min-h-0 justify-center space-y-2 sm:space-y-2.5">
         
         {/* Header & Sub-Navigation */}
-        <div className="relative text-left space-y-0.5 mb-3 shrink-0">
+        <div className="relative text-left space-y-0.5 mb-1.5 shrink-0">
           {/* Luminous aura behind heading */}
           <div 
             className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-20 sm:h-24 rounded-full blur-2xl pointer-events-none transition-all ${
@@ -170,7 +170,7 @@ export const OffKeyboard: React.FC<OffKeyboardProps> = ({ theme = 'apple-dark' }
           </p>
 
           {/* Sub-Tabs: Interests vs Curated Videos */}
-          <div className="flex items-center justify-start pt-0.5 gap-2 pb-0.5" style={{ paddingBottom: '2px', marginBottom: '6px' }}>
+          <div className="flex items-center justify-start pt-0.5 gap-2 pb-0.5" style={{ paddingBottom: '1px', marginBottom: '3px' }}>
             <button
               onClick={() => setActiveTab('interests')}
               className={`flex items-center gap-1.5 px-3 py-0.5 sm:py-1 rounded-xl text-[10px] sm:text-[11px] font-semibold transition-all ${

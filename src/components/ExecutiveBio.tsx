@@ -335,7 +335,7 @@ export const ExecutiveBio: React.FC<ExecutiveBioProps> = ({ theme = 'apple-light
                     Critical Infrastructure & HFT Security
                   </div>
                   <p className={`text-[9.5px] mt-1 leading-relaxed ${isLight ? 'text-zinc-600' : 'text-zinc-400'}`}>
-                    Protected $100B–$500B+ daily trading perimeters & $1T+ clearing scale, engineered 99.999% SLA BCP/DR, and executed STRIDE models.
+                    Protected $100B–$500B+ daily trading perimeters & $1T+ clearing scale, engineered 99.99% SLA BCP/DR, and executed STRIDE models.
                   </p>
                 </div>
               </div>

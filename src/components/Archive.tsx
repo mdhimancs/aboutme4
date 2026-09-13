@@ -431,7 +431,7 @@ export const Archive: React.FC<ArchiveProps> = ({
   return (
     <section 
       id="archive" 
-      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-between pt-8 sm:pt-10 pb-3 sm:pb-4 lg:pb-5 px-6 sm:px-10 lg:px-14 max-w-7xl mx-auto border-t ${
+      className={`relative overflow-hidden min-h-screen lg:h-screen w-full flex flex-col justify-between pt-0 pb-3 sm:pb-4 lg:pb-5 px-6 sm:px-10 lg:px-14 max-w-7xl mx-auto border-t ${
         isLight ? 'border-zinc-200 bg-[#fcfcfd]' : 'border-white/10 bg-[#000000]'
       }`}
     >
@@ -457,7 +457,7 @@ export const Archive: React.FC<ArchiveProps> = ({
       <div className="relative flex-1 flex flex-col justify-center min-h-0">
         
         {/* Section Header */}
-        <div className="relative w-full space-y-0.5 mb-6 shrink-0 text-left">
+        <div className="relative w-full space-y-0.5 mb-3 shrink-0 text-left">
           {/* Luminous aura behind heading */}
           <div 
             className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-24 sm:h-28 rounded-full blur-2xl pointer-events-none transition-all ${
@@ -518,7 +518,7 @@ export const Archive: React.FC<ArchiveProps> = ({
           </p>
 
           {/* Primary View Switcher */}
-          <div className="flex flex-wrap items-center justify-start pt-1 gap-1.5 pb-0" style={{ paddingBottom: '0px', marginBottom: '2px' }}>
+          <div className="flex flex-wrap items-center justify-start pt-1.5 gap-1.5 pb-0" style={{ paddingTop: '6px', paddingBottom: '0px', marginBottom: '1px' }}>
             <button
               onClick={() => setActiveTab('blueprints')}
               className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-bold transition-all ${

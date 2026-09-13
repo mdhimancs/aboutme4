@@ -95,7 +95,7 @@ export const TechnicalBlog: React.FC<TechnicalBlogProps> = ({ theme = 'apple-lig
         />
 
       {/* Section Header */}
-      <div className="relative w-full space-y-0.5 mb-6 shrink-0 text-left">
+      <div className="relative w-full space-y-0.5 mb-2 sm:mb-2.5 shrink-0 text-left">
         {/* Luminous aura behind heading */}
         <div 
           className={`absolute -top-3 -left-2 sm:-left-4 w-72 sm:w-96 h-24 sm:h-28 rounded-full blur-2xl pointer-events-none transition-all ${
@@ -157,7 +157,7 @@ export const TechnicalBlog: React.FC<TechnicalBlogProps> = ({ theme = 'apple-lig
       </div>
 
       {/* Featured CISO Executive Briefings Spotlight */}
-      <div className="mb-6 w-full">
+      <div className="mb-2.5 sm:mb-3 w-full">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-blue-400" />

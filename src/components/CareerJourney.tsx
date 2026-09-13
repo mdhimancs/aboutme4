@@ -181,7 +181,7 @@ export const CareerJourney: React.FC<CareerJourneyProps> = ({ theme = 'apple-dar
           Career Journey & Milestones
         </h2>
         <p 
-          className={`relative max-w-4xl text-xs sm:text-[13.5px] font-normal leading-normal ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}
+          className={`relative max-w-4xl text-[11px] sm:text-[12.5px] font-normal leading-normal ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}
         >
           Directing global cybersecurity, Zero Trust IAM, risk governance, and AI defense across leading Banking & Financial Services and Fortune 100 institutions.
         </p>
@@ -316,8 +316,8 @@ export const CareerJourney: React.FC<CareerJourneyProps> = ({ theme = 'apple-dar
                     }`}
                   >
                     {/* Header: Role, Attractive Company Pill, and Right-Aligned Highlight */}
-                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-1.5 mb-1.5">
-                      <div className="min-w-0 flex-1">
+                    <div className="flex flex-col gap-1.5 mb-1.5">
+                      <div className="min-w-0 w-full">
                         {/* Company Badge with Elevated Visual Aesthetic */}
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           {milestone.company === 'Goldman Sachs' ? (
@@ -369,8 +369,8 @@ export const CareerJourney: React.FC<CareerJourneyProps> = ({ theme = 'apple-dar
                         </h3>
                       </div>
 
-                      {/* Right-Aligned Category Highlight Badges */}
-                      <div className="shrink-0 self-start sm:self-center ml-auto flex flex-wrap items-center justify-start sm:justify-end gap-1 max-w-full sm:max-w-[340px]">
+                      {/* Category Highlight Badges */}
+                      <div className="flex flex-wrap items-center justify-start gap-1 w-full">
                         {milestone.category.split(',').map((catTag, cIdx) => (
                           <span 
                             key={cIdx}
@@ -384,30 +384,26 @@ export const CareerJourney: React.FC<CareerJourneyProps> = ({ theme = 'apple-dar
                       </div>
                     </div>
 
+                    {/* Key Achievements (Highlights) */}
+                    <div className="mb-2">
+                      <ul className="space-y-1">
+                        {milestone.achievements.map((ach, i) => (
+                          <li key={i} className={`flex items-start space-x-1.5 text-xs sm:text-[12.5px] leading-relaxed ${isLight ? 'text-zinc-800' : 'text-zinc-200'}`}>
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
+                            <span>{ach}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
                     {/* Executive Summary - Compact & Clear */}
                     <p className={`text-xs sm:text-[13px] leading-relaxed mb-1.5 ${isLight ? 'text-zinc-700' : 'text-zinc-300'}`}>
                       {milestone.summary}
                     </p>
 
-                    {/* Key Achievements (Collapsible / Expandable) */}
+                    {/* Collapsible Tech Stack */}
                     {isExpanded && (
                       <div className={`space-y-2 pt-2 border-t ${isLight ? 'border-zinc-100' : 'border-white/10'} animate-in fade-in duration-300`}>
-                        <div className="flex items-center gap-1.5">
-                          <Award className="w-3.5 h-3.5 text-blue-500 shrink-0" />
-                          <div className={`text-[10.5px] font-bold uppercase tracking-wider ${isLight ? 'text-zinc-800' : 'text-zinc-200'}`}>
-                            Key Architectural, Fiduciary & Leadership Impact
-                          </div>
-                        </div>
-
-                        <ul className="space-y-1">
-                          {milestone.achievements.map((ach, i) => (
-                            <li key={i} className={`flex items-start space-x-1.5 text-xs sm:text-[12.5px] leading-relaxed ${isLight ? 'text-zinc-800' : 'text-zinc-200'}`}>
-                              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                              <span>{ach}</span>
-                            </li>
-                          ))}
-                        </ul>
-
                         {/* Tech Stack Chips */}
                         <div className="pt-1">
                           <div className={`text-[9.5px] font-semibold uppercase tracking-wider mb-1 ${isLight ? 'text-zinc-500' : 'text-zinc-400'}`}>

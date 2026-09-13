@@ -99,17 +99,31 @@ async function startServer() {
       return res.status(500).json({ error: "Email service not configured. Please add RESEND_API_KEY to environment variables." });
     }
 
+    // Support multiple email addresses separated by ; or ,
+    const emailList = String(email)
+      .split(/[;,]/)
+      .map((e: string) => e.trim())
+      .filter(Boolean);
+
+    const ccList = cc
+      ? String(cc)
+          .split(/[;,]/)
+          .map((e: string) => e.trim())
+          .filter(Boolean)
+      : undefined;
+
     try {
       const { data, error } = await resend.emails.send({
         from: 'Portfolio Contact <onboarding@resend.dev>',
         to: ['munish.world@gmail.com'], // The user's email from portfolioData
-        cc: cc ? [cc] : undefined,
-        replyTo: email,
+        cc: ccList && ccList.length > 0 ? ccList : undefined,
+        replyTo: emailList.length === 1 ? emailList[0] : (emailList.length > 0 ? emailList : email),
         subject: `[Portfolio Inquiry] ${subject}`,
         html: `
           <h3>New Message from Portfolio</h3>
           <p><strong>Name:</strong> ${name}</p>
-          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Email(s):</strong> ${emailList.join('; ')}</p>
+          ${ccList && ccList.length > 0 ? `<p><strong>CC:</strong> ${ccList.join('; ')}</p>` : ''}
           <p><strong>Subject:</strong> ${subject}</p>
           <p><strong>Message:</strong></p>
           <div style="white-space: pre-wrap; padding: 10px; background: #f4f4f4; border-radius: 5px;">${message}</div>

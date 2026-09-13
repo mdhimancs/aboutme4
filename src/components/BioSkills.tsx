@@ -192,7 +192,7 @@ export const BioSkills: React.FC<BioSkillsProps> = ({ theme = 'apple-dark' }) =>
                   <div className={`font-bold text-xs sm:text-sm ${isLight ? 'text-zinc-900' : 'text-white'}`}>Enterprise Cybertechnology & IAM Scale</div>
                 </div>
                 <div className={`text-xs leading-relaxed ${isLight ? 'text-zinc-700' : 'text-zinc-400'}`}>
-                  Architected federated IAM platforms serving 15M+ enterprise users with 99.999% SLA across multi-region hybrid clouds.
+                  Architected federated IAM platforms serving 15M+ enterprise users with 99.99% SLA across multi-region hybrid clouds.
                 </div>
               </div>
 

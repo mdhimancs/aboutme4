@@ -185,6 +185,12 @@ export const CaseStudyModal: React.FC<CaseStudyModalProps> = ({ caseStudy, onClo
             </div>
           </div>
 
+          {caseStudy.imageUrl && (
+            <div className="w-full h-48 sm:h-64 md:h-80 rounded-2xl overflow-hidden border border-zinc-200/80 dark:border-white/10 shadow-lg">
+              <img src={caseStudy.imageUrl} alt={caseStudy.imageAlt || caseStudy.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+            </div>
+          )}
+
           {/* Key Impact Metrics Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 py-2 border-y border-zinc-100 dark:border-white/5">
             {caseStudy.impactMetrics.map((metric, idx) => (

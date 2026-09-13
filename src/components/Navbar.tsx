@@ -73,7 +73,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           ? 'bg-white/90 border-zinc-200 text-zinc-900 shadow-sm'
           : 'bg-[#050507]/90 border-white/10 text-white shadow-2xl'
       }`}>
-        {/* Top: Name & Collapse Button */}
+        {/* Top: Name & Logo */}
         <div className="shrink-0 relative w-full">
           <div className={`flex items-center gap-1.5 w-full ${isSidebarCollapsed ? 'justify-center' : 'justify-between'}`}>
             <a
@@ -92,9 +92,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
               {!isSidebarCollapsed && (
                 <div className="flex flex-col min-w-0">
-                  <span className={`text-[15px] font-sans font-bold tracking-tight block truncate ${isLight ? 'text-zinc-900 drop-shadow-[0_1px_6px_rgba(0,0,0,0.12)]' : 'text-white drop-shadow-[0_1px_8px_rgba(255,255,255,0.2)]'}`}>
-                    {PERSONAL_INFO.name}
-                  </span>
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className={`text-[15px] font-sans font-bold tracking-tight block truncate ${isLight ? 'text-zinc-900 drop-shadow-[0_1px_6px_rgba(0,0,0,0.12)]' : 'text-white drop-shadow-[0_1px_8px_rgba(255,255,255,0.2)]'}`}>
+                      {PERSONAL_INFO.name}
+                    </span>
+                  </div>
                   <span className="text-[10px] text-blue-500 font-semibold tracking-tight truncate leading-tight mt-0.5">
                     Cybersecurity & IAM • Data & AI
                   </span>
@@ -103,25 +105,25 @@ export const Navbar: React.FC<NavbarProps> = ({
             </a>
           </div>
 
-          {/* Toggle Button on the Edge */}
-          {onToggleSidebar && (
-            <button
-              onClick={onToggleSidebar}
-              title={isSidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
-              aria-label="Toggle sidebar"
-              className={`absolute -right-3.5 top-[30vh] z-50 flex items-center justify-center w-7 h-7 rounded-full border shadow-sm transition-all duration-200 hover:scale-105 ${
-                isLight
-                  ? 'bg-white border-zinc-200 text-zinc-600 hover:text-zinc-900'
-                  : 'bg-[#18181b] border-zinc-700 text-zinc-400 hover:text-white'
-              }`}
-            >
-              {isSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
-            </button>
-          )}
-
           {/* Slim Divider Line */}
           <div className={`h-px w-full mt-6 ${isLight ? 'bg-zinc-200' : 'bg-white/10'}`} />
         </div>
+
+        {/* Collapsing Button on the Outer Edge of the Navigation Plane */}
+        {onToggleSidebar && (
+          <button
+            onClick={onToggleSidebar}
+            title={isSidebarCollapsed ? "Expand sidebar (Ctrl+B)" : "Collapse sidebar (Ctrl+B)"}
+            aria-label="Toggle sidebar"
+            className={`absolute -right-3.5 top-12 z-50 flex items-center justify-center w-7 h-7 rounded-full border shadow-md transition-all duration-200 hover:scale-110 active:scale-95 cursor-pointer ${
+              isLight
+                ? 'bg-white border-zinc-300 text-zinc-700 hover:text-zinc-900 shadow-zinc-200/80'
+                : 'bg-[#18181b] border-zinc-700 text-zinc-300 hover:text-white shadow-black/60'
+            }`}
+          >
+            {isSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+          </button>
+        )}
 
         {/* Center: Navigation Links & Social Icons vertically aligned to top */}
         <div className="flex-1 flex flex-col justify-start pt-6 pb-2 min-h-0 w-full overflow-y-auto">
@@ -319,7 +321,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Shield className="w-4 h-4 text-white relative z-10 drop-shadow-sm fill-white/20" strokeWidth={2} />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className={`font-semibold text-xs sm:text-sm truncate ${isLight ? 'drop-shadow-[0_1px_5px_rgba(0,0,0,0.1)]' : 'drop-shadow-[0_1px_6px_rgba(255,255,255,0.2)]'}`}>{PERSONAL_INFO.name}</span>
+            <div className="flex items-center gap-1.5 min-w-0">
+              <span className={`font-semibold text-xs sm:text-sm truncate ${isLight ? 'drop-shadow-[0_1px_5px_rgba(0,0,0,0.1)]' : 'drop-shadow-[0_1px_6px_rgba(255,255,255,0.2)]'}`}>{PERSONAL_INFO.name}</span>
+            </div>
             <span className="text-[9px] text-blue-500 font-semibold tracking-tight truncate">Cybersecurity & IAM • Data & AI</span>
           </div>
         </a>

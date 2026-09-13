@@ -327,11 +327,15 @@ export default function App() {
         style={{ marginLeft: isSidebarCollapsed ? '72px' : '260.438px' }}
         className="h-screen overflow-y-auto scroll-container select-text transition-[margin] duration-300 ease-in-out relative"
       >
-        {/* Subtle Top Scroll Progress Bar */}
-        <div className="sticky top-0 left-0 right-0 h-[2.5px] z-50 pointer-events-none bg-transparent">
+        {/* Atmospheric Top Scroll Progress Bar */}
+        <div className="sticky top-0 left-0 right-0 h-[3px] z-50 pointer-events-none bg-transparent overflow-hidden">
           <div 
-            className="h-full bg-blue-500 transition-all duration-100 ease-out shadow-xs"
+            className="h-full bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 transition-all duration-100 ease-out shadow-[0_0_16px_rgba(59,130,246,0.8)]"
             style={{ width: `${scrollProgress * 100}%` }}
+          />
+          <div 
+            className="absolute top-0 bottom-0 w-12 bg-white/40 blur-sm transition-all duration-100 ease-out -translate-y-1/2"
+            style={{ left: `calc(${scrollProgress * 100}% - 24px)` }}
           />
         </div>
 
@@ -392,6 +396,7 @@ export default function App() {
           <SnapSection id="philosophy">
             <Philosophy 
               theme={theme} 
+              onNavigate={(id) => navigateToSection(id as SectionId)}
             />
           </SnapSection>
           
